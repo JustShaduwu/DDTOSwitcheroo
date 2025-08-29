@@ -1,0 +1,20 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TextureAtlas imagePath="giffany.png">
+	<!-- Created with Adobe Animate version 24.0.7.61 -->
+	<!-- http://www.adobe.com/products/animate.html -->
+	<SubTexture name="giffany instancia 10000" x="0" y="0" width="413" height="597"/>
+	<SubTexture name="giffany instancia 10001" x="0" y="0" width="413" height="597"/>
+	<SubTexture name="giffany instancia 10002" x="413" y="0" width="413" height="597"/>
+	<SubTexture name="giffany instancia 10003" x="413" y="0" width="413" height="597"/>
+	<SubTexture name="giffany instancia 10004" x="826" y="0" width="413" height="597"/>
+	<SubTexture name="giffany instancia 10005" x="826" y="0" width="413" height="597"/>
+	<SubTexture name="giffany instancia 10006" x="826" y="0" width="413" height="597"/>
+	<SubTexture name="giffany instancia 10007" x="826" y="0" width="413" height="597"/>
+	<SubTexture name="giffany instancia 10008" x="826" y="0" width="413" height="597"/>
+	<SubTexture name="giffany instancia 10009" x="826" y="0" width="413" height="597"/>
+	<SubTexture name="giffany instancia 10010" x="826" y="0" width="413" height="597"/>
+	<SubTexture name="giffany instancia 10011" x="826" y="0" width="413" height="597"/>
+	<SubTexture name="giffany instancia 10012" x="826" y="0" width="413" height="597"/>
+	<SubTexture name="giffany instancia 10013" x="826" y="0" width="413" height="597"/>
+	<SubTexture name="giffany instancia 10014" x="826" y="0" width="413" height="597"/>
+</TextureAtlas>

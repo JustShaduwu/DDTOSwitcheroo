@@ -1,0 +1,87 @@
+{
+	"animations": [
+		{
+			"loop": false,
+			"offsets": [0, 0],
+			"anim": "singRIGHT",
+			"fps": 24,
+			"name": "ManRight",
+			"indices": []
+		},
+		{
+			"loop": false,
+			"offsets": [0, 1],
+			"anim": "singLEFT",
+			"fps": 24,
+			"name": "ManLeft",
+			"indices": []
+		},
+		{
+			"loop": false,
+			"offsets": [0, 2],
+			"anim": "singDOWN",
+			"fps": 24,
+			"name": "ManDown",
+			"indices": []
+		},
+		{
+			"offsets": [1, 2],
+			"loop": false,
+			"fps": 24,
+			"anim": "singUP",
+			"indices": [],
+			"name": "ManUp"
+		},
+		{
+			"loop": false,
+			"offsets": [3, 1],
+			"anim": "idle",
+			"fps": 24,
+			"name": "Idle",
+			"indices": []
+		},
+		{
+			"offsets": [2, 3],
+			"loop": false,
+			"fps": 24,
+			"anim": "singUP-alt",
+			"indices": [],
+			"name": "SeUp"
+		},
+		{
+			"offsets": [1, 2],
+			"loop": false,
+			"fps": 24,
+			"anim": "singRIGHT-alt",
+			"indices": [],
+			"name": "SeRight"
+		},
+		{
+			"offsets": [1, 2],
+			"loop": false,
+			"fps": 24,
+			"anim": "singLEFT-alt",
+			"indices": [],
+			"name": "SeLeft"
+		},
+		{
+			"offsets": [0, 2],
+			"loop": false,
+			"fps": 24,
+			"anim": "singDOWN-alt",
+			"indices": [],
+			"name": "SeDown"
+		}
+	],
+	"vocals_file": "",
+	"no_antialiasing": true,
+	"image": "characters/Duet Bean",
+	"position": [120, 400],
+	"healthicon": "duet",
+	"flip_x": false,
+	"healthbar_colors": [255, 184, 227],
+	"camera_position": [-210, -190],
+	"sing_duration": 4,
+	"scale": 5,
+	"_editor_isPlayer": false
+}

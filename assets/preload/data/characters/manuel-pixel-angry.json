@@ -1,0 +1,85 @@
+{
+	"animations": [
+		{
+			"offsets": [0, 0],
+			"loop": false,
+			"fps": 12,
+			"anim": "idle",
+			"indices": [],
+			"name": "Just Manuel Idle"
+		},
+		{
+			"loop": false,
+			"offsets": [0, 0],
+			"anim": "singUP",
+			"fps": 24,
+			"name": "Man Up",
+			"indices": []
+		},
+		{
+			"loop": false,
+			"offsets": [0, 10],
+			"anim": "singDOWN",
+			"fps": 24,
+			"name": "Man Down",
+			"indices": []
+		},
+		{
+			"loop": false,
+			"offsets": [10, 0],
+			"anim": "singLEFT",
+			"fps": 24,
+			"name": "Man Left",
+			"indices": []
+		},
+		{
+			"loop": false,
+			"offsets": [-10, 0],
+			"anim": "singRIGHT",
+			"fps": 24,
+			"name": "Man Right",
+			"indices": []
+		},
+		{
+			"loop": false,
+			"offsets": [0, 0],
+			"anim": "singUP-alt",
+			"fps": 12,
+			"name": "Glitch Up",
+			"indices": []
+		},
+		{
+			"loop": false,
+			"offsets": [0, 0],
+			"anim": "singDOWN-alt",
+			"fps": 12,
+			"name": "Glitch Down",
+			"indices": []
+		},
+		{
+			"loop": false,
+			"offsets": [10, 0],
+			"anim": "singLEFT-alt",
+			"fps": 12,
+			"name": "Glitch Left",
+			"indices": []
+		},
+		{
+			"loop": false,
+			"offsets": [-10, 0],
+			"anim": "singRIGHT-alt",
+			"fps": 12,
+			"name": "Glitch Right",
+			"indices": []
+		}
+	],
+	"no_antialiasing": true,
+	"image": "characters/Just Manuel",
+	"position": [95, 97],
+	"healthicon": "Manuel Angry",
+	"flip_x": false,
+	"healthbar_colors": [201, 206, 255],
+	"camera_position": [0, 0],
+	"sing_duration": 4,
+	"scale": 6
+}

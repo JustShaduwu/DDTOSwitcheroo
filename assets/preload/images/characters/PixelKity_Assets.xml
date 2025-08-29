@@ -1,0 +1,35 @@
+<?xml version='1.0' encoding='utf-8'?>
+<TextureAtlas imagePath="PixelKity_Assets.png">
+<SubTexture name="PixelKity_Assets Idle0000" x="357" y="72" width="65" height="69" frameX="-14" frameY="-14" frameWidth="84" frameHeight="84" />
+<SubTexture name="PixelKity_Assets Idle0001" x="357" y="72" width="65" height="69" frameX="-14" frameY="-14" frameWidth="84" frameHeight="84" />
+<SubTexture name="PixelKity_Assets Idle0002" x="273" y="73" width="65" height="72" frameX="-14" frameY="-11" frameWidth="84" frameHeight="84" />
+<SubTexture name="PixelKity_Assets Idle0003" x="0" y="0" width="65" height="73" frameX="-14" frameY="-10" frameWidth="84" frameHeight="84" />
+<SubTexture name="PixelKity_Assets Idle0004" x="273" y="145" width="66" height="72" frameX="-13" frameY="-11" frameWidth="84" frameHeight="84" />
+<SubTexture name="PixelKity_Assets Idle0005" x="273" y="145" width="66" height="72" frameX="-13" frameY="-11" frameWidth="84" frameHeight="84" />
+<SubTexture name="PixelKity_Assets Idle0006" x="273" y="145" width="66" height="72" frameX="-13" frameY="-11" frameWidth="84" frameHeight="84" />
+<SubTexture name="PixelKity_Assets Idle0007" x="273" y="145" width="66" height="72" frameX="-13" frameY="-11" frameWidth="84" frameHeight="84" />
+<SubTexture name="PixelKity_Assets Down0000" x="196" y="73" width="65" height="72" frameX="-13" frameY="-11" frameWidth="84" frameHeight="84" />
+<SubTexture name="PixelKity_Assets Down0001" x="196" y="73" width="65" height="72" frameX="-13" frameY="-11" frameWidth="84" frameHeight="84" />
+<SubTexture name="PixelKity_Assets Down0002" x="0" y="219" width="65" height="72" frameX="-14" frameY="-11" frameWidth="84" frameHeight="84" />
+<SubTexture name="PixelKity_Assets Left0000" x="65" y="0" width="65" height="73" frameX="-13" frameY="-10" frameWidth="84" frameHeight="84" />
+<SubTexture name="PixelKity_Assets Left0001" x="65" y="0" width="65" height="73" frameX="-13" frameY="-10" frameWidth="84" frameHeight="84" />
+<SubTexture name="PixelKity_Assets Left0002" x="130" y="0" width="66" height="73" frameX="-13" frameY="-10" frameWidth="84" frameHeight="84" />
+<SubTexture name="PixelKity_Assets Right0000" x="0" y="73" width="65" height="73" frameX="-16" frameY="-10" frameWidth="84" frameHeight="84" />
+<SubTexture name="PixelKity_Assets Right0001" x="0" y="73" width="65" height="73" frameX="-16" frameY="-10" frameWidth="84" frameHeight="84" />
+<SubTexture name="PixelKity_Assets Right0002" x="65" y="73" width="66" height="73" frameX="-13" frameY="-10" frameWidth="84" frameHeight="84" />
+<SubTexture name="PixelKity_Assets Up0000" x="131" y="73" width="65" height="73" frameX="-14" frameY="-10" frameWidth="84" frameHeight="84" />
+<SubTexture name="PixelKity_Assets Up0001" x="131" y="73" width="65" height="73" frameX="-14" frameY="-10" frameWidth="84" frameHeight="84" />
+<SubTexture name="PixelKity_Assets Up0002" x="65" y="219" width="65" height="72" frameX="-14" frameY="-11" frameWidth="84" frameHeight="84" />
+<SubTexture name="PixelKity_Assets Miss Down0000" x="196" y="0" width="77" height="73" frameX="-7" frameY="-10" frameWidth="84" frameHeight="84" />
+<SubTexture name="PixelKity_Assets Miss Down0001" x="196" y="0" width="77" height="73" frameX="-7" frameY="-10" frameWidth="84" frameHeight="84" />
+<SubTexture name="PixelKity_Assets Miss Down0002" x="0" y="146" width="80" height="73" frameX="-3" frameY="-10" frameWidth="84" frameHeight="84" />
+<SubTexture name="PixelKity_Assets Down Miss0000" x="130" y="219" width="83" height="72" frameX="-1" frameY="-11" frameWidth="84" frameHeight="84" />
+<SubTexture name="PixelKity_Assets Down Miss0001" x="130" y="219" width="83" height="72" frameX="-1" frameY="-11" frameWidth="84" frameHeight="84" />
+<SubTexture name="PixelKity_Assets Down Miss0002" x="213" y="219" width="78" height="72" frameX="-6" frameY="-11" frameWidth="84" frameHeight="84" />
+<SubTexture name="PixelKity_Assets Up Miss0000" x="357" y="0" width="79" height="72" frameX="-5" frameY="-11" frameWidth="84" frameHeight="84" />
+<SubTexture name="PixelKity_Assets Up Miss0001" x="357" y="0" width="79" height="72" frameX="-5" frameY="-11" frameWidth="84" frameHeight="84" />
+<SubTexture name="PixelKity_Assets Up Miss0002" x="80" y="146" width="78" height="73" frameX="-6" frameY="-10" frameWidth="84" frameHeight="84" />
+<SubTexture name="PixelKity_Assets Right Miss0000" x="158" y="146" width="84" height="73" frameX="0" frameY="-10" frameWidth="84" frameHeight="84" />
+<SubTexture name="PixelKity_Assets Right Miss0001" x="158" y="146" width="84" height="73" frameX="0" frameY="-10" frameWidth="84" frameHeight="84" />
+<SubTexture name="PixelKity_Assets Right Miss0002" x="273" y="0" width="84" height="73" frameX="0" frameY="-10" frameWidth="84" frameHeight="84" />
+</TextureAtlas>

@@ -1,0 +1,10 @@
+{
+    "song": {
+        "name": "Gra",
+        "artist": "Shaduwu / GGalactigal",
+        "icon": "pen-pixel",
+        "pause": "manuel",
+        "introDialogue": "IntroDialogue",
+        "endDialogue": "EndDialogue"
+    }
+}

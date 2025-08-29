@@ -1,0 +1,49 @@
+flag	content
+nameKeyBindings	Atalhos Do Teclado
+nameDownscroll	Rolagem Para Baixo
+nameUpscroll	Rolagem Para Cima
+nameGhostTap	Toque Fantasma
+nameNoGhostTap	Sem Toque Fantasma
+namePosition	Posição Da Música
+nameReset	Botão De Reset
+nameFlashing	Luzes Piscantes
+nameJudgement	Tempos De Julgamento
+nameFPSCount	Contador De FPS & Memória
+nameFPSCap	Limite De FPS
+nameScroll	Velocidade De Rolagem
+nameScrollDefault	Musica Padrão
+nameNPS	NPS Display
+nameCustomize	Customizar HUD da Gameplay
+nameGFCountdown	Contagem Regressiva Da Girlfriend
+nameMiddleScrollOn	Rolagem Para O Meio
+nameMiddleScrollOff	Rolagem Para Os Lados
+nameLaneUnderwayOn	Subpavimento De Pistas
+nameLaneUnderwayOff	Sem Subpavimento De Pistas
+nameScoreReset	Restar Dados De Pontuação
+nameScoreResetConfirm	Confirmar Reset De Dados De Pontuação
+nameStoryReset	Resetar Dados Da História
+nameStoryResetConfirm	Confirm Reset De Dados Da História
+nameSaveReset	Deletar Dados Salvos
+nameSaveResetConfirm	Confirmar Exclusão De Dados Salvos
+nameSelfAware	Autoconsciência
+nameGameJolt	Integração No Game Jolt
+nameHitSound	Sons De Hit
+nameHitSoundJudge	Sons De Hit De Julgamento
+nameNoteSplash	Notas Salpicam
+nameEarlyLate	Indicador precoce/tardio
+nameAutoPause	Pause Automático
+nameJudgeCount	Contador De Julgamentos
+nameVideoDub	Video Dub
+nameShowRating	Mostrar Avaliações
+nameHideRating	Esconder Avaliações
+nameAntialiasing	Anti-aliasing
+nameGPUTextures	Texturas Do GPU
+nameCacheSong	Cache De Músicas
+nameCache	Assets De Cache
+namePreload	Assets Pré-carregados
+nameShaders	Shaders
+nameLowEnd	Final Baixo
+nameCursor	Cursor Customizável
+nameMirror	Mode Espelho
+nameSudden	Morte Súbita
+nameRandom	Notas Randomizáveis

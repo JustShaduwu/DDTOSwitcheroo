@@ -1,0 +1,10 @@
+{
+    "song": {
+        "name": "Conflicto de Graduación",
+        "artist": "Shaduwu y GGalactigal",
+        "icon": "pen-pixel",
+        "pause": "manuel",
+        "introDialogue": "IntroDialogue",
+        "endDialogue": "EndDialogue"
+    }
+}

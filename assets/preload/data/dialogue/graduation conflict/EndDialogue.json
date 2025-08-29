@@ -1,0 +1,102 @@
+{
+	"initStyle": "pixel",
+	"dialogue": 
+	[
+		{
+			"isCommand": false,
+			"name": "manuel",
+			"expression": "happy",
+			"string": "Wow...",
+			"key": "hscEnd1",
+			"side": "left"
+		},
+		{
+			"isCommand": false,
+			"name": "manuel",
+			"expression": "happy",
+			"string": "That was very",
+			"key": "hscEnd2",
+			"side": "left"
+		},
+		{
+			"isCommand": false,
+			"name": "manuel",
+			"expression": "happy",
+			"string": "funny!",
+			"key": "hscEnd3",
+			"side": "left"
+		},
+		{
+			"isCommand": false,
+			"name": "manuel",
+			"expression": "neutral",
+			"string": "In a way I can't even remember the last time I felt like this...",
+			"key": "hscEnd4",
+			"side": "left"
+		},
+		{
+			"isCommand": false,
+			"name": "bf",
+			"expression": "angry",
+			"string": " Beep!",
+			"key": "hscEnd5",
+			"side": "right"
+		},
+		{
+			"isCommand": false,
+			"name": "manuel",
+			"expression": "neutral",
+			"string": "...okay.",
+			"key": "hscEnd6",
+			"side": "left"
+		},
+		{
+			"isCommand": false,
+			"name": "manuel",
+			"expression": "sad",
+			"string": "Now is enough of games.",
+			"key": "hscEnd7",
+			"side": "left"
+		},
+		{
+			"isCommand": false,
+			"name": "manuel",
+			"expression": "uhoh",
+			"string": "I sang with you, so now you're going to keep your part of the deal, okay?-",
+			"key": "hscEnd8",
+			"side": "left"
+		},
+		{
+			"isCommand": false,
+			"name": "no_one",
+			"expression": "gone",
+			"string": "*the school bell rings*",
+			"key": "hscEnd9",
+			"side": "left"
+		},
+		{
+			"isCommand": false,
+			"name": "no_one",
+			"expression": "gone",
+			"string": "*In the middle of the crowd, someone notices the disappearance of their beloved microphone*",
+			"key": "hscEnd10",
+			"side": "left"
+		},
+		{
+			"isCommand": false,
+			"name": "seira",
+			"expression": "whodis",
+			"string": "Who the hell do you think you are!?",
+			"key": "hscEnd17",
+			"side": "left"
+		},
+		{
+			"isCommand": false,
+			"name": "manuel",
+			"expression": "gasp",
+			"string": "What the-",
+			"key": "hscEnd12",
+			"side": "left"
+		}
+	]
+}

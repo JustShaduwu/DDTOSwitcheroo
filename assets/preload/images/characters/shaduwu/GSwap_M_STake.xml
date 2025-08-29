@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TextureAtlas imagePath="GSwap_M_STake.png">
+	<!-- Made using Maru Aseprite JSON to XML converter -->
+	<SubTexture name="MIdle0000" x="0" y="0" width="180" height="140"/>
+	<SubTexture name="MIdle0001" x="180" y="0" width="180" height="140"/>
+	<SubTexture name="MIdle0002" x="360" y="0" width="180" height="140"/>
+	<SubTexture name="MIdle0003" x="540" y="0" width="180" height="140"/>
+	<SubTexture name="MIdle0004" x="720" y="0" width="180" height="140"/>
+	<SubTexture name="MIdle0005" x="900" y="0" width="180" height="140"/>
+	<SubTexture name="MUp0000" x="0" y="140" width="180" height="140"/>
+	<SubTexture name="MUp0001" x="180" y="140" width="180" height="140"/>
+	<SubTexture name="MLeft0000" x="360" y="140" width="180" height="140"/>
+	<SubTexture name="MLeft0001" x="540" y="140" width="180" height="140"/>
+	<SubTexture name="MDown0000" x="720" y="140" width="180" height="140"/>
+	<SubTexture name="MDown0001" x="900" y="140" width="180" height="140"/>
+	<SubTexture name="MRight0000" x="0" y="280" width="180" height="140"/>
+	<SubTexture name="MRight0001" x="180" y="280" width="180" height="140"/>
+	<SubTexture name="MAltIdle0000" x="360" y="280" width="180" height="140"/>
+	<SubTexture name="MAltIdle0001" x="540" y="280" width="180" height="140"/>
+	<SubTexture name="MAltIdle0002" x="720" y="280" width="180" height="140"/>
+	<SubTexture name="MAltIdle0003" x="900" y="280" width="180" height="140"/>
+	<SubTexture name="MAltIdle0004" x="0" y="420" width="180" height="140"/>
+	<SubTexture name="MAltIdle0005" x="180" y="420" width="180" height="140"/>
+	<SubTexture name="MAltUp0000" x="360" y="420" width="180" height="140"/>
+	<SubTexture name="MAltUp00001" x="540" y="420" width="180" height="140"/>
+	<SubTexture name="MAltLeft0000" x="720" y="420" width="180" height="140"/>
+	<SubTexture name="MAltLeft0001" x="900" y="420" width="180" height="140"/>
+	<SubTexture name="MAltDown0000" x="720" y="140" width="180" height="140"/>
+	<SubTexture name="MAltDown0001" x="900" y="140" width="180" height="140"/>
+	<SubTexture name="MAltRight0000" x="0" y="560" width="180" height="140"/>
+	<SubTexture name="MAltRight0001" x="180" y="560" width="180" height="140"/>
+	<SubTexture name="UpMiss0000" x="360" y="560" width="180" height="140"/>
+	<SubTexture name="UpMiss0001" x="360" y="560" width="180" height="140"/>
+	<SubTexture name="DownMiss0000" x="360" y="560" width="180" height="140"/>
+	<SubTexture name="DownMiss0001" x="360" y="560" width="180" height="140"/>
+	<SubTexture name="LeftMiss0000" x="360" y="560" width="180" height="140"/>
+	<SubTexture name="LeftMiss0001" x="360" y="560" width="180" height="140"/>
+	<SubTexture name="RightMiss0000" x="360" y="560" width="180" height="140"/>
+	<SubTexture name="RightMiss0001" x="360" y="560" width="180" height="140"/>
+	<SubTexture name="RightMiss0002" x="360" y="560" width="180" height="140"/>
+	<SubTexture name="RightMiss0003" x="360" y="560" width="180" height="140"/>
+</TextureAtlas>

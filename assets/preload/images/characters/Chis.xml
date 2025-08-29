@@ -1,0 +1,14 @@
+<?xml version='1.0' encoding='utf-8'?>
+<TextureAtlas imagePath="Chis.png">
+<SubTexture name="Chis Idle0000" x="0" y="0" width="67" height="72" frameX="-31" frameY="-33" frameWidth="120" frameHeight="106" />
+<SubTexture name="Chis Idle0001" x="67" y="0" width="66" height="72" frameX="-32" frameY="-33" frameWidth="120" frameHeight="106" />
+<SubTexture name="Chis Idle0002" x="0" y="72" width="66" height="71" frameX="-32" frameY="-34" frameWidth="120" frameHeight="106" />
+<SubTexture name="Chis Idle0003" x="132" y="72" width="66" height="70" frameX="-32" frameY="-35" frameWidth="120" frameHeight="106" />
+<SubTexture name="Chis Idle0004" x="66" y="72" width="66" height="71" frameX="-32" frameY="-34" frameWidth="120" frameHeight="106" />
+<SubTexture name="Chis Idle0005" x="133" y="0" width="67" height="72" frameX="-31" frameY="-33" frameWidth="120" frameHeight="106" />
+<SubTexture name="Chis Idle0006" x="0" y="0" width="67" height="72" frameX="-31" frameY="-33" frameWidth="120" frameHeight="106" />
+<SubTexture name="Chis Idle0007" x="200" y="70" width="67" height="69" frameX="-31" frameY="-36" frameWidth="120" frameHeight="106" />
+<SubTexture name="Chis Idle0008" x="200" y="0" width="67" height="70" frameX="-31" frameY="-35" frameWidth="120" frameHeight="106" />
+<SubTexture name="Chis Idle0009" x="0" y="0" width="67" height="72" frameX="-31" frameY="-33" frameWidth="120" frameHeight="106" />
+<SubTexture name="Chis Idle0010" x="0" y="0" width="67" height="72" frameX="-31" frameY="-33" frameWidth="120" frameHeight="106" />
+</TextureAtlas>

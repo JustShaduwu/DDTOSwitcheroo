@@ -1,0 +1,10 @@
+{
+    "song": {
+        "name": "Sumire no Yume",
+        "artist": "Shaduwu / JACKALRUIN",
+        "icon": "pen-pixel",
+        "pause": "manuel",
+        "introDialogue": "IntroDialogue",
+        "endDialogue": "EndDialogue"
+    }
+}

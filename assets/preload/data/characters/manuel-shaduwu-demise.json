@@ -1,0 +1,88 @@
+{
+	"animations": [
+		{
+			"loop": false,
+			"offsets": [0, 0],
+			"anim": "idle",
+			"fps": 12,
+			"name": "BonikaIdle",
+			"indices": [0, 1, 2, 3, 4, 4, 4, 4, 4, 4, 4, 4, 4]
+		},
+		{
+			"offsets": [0, 0],
+			"indices": [],
+			"fps": 12,
+			"anim": "singUP",
+			"loop": false,
+			"name": "BonikaUp00"
+		},
+		{
+			"offsets": [0, 10],
+			"indices": [],
+			"fps": 12,
+			"anim": "singDOWN",
+			"loop": false,
+			"name": "BonikaDown0"
+		},
+		{
+			"offsets": [0, 0],
+			"indices": [],
+			"fps": 12,
+			"anim": "singLEFT",
+			"loop": false,
+			"name": "BonikaLeft0"
+		},
+		{
+			"offsets": [0, 0],
+			"indices": [],
+			"fps": 12,
+			"anim": "singRIGHT",
+			"loop": false,
+			"name": "BonikaRight0"
+		},
+		{
+			"offsets": [0, 0],
+			"indices": [],
+			"fps": 12,
+			"anim": "singUP-alt",
+			"loop": false,
+			"name": "BonikaUpGlitch"
+		},
+		{
+			"offsets": [0, 0],
+			"indices": [],
+			"fps": 12,
+			"anim": "singDOWN-alt",
+			"loop": false,
+			"name": "BonikaDownGlitch"
+		},
+		{
+			"offsets": [0, 0],
+			"indices": [],
+			"fps": 12,
+			"anim": "singLEFT-alt",
+			"loop": false,
+			"name": "BonikaLeftGlitch"
+		},
+		{
+			"offsets": [0, 0],
+			"indices": [],
+			"fps": 12,
+			"anim": "singRIGHT-alt",
+			"loop": false,
+			"name": "BonikaRightGlitch"
+		}
+	],
+	"no_antialiasing": true,
+	"image": "characters/shaduwu/Demise_M_STake",
+	"position": [
+    50, 162
+	],
+	"healthicon": "manuel-shaduwu",
+	"flip_x": false,
+	"healthbar_colors": [161, 161, 161],
+	"camera_position": [100, 0],
+	"sing_duration": 4,
+	"scale": 6,
+	"death_sound": "fnf_loss_sfx-doki"
+}

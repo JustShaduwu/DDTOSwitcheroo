@@ -1,0 +1,21 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TextureAtlas imagePath="manuandmanuel.png">
+	<!-- Created with Adobe Animate version 24.0.7.61 -->
+	<!-- http://www.adobe.com/products/animate.html -->
+	<SubTexture name="manuandmanuel instancia 10000" x="0" y="0" width="661" height="665"/>
+	<SubTexture name="manuandmanuel instancia 10001" x="0" y="0" width="661" height="665"/>
+	<SubTexture name="manuandmanuel instancia 10002" x="661" y="0" width="661" height="665"/>
+	<SubTexture name="manuandmanuel instancia 10003" x="661" y="0" width="661" height="665"/>
+	<SubTexture name="manuandmanuel instancia 10004" x="1322" y="0" width="661" height="665"/>
+	<SubTexture name="manuandmanuel instancia 10005" x="1322" y="0" width="661" height="665"/>
+	<SubTexture name="manuandmanuel instancia 10006" x="1322" y="0" width="661" height="665"/>
+	<SubTexture name="manuandmanuel instancia 10007" x="1322" y="0" width="661" height="665"/>
+	<SubTexture name="manuandmanuel instancia 10008" x="0" y="665" width="661" height="665"/>
+	<SubTexture name="manuandmanuel instancia 10009" x="0" y="665" width="661" height="665"/>
+	<SubTexture name="manuandmanuel instancia 10010" x="661" y="665" width="661" height="665"/>
+	<SubTexture name="manuandmanuel instancia 10011" x="661" y="665" width="661" height="665"/>
+	<SubTexture name="manuandmanuel instancia 10012" x="661" y="665" width="661" height="665"/>
+	<SubTexture name="manuandmanuel instancia 10013" x="661" y="665" width="661" height="665"/>
+	<SubTexture name="manuandmanuel instancia 10014" x="661" y="665" width="661" height="665"/>
+	<SubTexture name="manuandmanuel instancia 10015" x="661" y="665" width="661" height="665"/>
+</TextureAtlas>

@@ -1,0 +1,10 @@
+{
+    "song": {
+        "name": "Muerte Por Muerte",
+        "artist": "Shaduwu y DPZ",
+        "icon": "pen-demise",
+        "pause": "manuel",
+        "introDialogue": "IntroDialogue",
+        "endDialogue": "EndDialogue"
+    }
+}

@@ -1,0 +1,26 @@
+<?xml version='1.0' encoding='utf-8'?>
+<TextureAtlas imagePath="Duet (Spirit).png">
+<SubTexture name="Duet (Spirit) Idle0000" x="220" y="131" width="103" height="128" frameX="-8" frameY="-3" frameWidth="140" frameHeight="140" />
+<SubTexture name="Duet (Spirit) Idle0001" x="221" y="0" width="108" height="130" frameX="-3" frameY="-1" frameWidth="140" frameHeight="140" />
+<SubTexture name="Duet (Spirit) Idle0002" x="0" y="0" width="111" height="131" frameX="0" frameY="0" frameWidth="140" frameHeight="140" />
+<SubTexture name="Duet (Spirit) Idle0003" x="111" y="0" width="110" height="131" frameX="0" frameY="0" frameWidth="140" frameHeight="140" />
+<SubTexture name="Duet (Spirit) Idle0004" x="0" y="131" width="110" height="130" frameX="0" frameY="-1" frameWidth="140" frameHeight="140" />
+<SubTexture name="Duet (Spirit) Idle0005" x="110" y="131" width="110" height="130" frameX="0" frameY="-1" frameWidth="140" frameHeight="140" />
+<SubTexture name="Duet (Spirit) Idle0006" x="110" y="131" width="110" height="130" frameX="0" frameY="-1" frameWidth="140" frameHeight="140" />
+<SubTexture name="Duet (Spirit) ManUp0000" x="329" y="0" width="86" height="126" frameX="-8" frameY="-5" frameWidth="140" frameHeight="140" />
+<SubTexture name="Duet (Spirit) ManUp0001" x="329" y="126" width="85" height="126" frameX="-8" frameY="-5" frameWidth="140" frameHeight="140" />
+<SubTexture name="Duet (Spirit) ManRight0000" x="0" y="261" width="101" height="126" frameX="-8" frameY="-5" frameWidth="140" frameHeight="140" />
+<SubTexture name="Duet (Spirit) ManRight0001" x="101" y="261" width="102" height="126" frameX="-8" frameY="-5" frameWidth="140" frameHeight="140" />
+<SubTexture name="Duet (Spirit) ManLeft0000" x="203" y="261" width="100" height="125" frameX="-7" frameY="-6" frameWidth="140" frameHeight="140" />
+<SubTexture name="Duet (Spirit) ManLeft0001" x="303" y="261" width="102" height="125" frameX="-7" frameY="-6" frameWidth="140" frameHeight="140" />
+<SubTexture name="Duet (Spirit) ManDown0000" x="415" y="0" width="97" height="125" frameX="-7" frameY="-6" frameWidth="140" frameHeight="140" />
+<SubTexture name="Duet (Spirit) ManDown0001" x="0" y="387" width="99" height="125" frameX="-7" frameY="-6" frameWidth="140" frameHeight="140" />
+<SubTexture name="Duet (Spirit) SpiUp0000" x="512" y="0" width="95" height="117" frameX="-9" frameY="-13" frameWidth="140" frameHeight="140" />
+<SubTexture name="Duet (Spirit) SpiUp0001" x="512" y="117" width="95" height="117" frameX="-9" frameY="-13" frameWidth="140" frameHeight="140" />
+<SubTexture name="Duet (Spirit) SpiRight0000" x="286" y="387" width="88" height="119" frameX="-16" frameY="-13" frameWidth="140" frameHeight="140" />
+<SubTexture name="Duet (Spirit) SpiRight0001" x="374" y="387" width="89" height="119" frameX="-15" frameY="-13" frameWidth="140" frameHeight="140" />
+<SubTexture name="Duet (Spirit) SpiLeft0000" x="415" y="125" width="90" height="120" frameX="-12" frameY="-12" frameWidth="140" frameHeight="140" />
+<SubTexture name="Duet (Spirit) SpiLeft0001" x="415" y="245" width="91" height="120" frameX="-11" frameY="-12" frameWidth="140" frameHeight="140" />
+<SubTexture name="Duet (Spirit) SpiDown0000" x="99" y="387" width="91" height="120" frameX="-11" frameY="-12" frameWidth="140" frameHeight="140" />
+<SubTexture name="Duet (Spirit) SpiDown0001" x="190" y="387" width="96" height="120" frameX="-6" frameY="-12" frameWidth="140" frameHeight="140" />
+</TextureAtlas>

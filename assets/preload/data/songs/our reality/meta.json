@@ -1,0 +1,9 @@
+{
+    "song": {
+        "name": "Our Reality",
+        "artist": "Shaduwu / Unstorm",
+        "icon": "pen-pixel",
+        "allowCountDown": false,
+        "pause": "manuel"
+    }
+}

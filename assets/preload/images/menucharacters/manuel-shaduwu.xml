@@ -1,0 +1,20 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TextureAtlas imagePath="manuel-shaduwu.png">
+	<!-- Created with Adobe Animate version 24.0.7.61 -->
+	<!-- http://www.adobe.com/products/animate.html -->
+	<SubTexture name="manuel-shaduwu instancia 10000" x="0" y="0" width="836" height="651"/>
+	<SubTexture name="manuel-shaduwu instancia 10001" x="0" y="0" width="836" height="651"/>
+	<SubTexture name="manuel-shaduwu instancia 10002" x="836" y="0" width="836" height="651"/>
+	<SubTexture name="manuel-shaduwu instancia 10003" x="836" y="0" width="836" height="651"/>
+	<SubTexture name="manuel-shaduwu instancia 10004" x="0" y="651" width="836" height="651"/>
+	<SubTexture name="manuel-shaduwu instancia 10005" x="0" y="651" width="836" height="651"/>
+	<SubTexture name="manuel-shaduwu instancia 10006" x="836" y="651" width="836" height="651"/>
+	<SubTexture name="manuel-shaduwu instancia 10007" x="836" y="651" width="836" height="651"/>
+	<SubTexture name="manuel-shaduwu instancia 10008" x="0" y="1302" width="836" height="651"/>
+	<SubTexture name="manuel-shaduwu instancia 10009" x="0" y="1302" width="836" height="651"/>
+	<SubTexture name="manuel-shaduwu instancia 10010" x="836" y="1302" width="836" height="651"/>
+	<SubTexture name="manuel-shaduwu instancia 10011" x="836" y="1302" width="836" height="651"/>
+	<SubTexture name="manuel-shaduwu instancia 10012" x="836" y="1302" width="836" height="651"/>
+	<SubTexture name="manuel-shaduwu instancia 10013" x="836" y="1302" width="836" height="651"/>
+	<SubTexture name="manuel-shaduwu instancia 10014" x="836" y="1302" width="836" height="651"/>
+</TextureAtlas>

@@ -1,0 +1,20 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TextureAtlas imagePath="manuel.png">
+	<!-- Created with Adobe Animate version 24.0.7.61 -->
+	<!-- http://www.adobe.com/products/animate.html -->
+	<SubTexture name="MonikaAnim_gif instancia 10000" x="0" y="0" width="534" height="715"/>
+	<SubTexture name="MonikaAnim_gif instancia 10001" x="534" y="0" width="534" height="715"/>
+	<SubTexture name="MonikaAnim_gif instancia 10002" x="1068" y="0" width="534" height="715"/>
+	<SubTexture name="MonikaAnim_gif instancia 10003" x="1602" y="0" width="534" height="715"/>
+	<SubTexture name="MonikaAnim_gif instancia 10004" x="2136" y="0" width="534" height="715"/>
+	<SubTexture name="MonikaAnim_gif instancia 10005" x="2670" y="0" width="534" height="715"/>
+	<SubTexture name="MonikaAnim_gif instancia 10006" x="3204" y="0" width="534" height="715"/>
+	<SubTexture name="MonikaAnim_gif instancia 10007" x="0" y="715" width="534" height="715"/>
+	<SubTexture name="MonikaAnim_gif instancia 10008" x="534" y="715" width="534" height="715"/>
+	<SubTexture name="MonikaAnim_gif instancia 10009" x="1068" y="715" width="534" height="715"/>
+	<SubTexture name="MonikaAnim_gif instancia 10010" x="1602" y="715" width="534" height="715"/>
+	<SubTexture name="MonikaAnim_gif instancia 10011" x="2136" y="715" width="534" height="715"/>
+	<SubTexture name="MonikaAnim_gif instancia 10012" x="2670" y="715" width="534" height="715"/>
+	<SubTexture name="MonikaAnim_gif instancia 10013" x="3204" y="715" width="534" height="715"/>
+	<SubTexture name="MonikaAnim_gif instancia 10014" x="0" y="1430" width="534" height="715"/>
+</TextureAtlas>

@@ -1,0 +1,11 @@
+{
+    "song": {
+        "name": "Historias de Violetas",
+        "artist": "Shaduwu",
+        "icon": "pen-pixel",
+        "pause": "manuel",
+        "introDialogue": "IntroDialogue",
+        "endDialogue": "EndDialogue",
+        "playManually": true
+    }
+}

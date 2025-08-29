@@ -1,0 +1,20 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TextureAtlas imagePath="nightmare.png">
+	<!-- Created with Adobe Animate version 24.0.7.61 -->
+	<!-- http://www.adobe.com/products/animate.html -->
+	<SubTexture name="nightmare instancia 10000" x="0" y="0" width="651" height="605"/>
+	<SubTexture name="nightmare instancia 10001" x="651" y="0" width="651" height="605"/>
+	<SubTexture name="nightmare instancia 10002" x="1302" y="0" width="651" height="605"/>
+	<SubTexture name="nightmare instancia 10003" x="1953" y="0" width="651" height="605"/>
+	<SubTexture name="nightmare instancia 10004" x="2604" y="0" width="651" height="605"/>
+	<SubTexture name="nightmare instancia 10005" x="3255" y="0" width="651" height="605"/>
+	<SubTexture name="nightmare instancia 10006" x="0" y="605" width="651" height="605"/>
+	<SubTexture name="nightmare instancia 10007" x="651" y="605" width="651" height="605"/>
+	<SubTexture name="nightmare instancia 10008" x="1302" y="605" width="651" height="605"/>
+	<SubTexture name="nightmare instancia 10009" x="1953" y="605" width="651" height="605"/>
+	<SubTexture name="nightmare instancia 10010" x="2604" y="605" width="651" height="605"/>
+	<SubTexture name="nightmare instancia 10011" x="3255" y="605" width="651" height="605"/>
+	<SubTexture name="nightmare instancia 10012" x="0" y="1210" width="651" height="605"/>
+	<SubTexture name="nightmare instancia 10013" x="651" y="1210" width="651" height="605"/>
+	<SubTexture name="nightmare instancia 10014" x="1302" y="1210" width="651" height="605"/>
+</TextureAtlas>

@@ -1,0 +1,143 @@
+{
+	"startingMusic": "Nightmare",
+	"initStyle": "pixel",
+	"dialogue": 
+	[
+		{
+			"isCommand": false,
+			"name": "manuel",
+			"expression": "happy",
+			"string": "...",
+			"key": "ydIntro1",
+			"side": "left"
+		},
+		{
+			"isCommand": false,
+			"name": "manuel",
+			"expression": "happy",
+			"string": "Ah...peace and silence, finally.",
+			"key": "ydIntro2",
+			"side": "left"
+		},
+		{
+			"isCommand": false,
+			"name": "bf",
+			"expression": "what",
+			"string": "...beep..?",
+			"key": "ydIntro3",
+			"side": "right"
+		},
+		{
+			"isCommand": false,
+			"name": "manuel",
+			"expression": "happy",
+			"string": "Oh, yeah. Where we left it?",
+			"key": "ydIntro4",
+			"side": "left"
+		},
+		{
+			"isCommand": false,
+			"name": "manuel",
+			"expression": "hmm",
+			"string": "Okay, you were going to keep your end of the deal, weren't you? Come on, I'm waiting... ",
+			"key": "ydIntro5",
+			"side": "left"
+		},
+		{
+			"isCommand": false,
+			"name": "bf",
+			"expression": "what",
+			"string": "*aggressive bee bop noises*",
+			"key": "ydIntro6",
+			"side": "right"
+		},
+		{
+			"isCommand": false,
+			"name": "manuel",
+			"expression": "surprised",
+			"string": "...uh?",
+			"key": "ydIntro7",
+			"side": "left"
+		},
+		{
+			"isCommand": false,
+			"name": "manuel",
+			"expression": "surprised",
+			"string": "What do you mean 'no'!?",
+			"key": "ydIntro8",
+			"side": "left"
+		},
+		{
+			"isCommand": false,
+			"name": "bf",
+			"expression": "what",
+			"string": "*more aggressive bee bop noises*",
+			"key": "ydIntro9",
+			"side": "right"
+		},
+		{
+			"isCommand": false,
+			"name": "manuel",
+			"expression": "hmm",
+			"string": "...hmm. It's because of your boyfriend, isn't it?",
+			"key": "ydIntro10",
+			"side": "left"
+		},
+		{
+			"isCommand": false,
+			"name": "manuel",
+			"expression": "sad",
+			"string": "...you chose the hardest path.",
+			"key": "ydIntro11",
+			"side": "left"
+		},
+		{
+			"isCommand": false,
+			"name": "manuel",
+			"expression": "sad",
+			"string": "Let's sing one more time.",
+			"key": "ydIntro12",
+			"side": "left"
+		},
+		{
+			"isCommand": false,
+			"name": "manuel",
+			"expression": "uhoh",
+			"string": "If I win, you tell me what I want to know.",
+			"key": "ydIntro13",
+			"side": "left"
+		},
+		{
+			"isCommand": false,
+			"name": "manuel",
+			"expression": "uhoh",
+			"string": "If you win, everything will go back to normal. Along with your Chris. Deal?",
+			"key": "ydIntro13",
+			"side": "left"
+		},
+		{
+			"isCommand": false,
+			"name": "bf",
+			"expression": "angry",
+			"string": "*determined bop*",
+			"key": "ydIntro14",
+			"side": "right"
+         },
+		{
+			"isCommand": false,
+			"name": "manuel",
+			"expression": "hmm",
+			"string": "...Great.",
+			"key": "ydIntro15",
+			"side": "left"
+        },
+		{
+			"isCommand": false,
+			"name": "manuel",
+			"expression": "sad",
+			"string": "Let's end this now.",
+			"key": "ydIntro16",
+			"side": "left"
+		}
+	]
+}

@@ -1,0 +1,104 @@
+{
+	"animations": [
+		{
+			"loop": false,
+			"offsets": [230, -310],
+			"anim": "singUP",
+			"fps": 12,
+			"name": "MUp",
+			"indices": []
+		},
+		{
+			"loop": false,
+			"offsets": [230, -310],
+			"anim": "singLEFT",
+			"fps": 12,
+			"name": "MLeft",
+			"indices": []
+		},
+		{
+			"loop": false,
+			"offsets": [230, -310],
+			"anim": "singDOWN",
+			"fps": 12,
+			"name": "MDown",
+			"indices": []
+		},
+		{
+			"offsets": [230, -310],
+			"loop": false,
+			"fps": 12,
+			"anim": "singRIGHT",
+			"indices": [],
+			"name": "MRight"
+		},
+		{
+			"loop": false,
+			"offsets": [230, -310],
+			"anim": "singUP-alt",
+			"fps": 12,
+			"name": "MAltUp",
+			"indices": []
+		},
+		{
+			"loop": false,
+			"offsets": [230, -310],
+			"anim": "singLEFT-alt",
+			"fps": 12,
+			"name": "MAltLeft",
+			"indices": []
+		},
+		{
+			"loop": false,
+			"offsets": [230, -310],
+			"anim": "singRIGHT-alt",
+			"fps": 12,
+			"name": "MAltRight",
+			"indices": []
+		},
+		{
+			"loop": false,
+			"offsets": [230, -310],
+			"anim": "singDOWN-alt",
+			"fps": 12,
+			"name": "MAltDown",
+			"indices": []
+		},
+		{
+			"offsets": [230, -310],
+			"indices": [],
+			"fps": 12,
+			"anim": "idle",
+			"loop": false,
+			"name": "MIdle"
+		},
+		{
+			"offsets": [230, -310],
+			"indices": [],
+			"fps": 12,
+			"anim": "idle-alt",
+			"loop": false,
+			"name": "MAltIdle"
+		}
+	],
+	"no_antialiasing": true,
+	"image": "characters/shaduwu/GSwap_M_STake",
+	"position": [
+		70,
+		-270
+	],
+	"healthicon": "manuel-shaduwu",
+	"flip_x": false,
+	"healthbar_colors": [
+		255,
+		184,
+		227
+	],
+	"camera_position": [
+		-280,
+		0
+	],
+	"sing_duration": 4,
+	"scale": 6,
+	"death_sound": "fnf_loss_sfx-doki"
+}

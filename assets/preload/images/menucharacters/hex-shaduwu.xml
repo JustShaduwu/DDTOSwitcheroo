@@ -1,0 +1,45 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TextureAtlas imagePath="hex-shaduwu.png">
+	<!-- Created with Adobe Animate version 24.0.7.61 -->
+	<!-- http://www.adobe.com/products/animate.html -->
+	<SubTexture name="hex-shaduwu instancia 10000" x="0" y="0" width="401" height="636"/>
+	<SubTexture name="hex-shaduwu instancia 10001" x="0" y="0" width="401" height="636"/>
+	<SubTexture name="hex-shaduwu instancia 10002" x="0" y="0" width="401" height="636"/>
+	<SubTexture name="hex-shaduwu instancia 10003" x="0" y="0" width="401" height="636"/>
+	<SubTexture name="hex-shaduwu instancia 10004" x="0" y="0" width="401" height="636"/>
+	<SubTexture name="hex-shaduwu instancia 10005" x="0" y="0" width="401" height="636"/>
+	<SubTexture name="hex-shaduwu instancia 10006" x="0" y="0" width="401" height="636"/>
+	<SubTexture name="hex-shaduwu instancia 10007" x="0" y="0" width="401" height="636"/>
+	<SubTexture name="hex-shaduwu instancia 10008" x="0" y="0" width="401" height="636"/>
+	<SubTexture name="hex-shaduwu instancia 10009" x="0" y="0" width="401" height="636"/>
+	<SubTexture name="hex-shaduwu instancia 10010" x="0" y="0" width="401" height="636"/>
+	<SubTexture name="hex-shaduwu instancia 10011" x="0" y="0" width="401" height="636"/>
+	<SubTexture name="hex-shaduwu instancia 10012" x="401" y="0" width="401" height="636"/>
+	<SubTexture name="hex-shaduwu instancia 10013" x="401" y="0" width="401" height="636"/>
+	<SubTexture name="hex-shaduwu instancia 10014" x="802" y="0" width="401" height="636"/>
+	<SubTexture name="hex-shaduwu instancia 10015" x="802" y="0" width="401" height="636"/>
+	<SubTexture name="hex-shaduwu instancia 10016" x="1203" y="0" width="401" height="636"/>
+	<SubTexture name="hex-shaduwu instancia 10017" x="1203" y="0" width="401" height="636"/>
+	<SubTexture name="hex-shaduwu instancia 10018" x="1604" y="0" width="401" height="636"/>
+	<SubTexture name="hex-shaduwu instancia 10019" x="1604" y="0" width="401" height="636"/>
+	<SubTexture name="hex-shaduwu instancia 10020" x="0" y="636" width="401" height="636"/>
+	<SubTexture name="hex-shaduwu instancia 10021" x="0" y="636" width="401" height="636"/>
+	<SubTexture name="hex-shaduwu instancia 10022" x="0" y="636" width="401" height="636"/>
+	<SubTexture name="hex-shaduwu instancia 10023" x="0" y="636" width="401" height="636"/>
+	<SubTexture name="hex-shaduwu instancia 10024" x="0" y="636" width="401" height="636"/>
+	<SubTexture name="hex-shaduwu instancia 10025" x="0" y="636" width="401" height="636"/>
+	<SubTexture name="hex-shaduwu instancia 10026" x="0" y="636" width="401" height="636"/>
+	<SubTexture name="hex-shaduwu instancia 10027" x="0" y="636" width="401" height="636"/>
+	<SubTexture name="hex-shaduwu instancia 10028" x="0" y="636" width="401" height="636"/>
+	<SubTexture name="hex-shaduwu instancia 10029" x="0" y="636" width="401" height="636"/>
+	<SubTexture name="hex-shaduwu instancia 10030" x="0" y="636" width="401" height="636"/>
+	<SubTexture name="hex-shaduwu instancia 10031" x="0" y="636" width="401" height="636"/>
+	<SubTexture name="hex-shaduwu instancia 10032" x="401" y="636" width="401" height="636"/>
+	<SubTexture name="hex-shaduwu instancia 10033" x="401" y="636" width="401" height="636"/>
+	<SubTexture name="hex-shaduwu instancia 10034" x="802" y="636" width="401" height="636"/>
+	<SubTexture name="hex-shaduwu instancia 10035" x="802" y="636" width="401" height="636"/>
+	<SubTexture name="hex-shaduwu instancia 10036" x="1203" y="636" width="401" height="636"/>
+	<SubTexture name="hex-shaduwu instancia 10037" x="1604" y="636" width="401" height="636"/>
+	<SubTexture name="hex-shaduwu instancia 10038" x="0" y="1272" width="401" height="636"/>
+	<SubTexture name="hex-shaduwu instancia 10039" x="0" y="1272" width="401" height="636"/>
+</TextureAtlas>

@@ -1,0 +1,20 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TextureAtlas imagePath="shadowand-og.png">
+	<!-- Created with Adobe Animate version 24.0.7.61 -->
+	<!-- http://www.adobe.com/products/animate.html -->
+	<SubTexture name="shadowand-og instancia 10000" x="7" y="7" width="326" height="585"/>
+	<SubTexture name="shadowand-og instancia 10001" x="356" y="7" width="326" height="585"/>
+	<SubTexture name="shadowand-og instancia 10002" x="705" y="7" width="326" height="585"/>
+	<SubTexture name="shadowand-og instancia 10003" x="1054" y="7" width="326" height="585"/>
+	<SubTexture name="shadowand-og instancia 10004" x="1403" y="7" width="326" height="585"/>
+	<SubTexture name="shadowand-og instancia 10005" x="7" y="615" width="326" height="585"/>
+	<SubTexture name="shadowand-og instancia 10006" x="356" y="615" width="326" height="585"/>
+	<SubTexture name="shadowand-og instancia 10007" x="705" y="615" width="326" height="585"/>
+	<SubTexture name="shadowand-og instancia 10008" x="1054" y="615" width="326" height="585"/>
+	<SubTexture name="shadowand-og instancia 10009" x="1403" y="615" width="326" height="585"/>
+	<SubTexture name="shadowand-og instancia 10010" x="7" y="1223" width="326" height="585"/>
+	<SubTexture name="shadowand-og instancia 10011" x="356" y="1223" width="326" height="585"/>
+	<SubTexture name="shadowand-og instancia 10012" x="705" y="1223" width="326" height="585"/>
+	<SubTexture name="shadowand-og instancia 10013" x="1054" y="1223" width="326" height="585"/>
+	<SubTexture name="shadowand-og instancia 10014" x="1403" y="1223" width="326" height="585"/>
+</TextureAtlas>

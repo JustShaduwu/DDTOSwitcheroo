@@ -1,0 +1,39 @@
+<?xml version='1.0' encoding='utf-8'?>
+<TextureAtlas imagePath="Just Manuel.png">
+<SubTexture name="Just Manuel Idle0000" x="0" y="101" width="59" height="92" frameX="-13" frameY="-23" frameWidth="96" frameHeight="124" />
+<SubTexture name="Just Manuel Idle0001" x="0" y="101" width="59" height="92" frameX="-13" frameY="-23" frameWidth="96" frameHeight="124" />
+<SubTexture name="Just Manuel Idle0002" x="0" y="193" width="59" height="91" frameX="-13" frameY="-24" frameWidth="96" frameHeight="124" />
+<SubTexture name="Just Manuel Idle0003" x="0" y="0" width="59" height="101" frameX="-13" frameY="-14" frameWidth="96" frameHeight="124" />
+<SubTexture name="Just Manuel Idle0004" x="322" y="180" width="59" height="88" frameX="-13" frameY="-27" frameWidth="96" frameHeight="124" />
+<SubTexture name="Just Manuel Idle0005" x="322" y="91" width="59" height="89" frameX="-13" frameY="-26" frameWidth="96" frameHeight="124" />
+<SubTexture name="Just Manuel Idle0006" x="322" y="91" width="59" height="89" frameX="-13" frameY="-26" frameWidth="96" frameHeight="124" />
+<SubTexture name="Just Manuel Idle0007" x="322" y="91" width="59" height="89" frameX="-13" frameY="-26" frameWidth="96" frameHeight="124" />
+<SubTexture name="Man Up0000" x="59" y="101" width="59" height="92" frameX="-13" frameY="-22" frameWidth="96" frameHeight="124" />
+<SubTexture name="Man Up0001" x="59" y="101" width="59" height="92" frameX="-13" frameY="-22" frameWidth="96" frameHeight="124" />
+<SubTexture name="Man Up0002" x="59" y="193" width="61" height="91" frameX="-12" frameY="-23" frameWidth="96" frameHeight="124" />
+<SubTexture name="Man Down0000" x="154" y="284" width="55" height="84" frameX="-15" frameY="-30" frameWidth="96" frameHeight="124" />
+<SubTexture name="Man Down0001" x="154" y="284" width="55" height="84" frameX="-15" frameY="-30" frameWidth="96" frameHeight="124" />
+<SubTexture name="Man Down0002" x="262" y="193" width="55" height="85" frameX="-15" frameY="-29" frameWidth="96" frameHeight="124" />
+<SubTexture name="Man Left0000" x="118" y="0" width="59" height="95" frameX="-12" frameY="-23" frameWidth="96" frameHeight="124" />
+<SubTexture name="Man Left0001" x="118" y="0" width="59" height="95" frameX="-12" frameY="-23" frameWidth="96" frameHeight="124" />
+<SubTexture name="Man Left0002" x="59" y="0" width="59" height="96" frameX="-12" frameY="-22" frameWidth="96" frameHeight="124" />
+<SubTexture name="Man Right0000" x="120" y="193" width="72" height="91" frameX="-10" frameY="-24" frameWidth="96" frameHeight="124" />
+<SubTexture name="Man Right0001" x="120" y="193" width="72" height="91" frameX="-10" frameY="-24" frameWidth="96" frameHeight="124" />
+<SubTexture name="Man Right0002" x="192" y="193" width="70" height="91" frameX="-10" frameY="-25" frameWidth="96" frameHeight="124" />
+<SubTexture name="Glitch Up0000" x="118" y="101" width="74" height="92" frameX="0" frameY="-22" frameWidth="96" frameHeight="124" />
+<SubTexture name="Glitch Up0001" x="118" y="101" width="74" height="92" frameX="0" frameY="-22" frameWidth="96" frameHeight="124" />
+<SubTexture name="Glitch Up0002" x="236" y="0" width="86" height="92" frameX="-2" frameY="-22" frameWidth="96" frameHeight="124" />
+<SubTexture name="Glitch Up0003" x="236" y="92" width="59" height="92" frameX="-13" frameY="-22" frameWidth="96" frameHeight="124" />
+<SubTexture name="Glitch Down0000" x="394" y="0" width="75" height="83" frameX="-8" frameY="-31" frameWidth="96" frameHeight="124" />
+<SubTexture name="Glitch Down0001" x="394" y="0" width="75" height="83" frameX="-8" frameY="-31" frameWidth="96" frameHeight="124" />
+<SubTexture name="Glitch Down0002" x="209" y="284" width="55" height="84" frameX="-15" frameY="-30" frameWidth="96" frameHeight="124" />
+<SubTexture name="Glitch Down0003" x="264" y="284" width="62" height="84" frameX="-11" frameY="-30" frameWidth="96" frameHeight="124" />
+<SubTexture name="Glitch Right0000" x="322" y="0" width="72" height="91" frameX="-10" frameY="-24" frameWidth="96" frameHeight="124" />
+<SubTexture name="Glitch Right0001" x="322" y="0" width="72" height="91" frameX="-10" frameY="-24" frameWidth="96" frameHeight="124" />
+<SubTexture name="Glitch Right0002" x="0" y="284" width="81" height="91" frameX="-5" frameY="-24" frameWidth="96" frameHeight="124" />
+<SubTexture name="Glitch Right0003" x="81" y="284" width="73" height="91" frameX="-11" frameY="-24" frameWidth="96" frameHeight="124" />
+<SubTexture name="Glitch Left0000" x="394" y="83" width="73" height="83" frameX="0" frameY="-35" frameWidth="96" frameHeight="124" />
+<SubTexture name="Glitch Left0001" x="394" y="83" width="73" height="83" frameX="0" frameY="-35" frameWidth="96" frameHeight="124" />
+<SubTexture name="Glitch Left0002" x="0" y="375" width="88" height="83" frameX="0" frameY="-35" frameWidth="96" frameHeight="124" />
+<SubTexture name="Glitch Left0003" x="177" y="0" width="59" height="95" frameX="-12" frameY="-23" frameWidth="96" frameHeight="124" />
+</TextureAtlas>

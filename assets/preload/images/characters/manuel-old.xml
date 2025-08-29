@@ -1,0 +1,84 @@
+<?xml version='1.0' encoding='utf-8'?>
+<TextureAtlas imagePath="manuel-old.png">
+<SubTexture name="ManDown 0000" x="0" y="0" width="89" height="147" frameX="-35" frameY="-63" frameWidth="128" frameHeight="170" />
+<SubTexture name="ManDown 0001" x="0" y="0" width="89" height="147" frameX="-35" frameY="-63" frameWidth="128" frameHeight="170" />
+<SubTexture name="ManDown 0002" x="0" y="0" width="89" height="147" frameX="-35" frameY="-63" frameWidth="128" frameHeight="170" />
+<SubTexture name="ManDown 0003" x="89" y="0" width="90" height="148" frameX="-35" frameY="-62" frameWidth="128" frameHeight="170" />
+<SubTexture name="ManDown 0004" x="89" y="0" width="90" height="148" frameX="-35" frameY="-62" frameWidth="128" frameHeight="170" />
+
+<SubTexture name="ManIdle 0000" x="179" y="0" width="104" height="156" frameX="-28" frameY="-54" frameWidth="128" frameHeight="170" />
+<SubTexture name="ManIdle 0001" x="179" y="0" width="104" height="156" frameX="-28" frameY="-54" frameWidth="128" frameHeight="170" />
+<SubTexture name="ManIdle 0002" x="283" y="0" width="104" height="156" frameX="-28" frameY="-54" frameWidth="128" frameHeight="170" />
+<SubTexture name="ManIdle 0003" x="283" y="0" width="104" height="156" frameX="-28" frameY="-54" frameWidth="128" frameHeight="170" />
+<SubTexture name="ManIdle 0004" x="387" y="0" width="104" height="157" frameX="-28" frameY="-53" frameWidth="128" frameHeight="170" />
+<SubTexture name="ManIdle 0005" x="387" y="0" width="104" height="157" frameX="-28" frameY="-53" frameWidth="128" frameHeight="170" />
+<SubTexture name="ManIdle 0006" x="491" y="0" width="106" height="159" frameX="-27" frameY="-51" frameWidth="128" frameHeight="170" />
+<SubTexture name="ManIdle 0007" x="491" y="0" width="106" height="159" frameX="-27" frameY="-51" frameWidth="128" frameHeight="170" />
+<SubTexture name="ManIdle 0008" x="0" y="159" width="108" height="157" frameX="-26" frameY="-53" frameWidth="128" frameHeight="170" />
+<SubTexture name="ManIdle 0009" x="0" y="159" width="108" height="157" frameX="-26" frameY="-53" frameWidth="128" frameHeight="170" />
+<SubTexture name="ManIdle 0010" x="108" y="159" width="108" height="158" frameX="-26" frameY="-52" frameWidth="128" frameHeight="170" />
+<SubTexture name="ManIdle 0011" x="108" y="159" width="108" height="158" frameX="-26" frameY="-52" frameWidth="128" frameHeight="170" />
+<SubTexture name="ManIdle 0012" x="108" y="159" width="108" height="158" frameX="-26" frameY="-52" frameWidth="128" frameHeight="170" />
+<SubTexture name="ManIdle 0013" x="108" y="159" width="108" height="158" frameX="-26" frameY="-52" frameWidth="128" frameHeight="170" />
+<SubTexture name="ManIdle 0014" x="108" y="159" width="108" height="158" frameX="-26" frameY="-52" frameWidth="128" frameHeight="170" />
+<SubTexture name="ManIdle 0015" x="108" y="159" width="108" height="158" frameX="-26" frameY="-52" frameWidth="128" frameHeight="170" />
+
+<SubTexture name="ManLeft 0000" x="216" y="159" width="90" height="155" frameX="-37" frameY="-55" frameWidth="128" frameHeight="170" />
+<SubTexture name="ManLeft 0001" x="216" y="159" width="90" height="155" frameX="-37" frameY="-55" frameWidth="128" frameHeight="170" />
+<SubTexture name="ManLeft 0002" x="216" y="159" width="90" height="155" frameX="-37" frameY="-55" frameWidth="128" frameHeight="170" />
+<SubTexture name="ManLeft 0003" x="306" y="159" width="91" height="156" frameX="-38" frameY="-54" frameWidth="128" frameHeight="170" />
+<SubTexture name="ManLeft 0004" x="306" y="159" width="91" height="156" frameX="-38" frameY="-54" frameWidth="128" frameHeight="170" />
+
+<SubTexture name="ManRight 0000" x="397" y="159" width="99" height="155" frameX="-34" frameY="-55" frameWidth="128" frameHeight="170" />
+<SubTexture name="ManRight 0001" x="397" y="159" width="99" height="155" frameX="-34" frameY="-55" frameWidth="128" frameHeight="170" />
+<SubTexture name="ManRight 0002" x="397" y="159" width="99" height="155" frameX="-34" frameY="-55" frameWidth="128" frameHeight="170" />
+<SubTexture name="ManRight 0003" x="496" y="159" width="103" height="156" frameX="-31" frameY="-54" frameWidth="128" frameHeight="170" />
+<SubTexture name="ManRight 0004" x="496" y="159" width="103" height="156" frameX="-31" frameY="-54" frameWidth="128" frameHeight="170" />
+
+<SubTexture name="ManUp 0000" x="0" y="317" width="76" height="161" frameX="-41" frameY="-49" frameWidth="128" frameHeight="170" />
+<SubTexture name="ManUp 0001" x="0" y="317" width="76" height="161" frameX="-41" frameY="-49" frameWidth="128" frameHeight="170" />
+<SubTexture name="ManUp 0002" x="0" y="317" width="76" height="161" frameX="-41" frameY="-49" frameWidth="128" frameHeight="170" />
+<SubTexture name="ManUp 0003" x="76" y="317" width="77" height="160" frameX="-40" frameY="-50" frameWidth="128" frameHeight="170" />
+<SubTexture name="ManUp 0004" x="76" y="317" width="77" height="160" frameX="-40" frameY="-50" frameWidth="128" frameHeight="170" />
+
+<SubTexture name="Man Alt Down 0000" x="0" y="0" width="89" height="147" frameX="-35" frameY="-63" frameWidth="128" frameHeight="170" />
+<SubTexture name="Man Alt Down 0001" x="0" y="0" width="89" height="147" frameX="-35" frameY="-63" frameWidth="128" frameHeight="170" />
+<SubTexture name="Man Alt Down 0002" x="0" y="0" width="89" height="147" frameX="-35" frameY="-63" frameWidth="128" frameHeight="170" />
+<SubTexture name="Man Alt Down 0003" x="89" y="0" width="90" height="148" frameX="-35" frameY="-62" frameWidth="128" frameHeight="170" />
+<SubTexture name="Man Alt Down 0004" x="89" y="0" width="90" height="148" frameX="-35" frameY="-62" frameWidth="128" frameHeight="170" />
+
+<SubTexture name="Man Alt Idle 0000" x="153" y="317" width="104" height="156" frameX="-28" frameY="-54" frameWidth="128" frameHeight="170" />
+<SubTexture name="Man Alt Idle 0001" x="153" y="317" width="104" height="156" frameX="-28" frameY="-54" frameWidth="128" frameHeight="170" />
+<SubTexture name="Man Alt Idle 0002" x="257" y="317" width="104" height="156" frameX="-28" frameY="-54" frameWidth="128" frameHeight="170" />
+<SubTexture name="Man Alt Idle 0003" x="257" y="317" width="104" height="156" frameX="-28" frameY="-54" frameWidth="128" frameHeight="170" />
+<SubTexture name="Man Alt Idle 0004" x="361" y="317" width="104" height="157" frameX="-28" frameY="-53" frameWidth="128" frameHeight="170" />
+<SubTexture name="Man Alt Idle 0005" x="361" y="317" width="104" height="157" frameX="-28" frameY="-53" frameWidth="128" frameHeight="170" />
+<SubTexture name="Man Alt Idle 0006" x="465" y="317" width="106" height="159" frameX="-27" frameY="-51" frameWidth="128" frameHeight="170" />
+<SubTexture name="Man Alt Idle 0007" x="465" y="317" width="106" height="159" frameX="-27" frameY="-51" frameWidth="128" frameHeight="170" />
+<SubTexture name="Man Alt Idle 0008" x="0" y="478" width="108" height="157" frameX="-26" frameY="-53" frameWidth="128" frameHeight="170" />
+<SubTexture name="Man Alt Idle 0009" x="0" y="478" width="108" height="157" frameX="-26" frameY="-53" frameWidth="128" frameHeight="170" />
+<SubTexture name="Man Alt Idle 0010" x="108" y="478" width="108" height="158" frameX="-26" frameY="-52" frameWidth="128" frameHeight="170" />
+<SubTexture name="Man Alt Idle 0011" x="108" y="478" width="108" height="158" frameX="-26" frameY="-52" frameWidth="128" frameHeight="170" />
+<SubTexture name="Man Alt Idle 0012" x="108" y="478" width="108" height="158" frameX="-26" frameY="-52" frameWidth="128" frameHeight="170" />
+<SubTexture name="Man Alt Idle 0013" x="108" y="478" width="108" height="158" frameX="-26" frameY="-52" frameWidth="128" frameHeight="170" />
+<SubTexture name="Man Alt Idle 0014" x="108" y="478" width="108" height="158" frameX="-26" frameY="-52" frameWidth="128" frameHeight="170" />
+<SubTexture name="Man Alt Idle 0015" x="108" y="478" width="108" height="158" frameX="-26" frameY="-52" frameWidth="128" frameHeight="170" />
+
+<SubTexture name="Man Alt Left 0000" x="216" y="478" width="90" height="155" frameX="-37" frameY="-55" frameWidth="128" frameHeight="170" />
+<SubTexture name="Man Alt Left 0001" x="216" y="478" width="90" height="155" frameX="-37" frameY="-55" frameWidth="128" frameHeight="170" />
+<SubTexture name="Man Alt Left 0002" x="216" y="478" width="90" height="155" frameX="-37" frameY="-55" frameWidth="128" frameHeight="170" />
+<SubTexture name="Man Alt Left 0003" x="306" y="478" width="91" height="156" frameX="-38" frameY="-54" frameWidth="128" frameHeight="170" />
+<SubTexture name="Man Alt Left 0004" x="306" y="478" width="91" height="156" frameX="-38" frameY="-54" frameWidth="128" frameHeight="170" />
+
+<SubTexture name="Man Alt Right 0000" x="397" y="478" width="99" height="155" frameX="-34" frameY="-55" frameWidth="128" frameHeight="170" />
+<SubTexture name="Man Alt Right 0001" x="397" y="478" width="99" height="155" frameX="-34" frameY="-55" frameWidth="128" frameHeight="170" />
+<SubTexture name="Man Alt Right 0002" x="397" y="478" width="99" height="155" frameX="-34" frameY="-55" frameWidth="128" frameHeight="170" />
+<SubTexture name="Man Alt Right 0003" x="496" y="478" width="103" height="156" frameX="-31" frameY="-54" frameWidth="128" frameHeight="170" />
+<SubTexture name="Man Alt Right 0004" x="496" y="478" width="103" height="156" frameX="-31" frameY="-54" frameWidth="128" frameHeight="170" />
+
+<SubTexture name="Man Alt Up 0000" x="0" y="636" width="76" height="161" frameX="-41" frameY="-49" frameWidth="128" frameHeight="170" />
+<SubTexture name="Man Alt Up 0001" x="0" y="636" width="76" height="161" frameX="-41" frameY="-49" frameWidth="128" frameHeight="170" />
+<SubTexture name="Man Alt Up 0002" x="0" y="636" width="76" height="161" frameX="-41" frameY="-49" frameWidth="128" frameHeight="170" />
+<SubTexture name="Man Alt Up 0003" x="76" y="636" width="77" height="160" frameX="-40" frameY="-50" frameWidth="128" frameHeight="170" />
+<SubTexture name="Man Alt Up 0004" x="76" y="636" width="77" height="160" frameX="-40" frameY="-50" frameWidth="128" frameHeight="170" />
+</TextureAtlas>

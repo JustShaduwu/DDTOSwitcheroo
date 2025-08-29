@@ -1,0 +1,367 @@
+{ 
+	"startingMusic": "Lunchbox",
+	"initStyle": "pixel",
+	"dialogue": 
+	[
+		{
+			"isCommand": false,
+			"name": "no_one",
+			"expression": "gone",
+			"string": "UAAAAAAGH",
+			"key": "hscIntro1",
+			"side": "left"
+		},
+		{
+			"isCommand": false,
+			"name": "no_one",
+			"expression": "gone",
+			"string": "*Thud*",
+			"key": "hscIntro2",
+			"side": "left"
+		},
+		{
+			"isCommand": false,
+			"name": "no_one",
+			"expression": "gone",
+			"string": "Ugh... what... was that",
+			"key": "hscIntro3",
+			"side": "left"
+		},
+		{
+			"isCommand": false,
+			"name": "no_one",
+			"expression": "gone",
+			"string": "*the man runs his hand over his head* ",
+			"key": "hscIntro4",
+			"side": "left"
+		},
+		{
+			"isCommand": false,
+			"name": "manuel",
+			"expression": "gasp",
+			"string": "My resolution... damn. It's so low.",
+			"key": "hscIntro5",
+			"side": "left"
+		},
+		{
+			"isCommand": false,
+			"name": "manuel",
+			"expression": "mad",
+			"string": "Oh god, how ''cool''",
+			"key": "hscIntro6",
+			"side": "left"
+		},
+		{
+			"isCommand": false,
+			"name": "manuel",
+			"expression": "mad",
+			"string": "This is definitely NOT Kansas",
+			"key": "hscIntro7",
+			"side": "left"
+		},
+		{
+			"isCommand": false,
+			"name": "manuel",
+			"expression": "gasp",
+			"string": "(That's a school...?)",
+			"key": "hscIntro8",
+			"side": "left"
+		},
+		{
+			"isCommand": false,
+			"name": "manuel",
+			"expression": "gasp",
+			"string": "Heh.",
+			"key": "hscIntro9",
+			"side": "left"
+		},
+		{
+			"isCommand": false,
+			"name": "manuel",
+			"expression": "gasp",
+			"string": "(And I thought I'd never see one of those again...)",
+			"key": "hscIntro10",
+			"side": "left"
+                },
+		{
+			"isCommand": false,
+			"name": "manuel",
+			"expression": "sad",
+			"string": "...",
+			"key": "hscIntro11",
+			"side": "left"
+                },
+		{
+			"isCommand": false,
+			"name": "manuel",
+			"expression": "gasp",
+			"string": "(Wait...)",
+			"key": "hscIntro12",
+			"side": "left"
+                },
+		{
+			"isCommand": false,
+			"name": "manuel",
+			"expression": "gasp",
+			"string": "(This place looks a little familiar...)",
+			"key": "hscIntro13",
+			"side": "left"
+                },
+		{
+			"isCommand": false,
+			"name": "manuel",
+			"expression": "gasp",
+			"string": "(...my school...)",
+			"key": "hscIntro14",
+			"side": "left"
+                },
+		{
+			"isCommand": false,
+			"name": "manuel",
+			"expression": "gasp",
+			"string": "(...maybe this place is related to her somehow...)",
+			"key": "hscIntro15",
+			"side": "left"
+                },
+		{
+			"isCommand": false,
+			"name": "no_one",
+			"expression": "gone",
+			"string": "*Manuel walks around the school and, as he turns a corner, almost bumps into a blue hair girl.*",
+			"key": "hscIntro16",
+			"side": "left"
+                },
+		{
+			"isCommand": true,
+			"name": "shake",
+			"duration": "0.5"
+		},
+		{
+			"isCommand": false,
+			"name": "manuel",
+			"expression": "sad",
+			"string": "AUGH!",
+			"key": "hscIntro17",
+			"side": "left"
+                },
+		{
+			"isCommand": false,
+			"name": "bf",
+			"expression": "what",
+			"string": "*surprised beep*",
+			"key": "hscIntro18",
+			"side": "right"
+		},
+		{
+			"isCommand": true,
+			"name": "playcutscene",
+			"string": "showbf",
+			"duration": 0
+                },
+		{
+			"isCommand": false,
+			"name": "manuel",
+			"expression": "sad",
+			"string": "Oh my God...sorry! Are you fine?",
+			"key": "hscIntro19",
+			"side": "left"
+		},
+		{
+			"isCommand": false,
+			"name": "bf",
+			"expression": "neutral",
+			"string": "Beep!",
+			"key": "hscIntro20",
+			"side": "right"
+		},
+		{
+			"isCommand": true,
+			"name": "shake",
+			"duration": "0.2"
+		},
+		{
+			"isCommand": false,
+			"name": "no_one",
+			"expression": "gone",
+			"string": "*Chris takes Kaity's hand to help her*",
+			"key": "hscIntro21",
+			"side": "left"
+		},
+		{
+			"isCommand": false,
+			"name": "manuel",
+			"expression": "sad",
+			"string": "Phew...sorry...",
+			"key": "hscIntro22",
+			"side": "left"
+		},
+		{
+			"isCommand": false,
+			"name": "manuel",
+			"expression": "sad",
+			"string": ". . .",
+			"key": "hscIntro23",
+			"side": "left"
+                },
+		{
+			"isCommand": false,
+			"name": "no_one",
+			"expression": "gone",
+			"string": "*Manuel is delighted with the couple's harmonious dynamic*",
+			"key": "hscIntro24",
+			"side": "left"
+		},
+		{
+			"isCommand": false,
+			"name": "bf",
+			"expression": "neutral",
+			"string": "Beep?",
+			"key": "hscIntro25",
+			"side": "right"
+		},
+		{
+			"isCommand": false,
+			"name": "manuel",
+			"expression": "gasp",
+			"string": "Ah! Sorry, sorry... I ended up being a little inattentive...",
+			"key": "hscIntro26",
+			"side": "left"
+		},
+		{
+			"isCommand": false,
+			"name": "manuel",
+			"expression": "gasp",
+			"string": "(...they seem to be from around here...can I ask them about some things?)",
+			"key": "hscIntro27",
+			"side": "left"
+		},
+		{
+			"isCommand": false,
+			"name": "manuel",
+			"expression": "mad",  
+			"string": "(Like, what the HELL kind of place is this?)",
+			"key": "hscIntro28",
+			"side": "left"
+		},
+		{
+			"isCommand": false,
+			"name": "manuel",
+			"expression": "neutral",
+			"string": "Hey...just a minute",
+			"key": "hscIntro29",
+			"side": "left"
+		},
+		{
+			"isCommand": false,
+			"name": "no_one",
+			"expression": "gone",
+			"string": "*manuel stops them from leaving*",
+			"key": "hscIntro30",
+			"side": "left"
+		},
+		{
+			"isCommand": false,
+			"name": "manuel",
+			"expression": "neutral",
+			"string": "Can you guys tell me what this place is? And...how do I get out of here?",
+			"key": "hscIntro31",
+			"side": "left"
+                },
+		{
+			"isCommand": false,
+			"name": "no_one",
+			"expression": "gone",
+			"string": "*Kaity looks at Chris with a smile*",
+			"key": "hscIntro32",
+			"side": "right"
+		},
+		{
+			"isCommand": false,
+			"name": "bf",
+			"expression": "happy",
+			"string": "Bip bop!",
+			"key": "hscIntro33",
+			"side": "right"
+		},
+		{
+			"isCommand": false,
+			"name": "manuel",
+			"expression": "gasp",
+			"string": "what",
+			"key": "hscIntro34",
+			"side": "left"
+                },
+		{
+			"isCommand": false,
+			"name": "manuel",
+			"expression": "mad",
+			"string": "Do you want me to sing with you?",
+			"key": "hscIntro35",
+			"side": "left"
+		},
+		{
+			"isCommand": false,
+			"name": "manuel",
+			"expression": "sad",
+			"string": "Seriously?",
+			"key": "hscIntro36",
+			"side": "left"
+		},
+		{
+			"isCommand": false,
+			"name": "manuel",
+			"expression": "mad",
+			"string": "...but why?-",
+			"key": "hscIntro37",
+			"side": "left"
+                },
+		{
+			"isCommand": false,
+			"name": "manuel",
+			"expression": "neutral",
+			"string": "(Wait...I can't refuse!)",
+			"key": "hscIntro38",
+			"side": "left"
+		},
+		{
+			"isCommand": false,
+			"name": "manuel",
+			"expression": "sad",
+			"string": "(They might be my only chance to understand this place!)?",
+			"key": "hscIntro39",
+			"side": "left"
+		},
+		{
+			"isCommand": false,
+			"name": "manuel",
+			"expression": "neutral",
+			"string": "...okay. Maybe.",
+			"key": "hscIntro40",
+			"side": "left"
+                },
+		{
+			"isCommand": false,
+			"name": "bf",
+			"expression": "happy",
+			"string": "*happy beep bop noises*",
+			"key": "hscIntro41",
+			"side": "right"
+		},
+		{
+			"isCommand": false,
+			"name": "manuel",
+			"expression": "neutral",
+			"string": " (...I feel like they're important pieces to understanding all of this.)",
+			"key": "hscIntro42",
+			"side": "left"
+		},
+		{
+			"isCommand": false,
+			"name": "manuel",
+			"expression": "sad",
+			"string": "(And find my sister.)",
+			"key": "hscIntro43",
+			"side": "left"
+		}
+	]
+}
