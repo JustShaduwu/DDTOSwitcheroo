@@ -72,6 +72,7 @@ class MainMenuState extends MusicBeatState
 
 	var backdrop:FlxBackdrop;
 	var logoBl:FlxSprite;
+	var bd:FlxSprite;
 	public static var menuCharJSON:MenuCharacterJSON;
 
 	public static var instance:MainMenuState;
@@ -148,11 +149,11 @@ class MainMenuState extends MusicBeatState
 			ten.push('indiehorror');
 		}
 
-		if (SaveData.unlockAntipathyCostume)
+	/*	if (SaveData.unlockAntipathyCostume)
 			ten.push('nathank');
 
 		if (SaveData.getFlixelSave('ShadowMario', 'VS Impostor')) // amogus
-			ten.push('sayomongus');
+			ten.push('sayomongus'); */
 
         if (SaveData.shaduwuver)
 		{
@@ -191,7 +192,7 @@ class MainMenuState extends MusicBeatState
 	        trace("no herobrine :c");
 		}
 
-		if (SaveData.getFlixelSave('TeamTBD', 'VSInfinite')) // infinite 
+	/*	if (SaveData.getFlixelSave('TeamTBD', 'VSInfinite')) // infinite 
 		{
 			ten.push('infinite');
 	        trace("we are gettin insanity!");
@@ -201,7 +202,20 @@ class MainMenuState extends MusicBeatState
 		{
 			ten.push('secretchar2');
 	        trace("nO INFINITE XD");
+			//sorry bro..
+		} */
+
+		if (SaveData.getFlixelSave('Team 375', 'Indie Cross')) // sans
+		{
+			ten.push('sans');
+	        trace("eee I'm Trans, I mean, Sans");
 		}
+
+		if (!SaveData.getFlixelSave('Team 375', 'Indie Cross')) // sans
+		{
+			ten.push('secretchar6');
+	        trace("nO eeee");
+		} 
 
 		if (SaveData.getFlixelSave('Shaduwu', 'Fridand Night Funkin')) // vs and shadows & friends update | fridand rebooted
 		{
@@ -331,7 +345,7 @@ class MainMenuState extends MusicBeatState
 			add(shaker);
 
 
-		var bd:FlxSprite = new FlxSprite().loadGraphic(Paths.image('discordov'));
+		bd = new FlxSprite(1100, 570).loadGraphic(Paths.image('discordov'));
 		bd.antialiasing = SaveData.globalAntialiasing;
 		add(bd);
 
@@ -373,6 +387,9 @@ class MainMenuState extends MusicBeatState
 			if (shaker != null && addVally && FlxG.mouse.overlaps(shaker) && FlxG.mouse.justPressed)
 				openSong();
 
+			if (bd != null && FlxG.mouse.overlaps(bd) && FlxG.mouse.justPressed)
+			CoolUtil.openURL('https://discord.gg/dN4a3Nzu5u');
+
 			if (controls.UP_P)
 			{
 				FlxG.sound.play(Paths.sound('scrollMenu'));
@@ -385,15 +402,16 @@ class MainMenuState extends MusicBeatState
 				changeItem(1);
 			}
 
-		/*	if (controls.LEFT_P)
-			{
-            LoadingState.loadAndSwitchState(new MainMenuState(), false);
-			}	 */
+
 			
 			if (controls.RESET)
 				MusicBeatState.resetState();
 
 			#if debug
+			if (controls.LEFT_P)
+			{
+            LoadingState.loadAndSwitchState(new MainMenuState(), false);
+			}	 
 			if (FlxG.keys.justPressed.O)
 				SaveData.unlockAll();
 

@@ -36,8 +36,8 @@
                 },
 		{
 			"isCommand": false,
-			"name": "kaity",
-			"expression": "what",
+			"name": "bf",
+			"expression": "angry",
 			"string": "(fearful beeps)",
 			"key": "ydEnd4",
 			"side": "right"
@@ -46,6 +46,10 @@
 			"isCommand": true,
 			"name": "swapstyle",
 			"string": "normal"
+		},
+		{
+			"isCommand": true,
+			"name": "glitch"
 		},
 		{
 			"isCommand": false,
@@ -59,17 +63,35 @@
 			"isCommand": false,
 			"name": "monika",
 			"expression": "sorry",
-			"string": "...don't repeat the same mistakes I made...",
+			"string": "...Don't repeat the same mistakes I made!!",
 			"key": "ydEnd6",
 			"side": "right"
+		},
+		{
+			"isCommand": true,
+			"name": "glitch"
+		},
+		{
+			"isCommand": true,
+			"name": "showbackgroundimage",
+			"string": "evilcutin"
 		},
 		{
 			"isCommand": false,
 			"name": "monika",
 			"expression": "sorry",
-			"string": "...please",
+			"string": "...please...",
 			"key": "ydEnd7",
 			"side": "right"
+		},
+		{
+			"isCommand": true,
+			"name": "glitch"
+		},
+		{
+			"isCommand": true,
+			"name": "showbackgroundimage",
+			"string": "black"
 		},
 		{
 			"isCommand": true,
@@ -96,7 +118,7 @@
 			"isCommand": false,
 			"name": "no_one",
 			"expression": "gone",
-			"string": "*Manuel snaps his fingers",
+			"string": "*Manuel snaps his fingers*",
 			"key": "ydEnd10",
 			"side": "left"
 		},
@@ -124,7 +146,7 @@
 		{
 			"isCommand": true,
 			"name": "showbackgroundimage",
-			"string": "jargon1"
+			"string": "piece1"
 		},
 		{
 			"isCommand": true,
@@ -147,6 +169,11 @@
 			"string": "I really am a monster, right?",
 			"key": "ydEnd12",
 			"side": "right"
+		},
+		{
+			"isCommand": true,
+			"name": "showbackgroundimage",
+			"string": "piece2"
 		},
 		{
 			"isCommand": false,
@@ -186,14 +213,6 @@
 			"expression": "sad",
 			"string": "...",
 			"key": "ydEnd14",
-			"side": "right"
-		},
-		{
-			"isCommand": false,
-			"name": "no_one",
-			"expression": "gone",
-			"string": "* Manuel keeps tearing up and looking away* ",
-			"key": "ydEnd17",
 			"side": "right"
 		},
 		{
@@ -275,6 +294,11 @@
 			"string": "*Manuel starts crying even harder*",
 			"key": "ydEnd27",
 			"side": "right"
+		},
+		{
+			"isCommand": true,
+			"name": "showbackgroundimage",
+			"string": "piece3"
 		},
 		{
 			"isCommand": false,
@@ -585,7 +609,7 @@
 			"isCommand": false,
 			"name": "manuel",
 			"expression": "happy",
-			"string": "Piece by Piece",
+			"string": "''Piece by Piece''",
 			"key": "ydEnd64",
 			"side": "right"
 		}

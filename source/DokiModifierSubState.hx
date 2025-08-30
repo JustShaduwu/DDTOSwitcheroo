@@ -65,7 +65,7 @@ class DokiModifierSubState extends MusicBeatSubstate
 		for (i in 0...modifierData.length)
 		{
 			var modText:FlxText = new FlxText(280, 129 + (i * 36), 714, modifierData[i][1], 26);
-			modText.setFormat(LangUtil.getFont('grotesk'), 26, 0xFF821F8B, FlxTextAlign.LEFT);
+			modText.setFormat(LangUtil.getFont('grotesk'), 26, 0xFF1A5057, FlxTextAlign.LEFT);
 			modText.y += LangUtil.getFontOffset('grotesk');
 			modText.antialiasing = SaveData.globalAntialiasing;
 			modText.ID = i;

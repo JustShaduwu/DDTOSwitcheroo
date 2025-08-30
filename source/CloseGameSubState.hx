@@ -36,14 +36,14 @@ class CloseGameSubState extends MusicBeatSubstate
 		textYes.setFormat(LangUtil.getFont('riffic'), 48, FlxColor.WHITE, FlxTextAlign.CENTER);
 		textYes.y += LangUtil.getFontOffset('riffic');
 		textYes.antialiasing = SaveData.globalAntialiasing;
-		textYes.setBorderStyle(OUTLINE, 0xFFFF7CFF, 3);
+		textYes.setBorderStyle(OUTLINE, 0xFF35a3b2, 3);
 		textYes.ID = 0;
 
 		var textNo:FlxText = new FlxText(box.x + (box.width * 0.7), box.y + (box.height * 0.65), 0, LangUtil.getString('cmnNo'));
 		textNo.setFormat(LangUtil.getFont('riffic'), 48, FlxColor.WHITE, FlxTextAlign.CENTER);
 		textNo.y += LangUtil.getFontOffset('riffic');
 		textNo.antialiasing = SaveData.globalAntialiasing;
-		textNo.setBorderStyle(OUTLINE, 0xFFFF7CFF, 3);
+		textNo.setBorderStyle(OUTLINE, 0xFF35a3b2, 3);
 		textNo.ID = 1;
 
 		selectGrp.add(textYes);
@@ -83,9 +83,9 @@ class CloseGameSubState extends MusicBeatSubstate
 		selectGrp.forEach(function(txt:FlxText)
 		{
 			if (txt.ID == curSelected)
-				txt.setBorderStyle(OUTLINE, 0xFFFFCFFF, 3);
+				txt.setBorderStyle(OUTLINE, 0xFF7cffff, 3);
 			else
-				txt.setBorderStyle(OUTLINE, 0xFFFF7CFF, 3);
+				txt.setBorderStyle(OUTLINE, 0xFF35a3b2, 3);
 		});
 	}
 

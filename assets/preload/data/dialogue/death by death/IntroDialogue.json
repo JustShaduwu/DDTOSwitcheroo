@@ -46,7 +46,7 @@
 		{
 			"isCommand": false,
 			"name": "bf",
-			"expression": "what",
+			"expression": "angry",
 			"string": "*aggressive bee bop noises*",
 			"key": "ydIntro6",
 			"side": "right"
@@ -70,7 +70,7 @@
 		{
 			"isCommand": false,
 			"name": "bf",
-			"expression": "what",
+			"expression": "angry",
 			"string": "*more aggressive bee bop noises*",
 			"key": "ydIntro9",
 			"side": "right"

@@ -1,0 +1,40 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TextureAtlas imagePath="sans.png">
+	<!-- Created with Adobe Animate version 23.0.0.407 -->
+	<!-- http://www.adobe.com/products/animate.html -->
+	<SubTexture name="sans0000" x="0" y="0" width="441" height="437" frameX="0" frameY="0" frameWidth="446" frameHeight="437"/>
+	<SubTexture name="sans0001" x="0" y="0" width="441" height="437" frameX="0" frameY="0" frameWidth="446" frameHeight="437"/>
+	<SubTexture name="sans0002" x="0" y="0" width="441" height="437" frameX="0" frameY="0" frameWidth="446" frameHeight="437"/>
+	<SubTexture name="sans0003" x="441" y="0" width="441" height="437" frameX="0" frameY="0" frameWidth="446" frameHeight="437"/>
+	<SubTexture name="sans0004" x="441" y="0" width="441" height="437" frameX="0" frameY="0" frameWidth="446" frameHeight="437"/>
+	<SubTexture name="sans0005" x="441" y="0" width="441" height="437" frameX="0" frameY="0" frameWidth="446" frameHeight="437"/>
+	<SubTexture name="sans0006" x="882" y="0" width="441" height="437" frameX="0" frameY="0" frameWidth="446" frameHeight="437"/>
+	<SubTexture name="sans0007" x="882" y="0" width="441" height="437" frameX="0" frameY="0" frameWidth="446" frameHeight="437"/>
+	<SubTexture name="sans0008" x="882" y="0" width="441" height="437" frameX="0" frameY="0" frameWidth="446" frameHeight="437"/>
+	<SubTexture name="sans0009" x="1323" y="0" width="446" height="436" frameX="0" frameY="-1" frameWidth="446" frameHeight="437"/>
+	<SubTexture name="sans0010" x="1323" y="0" width="446" height="436" frameX="0" frameY="-1" frameWidth="446" frameHeight="437"/>
+	<SubTexture name="sans0011" x="1323" y="0" width="446" height="436" frameX="0" frameY="-1" frameWidth="446" frameHeight="437"/>
+	<SubTexture name="sans0012" x="0" y="437" width="441" height="437" frameX="0" frameY="0" frameWidth="446" frameHeight="437"/>
+	<SubTexture name="sans0013" x="0" y="437" width="441" height="437" frameX="0" frameY="0" frameWidth="446" frameHeight="437"/>
+	<SubTexture name="sans0014" x="0" y="437" width="441" height="437" frameX="0" frameY="0" frameWidth="446" frameHeight="437"/>
+	<SubTexture name="sans0015" x="441" y="437" width="441" height="437" frameX="0" frameY="0" frameWidth="446" frameHeight="437"/>
+	<SubTexture name="sans0016" x="441" y="437" width="441" height="437" frameX="0" frameY="0" frameWidth="446" frameHeight="437"/>
+	<SubTexture name="sans0017" x="441" y="437" width="441" height="437" frameX="0" frameY="0" frameWidth="446" frameHeight="437"/>
+	<SubTexture name="sans0018" x="882" y="437" width="441" height="437" frameX="0" frameY="0" frameWidth="446" frameHeight="437"/>
+	<SubTexture name="sans0019" x="882" y="437" width="441" height="437" frameX="0" frameY="0" frameWidth="446" frameHeight="437"/>
+	<SubTexture name="sans0020" x="882" y="437" width="441" height="437" frameX="0" frameY="0" frameWidth="446" frameHeight="437"/>
+	<SubTexture name="sans0021" x="882" y="437" width="441" height="437" frameX="0" frameY="0" frameWidth="446" frameHeight="437"/>
+	<SubTexture name="sans0022" x="882" y="437" width="441" height="437" frameX="0" frameY="0" frameWidth="446" frameHeight="437"/>
+	<SubTexture name="sans0023" x="882" y="437" width="441" height="437" frameX="0" frameY="0" frameWidth="446" frameHeight="437"/>
+	<SubTexture name="sans0024" x="1323" y="437" width="441" height="437" frameX="0" frameY="0" frameWidth="446" frameHeight="437"/>
+	<SubTexture name="sans0025" x="1323" y="437" width="441" height="437" frameX="0" frameY="0" frameWidth="446" frameHeight="437"/>
+	<SubTexture name="sans0026" x="1323" y="437" width="441" height="437" frameX="0" frameY="0" frameWidth="446" frameHeight="437"/>
+	<SubTexture name="sans0027" x="1323" y="437" width="441" height="437" frameX="0" frameY="0" frameWidth="446" frameHeight="437"/>
+	<SubTexture name="sans0028" x="1323" y="437" width="441" height="437" frameX="0" frameY="0" frameWidth="446" frameHeight="437"/>
+	<SubTexture name="sans0029" x="0" y="437" width="441" height="437" frameX="0" frameY="0" frameWidth="446" frameHeight="437"/>
+	<SubTexture name="sans0030" x="0" y="437" width="441" height="437" frameX="0" frameY="0" frameWidth="446" frameHeight="437"/>
+	<SubTexture name="sans0031" x="0" y="437" width="441" height="437" frameX="0" frameY="0" frameWidth="446" frameHeight="437"/>
+	<SubTexture name="sans0032" x="0" y="874" width="441" height="437" frameX="0" frameY="0" frameWidth="446" frameHeight="437"/>
+	<SubTexture name="sans0033" x="0" y="874" width="441" height="437" frameX="0" frameY="0" frameWidth="446" frameHeight="437"/>
+	<SubTexture name="sans0034" x="0" y="874" width="441" height="437" frameX="0" frameY="0" frameWidth="446" frameHeight="437"/>
+</TextureAtlas>

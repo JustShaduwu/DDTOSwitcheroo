@@ -3,7 +3,7 @@
         "name": "Death By Death",
         "artist": "Shaduwu / DPZ",
         "icon": "pen-demise",
-        "pause": "manuel",
+        "pause": "manuel-angry",
         "introDialogue": "IntroDialogue",
         "endDialogue": "EndDialogue"
     }

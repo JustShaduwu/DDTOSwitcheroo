@@ -157,7 +157,7 @@
 			"name": "playcutscene",
 			"string": "showbf",
 			"duration": 0
-                },
+        },
 		{
 			"isCommand": false,
 			"name": "manuel",

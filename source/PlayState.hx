@@ -118,6 +118,8 @@ class PlayState extends MusicBeatState
 public var shieldSound:FlxSound = null;
 public var shieldSoundPlaying:Bool = false;
 
+public var markvsnotesound:FlxSound = null;
+
 	// Cleaner dialogue shit
 	var introDialogue:String;
 	var endDialogue:String;
@@ -341,11 +343,6 @@ public var shieldSoundPlaying:Bool = false;
 	var p2Boxtop:BGSprite;
 	var cursorDDTO:BGSprite;
 	var creditsBG:FlxBackdrop;
-	var wiltedwindow:FlxSprite;
-	var wiltedhey:BGSprite;
-	var wiltedhey_senpai:BGSprite;
-	var wiltedHmph:BGSprite;
-	var wiltbg:FlxSprite;
 
 	var space:FlxBackdrop;
 	var clouds:FlxBackdrop;
@@ -853,7 +850,7 @@ if (SaveData.language != 'en-US' && SaveData.songnametranslation)
 					bgTrees.updateHitbox();
 					treeLeaves.updateHitbox();
 
-					if ((SONG.song.toLowerCase() == "bara no yume" || SONG.song.toLowerCase() == "poems n thorns"/* || SONG.song.toLowerCase() == "stories of violets"*/))
+					if ((SONG.song.toLowerCase() == "bara no yume" || SONG.song.toLowerCase() == "poems n thorns" || SONG.song.toLowerCase() == "stories of violets"))
 					{
 						bgGirls = new BackgroundGirls(-600, 190);
 						bgGirls.scrollFactor.set(0.9, 0.9);
@@ -1146,136 +1143,6 @@ if (SaveData.language != 'en-US' && SaveData.songnametranslation)
 					cg2 = new BGSprite('credits/thanksforplaying', 'doki', true, 0, 0, 0, 0);
 					cg2.alpha = 0.001;
 					cg2.cameras = [camGame2];
-				}
-			case 'wilted':
-				{
-					defaultCamZoom = 0.7;
-					
-					camGame.bgColor = FlxColor.WHITE;
-
-					dokiBackdrop = new FlxBackdrop(Paths.image('scrollingBG'));
-					dokiBackdrop.scrollFactor.set(0.1, 0.1);
-					dokiBackdrop.velocity.set(-10, 0);
-					dokiBackdrop.antialiasing = SaveData.globalAntialiasing;
-					dokiBackdrop.alpha = 0.3;
-					dokiBackdrop.shader = new ColorMaskShader(0xFFFDFFFF, 0xFFFDDBF1);
-					add(dokiBackdrop);
-
-					if (!SaveData.lowEnd)
-					{						
-						creditsBG = new FlxBackdrop(Paths.image('credits/pocBackground', 'doki'));
-						creditsBG.scrollFactor.set(0.1, 0.1);
-						creditsBG.velocity.set(-50, 0);
-						add(creditsBG);
-	
-						var scanline:FlxBackdrop = new FlxBackdrop(Paths.image('credits/scanlines', 'doki'));
-						scanline.scrollFactor.set(0.1, 0.1);
-						scanline.velocity.set(0, 20);
-						add(scanline);
-						
-						var gradient:FlxSprite = new FlxSprite().loadGraphic(Paths.image('credits/gradent', 'doki'));
-						gradient.antialiasing = SaveData.globalAntialiasing;
-						gradient.scrollFactor.set(0.1, 0.1);
-						gradient.screenCenter();
-						gradient.setGraphicSize(Std.int(gradient.width * 1.6));
-						add(gradient);
-	
-						if (SaveData.shaders)
-						{
-							var funnyShader:FishEyeShader = new FishEyeShader();
-							camGame.filters = [new ShaderFilter(funnyShader)];
-						}
-					}
-
-					wiltedwindow = new FlxSprite().loadGraphic(Paths.image('wilt/p1', 'doki'));
-					wiltedwindow.antialiasing = SaveData.globalAntialiasing;
-					wiltedwindow.scrollFactor.set(1, 1);
-					wiltedwindow.cameras = [camGame2];
-					wiltedwindow.scale.set(1.25, 1.25);
-					wiltedwindow.updateHitbox();
-					wiltedwindow.screenCenter();
-
-					wiltbg = new FlxSprite().loadGraphic(Paths.image('wilt/bg', 'doki'));
-					wiltbg.antialiasing = SaveData.globalAntialiasing;
-					wiltbg.scrollFactor.set(0.85, 1);
-					wiltbg.cameras = [camGame2];
-					wiltbg.scale.set(1.25, 1.25);
-					wiltbg.updateHitbox();
-					wiltbg.screenCenter();
-					add(wiltbg);
-
-					wiltedhey_senpai = new BGSprite('wilt/hoii_senpai', 'doki', wiltedwindow.x, wiltedwindow.y, 1, 1, ['Hey_Senpai'], false);
-					wiltedhey_senpai.alpha = 0.001;
-					wiltedhey_senpai.scale.set(1.25, 1.25);
-					wiltedhey_senpai.updateHitbox();
-					wiltedhey_senpai.cameras = [camGame2];
-
-					wiltedhey = new BGSprite('wilt/hoii', 'doki', 415, -150, 1, 1, ['Hey'], false);
-					wiltedhey.alpha = 0.001;
-					wiltedhey.scale.set(1.25, 1.25);
-					wiltedhey.updateHitbox();
-					wiltedhey.cameras = [camGame2];
-
-					wiltedHmph = new BGSprite('wilt/hmhphph', 'doki', -257, -167, 1, 1, ['Hmph'], false);
-					wiltedHmph.alpha = 0.001;
-					wiltedHmph.scale.set(1.25, 1.25);
-					wiltedHmph.updateHitbox();
-					wiltedHmph.cameras = [camGame2];
-				}
-			case 'va11halla':
-				{
-					var repositionShit = -200;
-
-					var bgVa11halla:FlxSprite = new FlxSprite(repositionShit, 0).loadGraphic(Paths.image('va11halla/barbg', 'doki'));
-					bgVa11halla.scrollFactor.set(1, 1);
-					add(bgVa11halla);
-
-					//anaThingie
-					anaThingie = new BGSprite('va11halla/anna', 'doki', repositionShit, 0, 1, 1, ['idle', 'anna_idle']);
-					anaThingie.animation.addByPrefix('static', 'anna_static', 24, false);
-					anaThingie.animation.play('idle');
-					anaThingie.scale.set(6, 6);
-					anaThingie.antialiasing = false;
-					anaThingie.updateHitbox();
-					add(anaThingie);
-
-					danaBop = new BGSprite('va11halla/dana', 'doki', 617, 72, 1, 1, ['idle', 'dana']);
-					danaBop.scale.set(6, 6);
-					danaBop.antialiasing = false;
-					danaBop.visible = false;
-					danaBop.updateHitbox();
-					add(danaBop);
-
-					var bg2Va11halla:FlxSprite = new FlxSprite(repositionShit, 0).loadGraphic(Paths.image('va11halla/barbg2', 'doki'));
-					bg2Va11halla.scrollFactor.set(1, 1);
-					add(bg2Va11halla);
-
-					barads = new BGSprite('va11halla/BarAds', 'doki', 1195, 165, 1, 1, ['BarAdvert'], true);
-					barads.scale.set(6, 6);
-					barads.antialiasing = false;
-					add(barads);
-
-					dorth = new BGSprite('va11halla/dorth', 'doki', -163, 242, 1, 1, ['danceLeft', 'dortohy_left']);
-					dorth.animation.addByPrefix('danceRight', 'dortohy_right', 24, false);
-					dorth.scale.set(6, 6);
-					dorth.antialiasing = false;
-					dorth.visible = false;
-					dorth.updateHitbox();
-
-					alma = new BGSprite('va11halla/alma', 'doki', 975, 61, 1, 1, ['idle', 'alma']);
-					alma.scale.set(6, 6);
-					alma.antialiasing = false;
-					alma.updateHitbox();
-					alma.visible = false;
-					add(alma);
-
-					var widShit = Std.int(bgVa11halla.width * 6);
-
-					bgVa11halla.setGraphicSize(widShit);
-					bg2Va11halla.setGraphicSize(widShit);
-
-					bgVa11halla.updateHitbox();
-					bg2Va11halla.updateHitbox();
 				}
 			case 'dokiclubroom':
 				{
@@ -2254,17 +2121,6 @@ if (SaveData.language != 'en-US' && SaveData.songnametranslation)
 				cg2.updateHitbox();
 				cg2.screenCenter();
 				add(cg2);
-			case 'wilted':
-				add(wiltedwindow);
-				boyfriend.cameras = [camGame2];
-				gf.cameras = [camGame2];
-				dad.cameras = [camGame2];
-				boyfriend.scrollFactor.set(0.9, 1);
-				gf.scrollFactor.set(0.9, 1);
-				dad.scrollFactor.set(0.9, 1);
-				add(wiltedhey_senpai);
-				add(wiltedhey);
-				add(wiltedHmph);
 			case 'clubroomevil':
 				boyfriend.cameras = [camGame2];
 				gf.cameras = [camGame2];
@@ -2729,42 +2585,6 @@ if (SaveData.language != 'en-US' && SaveData.songnametranslation)
 							introcutscene();
 						else
 							startCountdown();
-
-					case 'crucify (yuri mix)':
-						preintrocutscene();
-
-					case 'hot air balloon':
-						customstart();
-
-					case 'shrinking violet' | 'shrinking violet-alt':
-						customstart();
-
-					case 'joyride':
-						customstart();
-
-					case 'our harmony':
-						customstart();
-
-					case 'you and me':
-						customstart();
-
-					case 'love n funkin' | 'love n funkin-alt':
-						customstart();
-
-					case 'constricted':
-						customstart();
-
-					case 'wilted':
-						customstart();
-
-					case 'takeover medley':
-						customstart();
-
-					case 'libitina':
-						customstart();
-
-					case 'drinks on me':
-						customstart();
 				}
 			}
 			else
@@ -3016,32 +2836,6 @@ if (SaveData.language != 'en-US' && SaveData.songnametranslation)
 
 				
 				startCountdown();
-			case 'wilted':
-				add(whiteflash);
-				whiteflash.cameras = [camGame2];
-				whiteflash.alpha = 1;
-				remove(gf);
-
-				if (isStoryMode && showCutscene)
-				{
-					camHUD.visible = false;
-					new FlxTimer().start(1.2, function(godlike:FlxTimer)
-					{
-						if (dialogueBox != null)
-						{
-							inCutscene = true;
-							add(dialogueBox);
-						}
-						else
-						{
-							startCountdown();
-						}
-					});
-				}
-				else
-				{
-					startCountdown();
-				}
 			case 'dual demise':
 			Lib.application.window.title = 'DIE';
 			CoolUtil.precacheSound('glitchin');
@@ -3349,7 +3143,6 @@ if (SaveData.language != 'en-US' && SaveData.songnametranslation)
 			case 'wiltedbgout':
 			{
 				//Maybe play a sound effect here idk
-				wiltswap(0, true);
 				whiteflash.makeGraphic(FlxG.width * 3, FlxG.height * 3, FlxColor.WHITE);
 				whiteflash.alpha = 1;
 				FlxTween.tween(whiteflash, {alpha: 0.001}, length, {ease: FlxEase.sineOut});
@@ -3606,8 +3399,6 @@ if (SaveData.language != 'en-US' && SaveData.songnametranslation)
 				catpopup.setGraphicSize(Std.int(catpopup.width * 0.7));
 				catpopup.updateHitbox();
 				add(catpopup);
-			case 'wilted':
-				wiltswap(0, true);
 			case 'love n funkin' | 'love n funkin-alt' | 'constricted':
 				if (blackScreen != null)
 					FlxTween.tween(blackScreen, {alpha: 0.001}, CoolUtil.calcSectionLength(0.25), {ease: FlxEase.sineOut});
@@ -4384,16 +4175,6 @@ FlxTween.tween(warning, {x: 20}, 0.5,
 
 				switch (curStage)
 				{
-					case 'wilted':
-						boyfriend.x += 150;
-						boyfriend.y -= 80;
-						boyfriend.cameras = [camGame2];
-
-						if (newCharacter == 'monika-pixelnew')
-						{
-							boyfriend.x += 205;
-							boyfriend.y -= 75;
-						}
 					case 'credits':
 						boyfriend.cameras = [camGame2];
 					case 'school' | 'school erect':
@@ -4490,11 +4271,6 @@ FlxTween.tween(warning, {x: 20}, 0.5,
 					case 'senpai' | 'senpai-angry' | 'manuel-pixel':
 						dad.x += 150;
 						dad.y += 10;
-
-					if (curStage == 'wilted')
-						dad.y -= 100;
-					if (curStage == 'credits')
-						dad.y -= 50;
 					
 					case 'duet':
 						dad.x += 150;
@@ -4529,12 +4305,6 @@ FlxTween.tween(warning, {x: 20}, 0.5,
 				}
 				switch (curStage)
 				{
-					case 'wilted':
-						dad.x -= 150;
-						dad.y -= 65;
-						dad.cameras = [camGame2];
-					case 'credits':
-						dad.cameras = [camGame2];
 					case 'school':
 					case 'schoolEvilEX':
 						if (stageVER == 1)
@@ -5117,10 +4887,6 @@ else
 		if (FlxG.keys.justPressed.P && curStage == 'schoolEvilEX')
 			evilswap(1);
 
-		if (FlxG.keys.justPressed.O && curStage == 'wilted')
-			wiltswap(0);
-		if (FlxG.keys.justPressed.P && curStage == 'wilted')
-			wiltswap(1);
 
 		if (FlxG.keys.justPressed.O && curStage == 'school')
 			glitchySchool(0);
@@ -5223,7 +4989,7 @@ trace('current step: ' +  curStep);
 }
 
 		if (FlxG.keys.justPressed.F1)
-			songOutro(); */
+			songOutro();  */
 		
 
 		// Used for the dance func in Character update
@@ -5556,11 +5322,7 @@ trace('current step: ' +  curStep);
 					}
 				}
 
-				if (daNote.noteType == 8 && mirrormode) // invisible switcheroo markov notes
-				{
-					daNote.alpha = 0.01;
-				}
-			/*	if (daNote.noteType == 9 && !mirrormode) // invisible opponent switcheroo markov notes
+			/*	if (daNote.noteType == 8 && mirrormode) // invisible switcheroo markov notes
 				{
 					daNote.alpha = 0.01;
 				} */
@@ -5568,7 +5330,7 @@ trace('current step: ' +  curStep);
 				if (!daNote.mustPress && daNote.wasGoodHit && !daNote.hitByOpponent && !daNote.ignoreNote)
 					opponentNoteHit(daNote);
 
-				if (daNote.mustPress && toggleBotplay && (mirrormode || (!mirrormode && (daNote.noteType != 2 || daNote.noteType != 8))))
+				if (daNote.mustPress && toggleBotplay && (mirrormode || (!mirrormode && daNote.noteType != 2) || daNote.noteType == 8))
 				{
 					if (daNote.isSustainNote)
 					{
@@ -5604,7 +5366,7 @@ trace('current step: ' +  curStep);
 				// Kill extremely late notes and cause misses
 				if (Conductor.songPosition > noteKillOffset + daNote.strumTime)
 				{
-					if (daNote.mustPress && !toggleBotplay && !daNote.ignoreNote && !endingSong && (daNote.tooLate || !daNote.wasGoodHit) && (mirrormode || (!mirrormode && daNote.noteType != 2)))
+						if (daNote.mustPress && !toggleBotplay && !daNote.ignoreNote && !endingSong && (daNote.tooLate || !daNote.wasGoodHit) && (mirrormode || (!mirrormode && daNote.noteType != 2)))
 						noteMiss(daNote);
 
 					daNote.active = false;
@@ -6387,8 +6149,7 @@ trace('current step: ' +  curStep);
 	   else	if (daNote.noteType == 8)
 		{
 	 		if (!shieldActive)
-				health -= 200; // switcheroo note
-
+				health -= 200;
 	if (!isStoryMode && !practiceMode)
 	{
 	if (Math.random() <= 0.02)
@@ -6525,7 +6286,7 @@ trace('current step: ' +  curStep);
 
 		var altAnim:String = "";
 
-		if (isAltAnimSection() || note.noteType == 1 || note.noteType == 8)
+		if (isAltAnimSection() || note.noteType == 1)
 			altAnim = '-alt';
 
 		var char:Character = dad;
@@ -6636,12 +6397,14 @@ trace('current step: ' +  curStep);
 				popUpScore(note);
 			}
 
-if (note.noteType == 8 && !toggleBotplay && !note.isSustainNote) // Switcheroo Markv Note
-{
-		FlxG.sound.play(Paths.sound('glitch2'), 0.8);
+		if (note.noteType == 8 && !toggleBotplay && !note.isSustainNote) // Switcheroo Markv Note
+		{
+		markvsnotesound = FlxG.sound.load(Paths.sound("glitch2"), 0.6); // true = loop
+		markvsnotesound.play();
+
 	if (Math.random() <= 0.5)
 	{
-
+health += 0.2;
 	}
 	else
 	{
@@ -6664,7 +6427,7 @@ if (note.noteType == 8 && !toggleBotplay && !note.isSustainNote) // Switcheroo M
 
 			var altAnim:String = "";
 
-			if (isAltAnimSection() || note.noteType == 1 || note.noteType == 8)
+			if (isAltAnimSection() || note.noteType == 1)
 				altAnim = '-alt';
 			
 
@@ -6796,15 +6559,28 @@ if (note.noteType == 8 && !toggleBotplay && !note.isSustainNote) // Switcheroo M
 
 		stopMusic();
 
+	if (shieldSoundPlaying)
+	{
+		shieldSound.stop();
+		shieldSound.destroy();
+		shieldSound = null;
+		shieldSoundPlaying = false;
+	}
+
+		try
+		{
+		markvsnotesound.destroy();
+		}
+		catch (e)
+		{
+			trace('no makov note sound is playing actually');
+		}
+
+
 		deathCounter += 1;
 		var gaCharacter:Character = boyfriend;
 
 		//Feel free to optimize this but this should work as is
-		if (curSong.toLowerCase() == 'catfight' && mirrormode || curSong.toLowerCase() == 'epiphany' && storyDifficulty == 2)
-			gaCharacter = dad;
-
-		if (boyfriend.curCharacter == 'monika' && SaveData.monikacostume == 'casuallong' && !isStoryMode && !mirrormode)
-				boyfriend.x -= 120;
 
 		if (boyfriend.gameoverchara == 'gameover-generic' && !mirrormode)
 			openSubState(new GameOverSubstate(gaCharacter.getScreenPosition().x, gaCharacter.getScreenPosition().y - gaCharacter.positionArray[1] - 20, forceType));
@@ -7241,539 +7017,12 @@ if (note.noteType == 8 && !toggleBotplay && !note.isSustainNote) // Switcheroo M
 							{
 	                        evilswap(4);
 							}
-						case 1864:
+						case 1860:
 							Lib.application.window.title = '...';
-							FlxTween.tween(blackScreen, {alpha: 1}, CoolUtil.calcSectionLength(1.5), {ease: FlxEase.sineOut});
-						case 1876:
+							FlxTween.tween(blackScreen, {alpha: 1}, 3, {ease: FlxEase.sineOut});
+						case 1870:
 							FlxG.sound.play(Paths.sound('gameover/fnf_loss_sfx-pixel'));
-							health = 1;
-					}
-				case 'hot air balloon':
-					switch (curStep)
-					{
-						case 1024:
-							defaultCamZoom = 1.35;
-							if (!SaveData.lowEnd)
-							{
-								bakaOverlay.visible = true;
-								FlxTween.tween(bakaOverlay, {alpha: 1}, CoolUtil.calcSectionLength(), {ease: FlxEase.sineIn});
-							}
-						case 1280:
-							defaultCamZoom = 1;
-							if (!SaveData.lowEnd)
-								FlxTween.tween(bakaOverlay, {alpha: 0}, CoolUtil.calcSectionLength(2), {ease: FlxEase.sineOut});
-					}
-				case 'shrinking violet':
-					switch (curStep)
-					{
-						case 784:
-							defaultCamZoom = 1.3;
-							if (!SaveData.lowEnd)
-							{
-								sparkleBG.visible = true;
-								add(sparkleFG);
-								add(pinkOverlay);
-							}
-						case 1024:
-							defaultCamZoom = 1;
-						case 1040:
-							if (!SaveData.lowEnd)
-							{
-								FlxTween.tween(sparkleBG, {alpha: 0}, CoolUtil.calcSectionLength(), {ease: FlxEase.sineOut});
-								FlxTween.tween(sparkleFG, {alpha: 0}, CoolUtil.calcSectionLength(), {ease: FlxEase.sineOut});
-								FlxTween.tween(pinkOverlay, {alpha: 0}, CoolUtil.calcSectionLength(), {ease: FlxEase.sineOut});
-							}
-					}
-				case 'shrinking violet-alt': //Violet specific events
-					switch (curStep)
-					{
-						case 272:
-							defaultCamZoom = 1.2;
-						case 528:
-							defaultCamZoom = 1;
-						case 784:
-							if (!SaveData.lowEnd)
-							{
-								sparkleBG.visible = true;
-								add(sparkleFG);
-								add(pinkOverlay);
-							}
-						case 1024:
-							defaultCamZoom = 1.2;
-							camFocus = false;
-							moveCamera('centered');
-						case 1040:
-							whiteflash.alpha = 1;
-							FlxTween.tween(whiteflash, {alpha: 0.001}, CoolUtil.calcSectionLength(0.3), {ease: FlxEase.sineOut});
-							defaultCamZoom = 1;
-							if (!SaveData.lowEnd)
-							{
-								encoreTime = 2;
-								FlxTween.tween(sparkleBG, {alpha: 0}, CoolUtil.calcSectionLength(), {ease: FlxEase.sineOut});
-								FlxTween.tween(sparkleFG, {alpha: 0}, CoolUtil.calcSectionLength(), {ease: FlxEase.sineOut});
-								FlxTween.tween(pinkOverlay, {alpha: 0}, CoolUtil.calcSectionLength(), {ease: FlxEase.sineOut});
-							}
-						case 1296:
-							camFocus = true;
-							defaultCamZoom = 1.2;
-							encoreTime = 0;
-					}
-				case 'titular (mc mix)':
-					switch (curStep)
-					{
-						case 730:
-							defaultCamZoom = 1;
-							oneMore();
-						case 736:
-							defaultCamZoom = 0.75;
-					}
-				case 'constricted':
-					switch (curStep)
-					{
-						case 624:
-							if (!SaveData.lowEnd)
-							{
-								FlxTween.tween(zippergoo, {alpha: 1}, CoolUtil.calcSectionLength(0.1), {ease: FlxEase.sineOut});
-								add(zippergoo);
-								vignette.alpha = 0.2;
-								add(vignette);
-							}
-							camFocus = false;
-							camFollow.setPosition(dad.getMidpoint().x, dad.getMidpoint().y);
-							FlxTween.tween(FlxG.camera, {zoom: 1.5}, CoolUtil.calcSectionLength());
-							camGame.shake(0.01, CoolUtil.calcSectionLength());
-						case 639: // 640 is too late
-							camFocus = true;
-						case 1024:
-							if (!SaveData.lowEnd)
-							{
-								FlxTween.tween(zippergoo, {alpha: 0.01}, CoolUtil.calcSectionLength(2), {ease: FlxEase.sineOut});
-								FlxTween.tween(vignette, {alpha: 0.01}, CoolUtil.calcSectionLength(2), {ease: FlxEase.sineOut});
-							}
-					}
-				case 'deep breaths':
-					switch (curStep)
-					{
-						case 138:
-							dad.playAnim('breath');
-							dad.specialAnim = true;
-						case 148:
-							FlxG.sound.play(Paths.sound('exhale'));
-					}
-				case 'wilted':
-					switch (curStep)
-					{
-						case 16:
-							if (whiteflash.alpha == 1)
-							{
-								whiteflash.makeGraphic(FlxG.width * 3, FlxG.height * 3, FlxColor.WHITE);
-								whiteflash.alpha = 1;
-								FlxTween.tween(whiteflash, {alpha: 0.001}, CoolUtil.calcSectionLength(0.1), {ease: FlxEase.sineOut});
-							}
-						case 512:
-							glitchEffect();
-						case 516:
-							glitchEffect();
-							addcharacter("senpai-angry", 1);
-						case 520:
-							glitchEffect();
-							wiltedwindow.loadGraphic(Paths.image('wilt/p2', 'doki'));
-							wiltedwindow.cameras = [camGame2];
-						case 656:
-							defaultCamZoom = 0.8;
-							wiltswap(1);
-						case 708:
-							defaultCamZoom = 0.7;
-						case 841:
-							dad.playAnim('swap');
-						case 848:
-							addcharacter("senpai-angynonpixel", 1);
-						case 912:
-							wiltedhey.alpha = 1;
-							wiltedhey.animation.play('Hey');
-							wiltedhey_senpai.alpha = 1;
-							wiltedhey_senpai.animation.play('Hey_Senpai');
-						case 929:
-							remove(wiltedhey_senpai);
-							remove(wiltedhey);
-						case 928:
-							wiltswap(0);
-							addcharacter("senpai-angry", 1);
-						case 1056:
-							// Start final thing
-							wiltedHmph.alpha = 1;
-							wiltedHmph.animation.play('Hmph');
-						case 1064:
-							wiltbg.visible = false;
-							wiltedwindow.visible = false;
-							dad.visible = false;
-							boyfriend.visible = false;
-						case 1100:
-							// Fade to black
-							whiteflash.makeGraphic(FlxG.width * 3, FlxG.height * 3, FlxColor.BLACK);
-							whiteflash.alpha = 0.01;
-							FlxTween.tween(whiteflash, {alpha: 1}, CoolUtil.calcSectionLength(0.7), {ease: FlxEase.sineOut});
-					}
-				case 'joyride':
-					switch (curStep)
-					{
-						case 126:
-							encoreTime = 2;
-							defaultCamZoom = 1.3;
-						case 254:
-							encoreTime = 0;
-							defaultCamZoom = 1.6;
-						case 270 | 780:
-							encoreTime = 2;
-							defaultCamZoom = 1;
-						case 512:
-							encoreTime = 0;
-						case 768:
-							defaultCamZoom = 1.6;
-						case 1024:
-							encoreTime = 0;
-					}
-				case 'our harmony':
-					switch (curStep)
-					{
-						case 2420:
-							lyrics.y += 80;
-
-							scorePop = false;
-							FlxTween.tween(healthBarBG, {alpha: 0}, 2, {ease: FlxEase.sineIn});
-							FlxTween.tween(healthBar, {alpha: 0}, 2, {ease: FlxEase.sineIn});
-							FlxTween.tween(iconP1, {alpha: 0}, 2, {ease: FlxEase.sineIn});
-							FlxTween.tween(iconP2, {alpha: 0}, 2, {ease: FlxEase.sineIn});
-							FlxTween.tween(scoreTxt, {alpha: 0}, 2, {ease: FlxEase.sineIn});
-
-							FlxTween.tween(laneunderlay, {alpha: 0}, 2, {ease: FlxEase.sineIn});
-							FlxTween.tween(laneunderlayOpponent, {alpha: 0}, 2, {ease: FlxEase.sineIn});
-
-							if (positionBar)
-								positionDisplay.tweenOut(2);
-
-							if (SaveData.judgementCounter)
-								FlxTween.tween(judgementCounter, {alpha: 0}, 2, {ease: FlxEase.sineIn});
-
-							FlxTween.tween(whiteflash, {alpha: 1}, 2, {ease: FlxEase.sineIn});
-						case 2432:
-							for (i in 0...4)
-							{
-								FlxTween.tween(opponentStrums.members[i], {y: opponentStrums.members[i].y - 10, alpha: 0}, 1,
-									{ease: FlxEase.circOut, startDelay: 0.5 + (0.1 * i)});
-								FlxTween.tween(playerStrums.members[i], {y: playerStrums.members[i].y - 10, alpha: 0}, 1,
-									{ease: FlxEase.circOut, startDelay: 0.5 + (0.1 * i)});
-							}
-						case 2448:
-							if (hueh231 != null)
-								hueh231.visible = false;
-
-							canShowPracticeTxt = false;
-							botPlayState.visible = false;
-							practiceTxt.visible = false;
-
-							cg1.alpha = 1;
-							vocals.volume = 1;
-							FlxTween.tween(cg1, {"scale.x": 0.67, "scale.y": 0.67}, 5, {ease: FlxEase.sineIn});
-							camZooming = false;
-							FlxG.camera.zoom = defaultCamZoom;
-							camHUD.zoom = defaultCamZoom;
-						case 2456:
-							FlxTween.tween(whiteflash, {alpha: 0}, 2, {ease: FlxEase.sineIn});
-						case 2568:
-							FlxTween.tween(whiteflash, {alpha: 1}, 0.57, {ease: FlxEase.sineIn});
-						case 2578:
-							cg1.alpha = 0;
-							cg2.alpha = 1;
-							FlxTween.tween(whiteflash, {alpha: 0}, 1, {ease: FlxEase.sineIn});
-							FlxTween.tween(cg2, {x: -954}, 9, {ease: FlxEase.sineIn});
-						case 2590:
-						// end here
-						case 2674:
-							FlxTween.tween(whiteflash, {alpha: 1}, 1, {ease: FlxEase.sineIn});
-						case 2694:
-							cg2.alpha = 0;
-							cg2Group.alpha = 1;
-
-							for (item in cg2Group.members)
-								FlxTween.tween(item, {x: -250}, 17 + (1 * item.ID), {ease: FlxEase.sineIn});
-
-							FlxTween.tween(whiteflash, {alpha: 0}, 1, {ease: FlxEase.sineIn});
-						// Fade out
-						case 2702:
-							// End here
-					}
-				case 'neet':
-					switch (curStep)
-					{
-						case 384:
-							gf.alpha = 0.001;
-							deskfront.alpha = 0.001;
-							blackScreenBG.alpha = 0.98;
-							spotlight.alpha = 1;
-							FlxG.sound.play(Paths.sound('spotlight'));
-							camFocus = false;
-							moveCamera('centered');
-							camFollow.x = 554;
-							defaultCamZoom = 1.05;
-						case 512:
-							gf.alpha = 1;
-							deskfront.alpha = 1;
-
-							if (bgDokis != null)
-								bgDokis.alpha = 1;
-
-							spotlight.alpha = 0;
-							blackScreenBG.alpha = 0;
-							camFocus = true;
-							defaultCamZoom = 0.75;
-					}
-				case 'takeover medley':
-					switch (curStep)
-					{
-						case 1:
-							FlxTween.tween(whiteflash, {alpha: 1}, 2.6, {
-								ease: FlxEase.sineOut,
-								onComplete: function(tween:FlxTween)
-								{
-									blackScreen.visible = false;
-									FlxTween.tween(whiteflash, {alpha: 0}, 1, {ease: FlxEase.sineOut});
-								}
-							});
-						case 20:
-							positionDisplay.tweenIn();
-							metadataDisplay.tweenIn();
-						case 48:
-							FlxTween.tween(cg1, {alpha: 0.001}, 1, {
-								ease: FlxEase.sineOut,
-								onComplete: function(tween:FlxTween)
-								{
-									cg1.loadGraphic(Paths.image('credits/CreditsShit2', 'doki', true));
-									cg1.screenCenter();
-								}
-							});
-						case 54:
-							metadataDisplay.tweenOut();
-							FlxTween.tween(camHUD, {alpha: 1}, 2, {ease: FlxEase.sineOut});
-							FlxTween.tween(camFollow, {y: 460}, 2, {ease: FlxEase.sineOut});
-						case 76:
-							forcedPause = 'monika';
-							summmonStickies(true, 8);
-							creditsCharSwap("monika-pixelnew", true);
-						case 208 | 464 | 592 | 720 | 848 | 976 | 1104 | 1300 | 1744 | 1880 | 2008 | 2072 | 2136 | 2200:
-							summmonStickies(true, 8);
-						case 239:
-							defaultCamZoom = 0.5;
-							moveCamera('centered');
-							forcedPause = 'senpai';
-							camFollow.y += 50;
-							// Worst thing known to man right now
-
-							FlxTween.tween(p2Box, {x: p2Box.x - 200}, CoolUtil.calcSectionLength(), {ease: FlxEase.sineOut});
-							FlxTween.tween(p2Boxtop, {x: p2Boxtop.x - 200}, CoolUtil.calcSectionLength(), {ease: FlxEase.sineOut});
-							FlxTween.tween(dad, {x: dad.x - 200}, CoolUtil.calcSectionLength(), {ease: FlxEase.sineOut});
-
-							FlxTween.tween(p1Box, {x: p1Box.x + 200}, CoolUtil.calcSectionLength(), {ease: FlxEase.sineOut});
-							FlxTween.tween(p1Boxtop, {x: p1Boxtop.x + 200}, CoolUtil.calcSectionLength(), {ease: FlxEase.sineOut});
-							FlxTween.tween(boyfriend, {x: boyfriend.x + 200}, CoolUtil.calcSectionLength(), {ease: FlxEase.sineOut});
-
-							cursorDDTO.setPosition(500, 1060);
-							FlxTween.tween(senpaiBox, {y: senpaiBox.y - 900}, CoolUtil.calcSectionLength(), {ease: FlxEase.sineOut});
-							FlxTween.tween(senpaiBoxtop, {y: senpaiBoxtop.y - 900}, CoolUtil.calcSectionLength(), {ease: FlxEase.sineOut});
-							FlxTween.tween(cursorDDTO, {y: cursorDDTO.y - 900 + 10}, CoolUtil.calcSectionLength(), {ease: FlxEase.sineOut});
-							FlxTween.tween(gf, {y: gf.y - 900}, CoolUtil.calcSectionLength(), {ease: FlxEase.sineOut});
-						case 336:
-							summmonStickies(true, 8);
-							addcharacter("senpai-angry", 2);
-							gf.y -= 900;
-						case 440:
-							FlxTween.tween(senpaiBox, {y: senpaiBox.y - 1200}, CoolUtil.calcSectionLength(), {ease: FlxEase.sineOut});
-							FlxTween.tween(senpaiBoxtop, {y: senpaiBoxtop.y - 1200}, CoolUtil.calcSectionLength(), {ease: FlxEase.sineOut});
-							FlxTween.tween(cursorDDTO, {y: cursorDDTO.y - 1200 + 10}, CoolUtil.calcSectionLength(), {ease: FlxEase.sineOut});
-							FlxTween.tween(gf, {y: gf.y - 1200}, CoolUtil.calcSectionLength(), {ease: FlxEase.sineOut});
-						case 447:
-							moveCamera('centered');
-							defaultCamZoom = 0.7;
-
-							FlxTween.tween(p2Box, {x: p2Box.x + 200}, CoolUtil.calcSectionLength(), {ease: FlxEase.sineOut});
-							FlxTween.tween(p2Boxtop, {x: p2Boxtop.x + 200}, CoolUtil.calcSectionLength(), {ease: FlxEase.sineOut});
-							FlxTween.tween(dad, {x: dad.x + 200}, CoolUtil.calcSectionLength(), {ease: FlxEase.sineOut});
-
-							FlxTween.tween(p1Box, {x: p1Box.x - 200}, CoolUtil.calcSectionLength(), {ease: FlxEase.sineOut});
-							FlxTween.tween(p1Boxtop, {x: p1Boxtop.x - 200}, CoolUtil.calcSectionLength(), {ease: FlxEase.sineOut});
-							FlxTween.tween(boyfriend, {x: boyfriend.x - 200}, CoolUtil.calcSectionLength(), {ease: FlxEase.sineOut});
-						case 460:
-							forcedPause = 'sayori';
-							creditsCharSwap("sayori");
-							senpaiBox.visible = false;
-							senpaiBoxtop.visible = false;
-							gf.visible = false;
-						case 844:
-							forcedPause = 'natsuki';
-							creditsCharSwap("natsuki");
-						case 1228:
-							forcedPause = 'yuri';
-							creditsCharSwap("yuri");
-							summmonStickies(true, 8);
-						case 1392:
-							if (staticcredits != null) FlxTween.tween(staticcredits, {alpha: 1}, CoolUtil.calcSectionLength(5), {ease: FlxEase.sineOut});
-							FlxTween.tween(dad, {alpha: 0}, 5, {ease: FlxEase.sineOut});
-							FlxTween.tween(extrachar1, {alpha: 1}, 5, {ease: FlxEase.sineOut});
-						case 1488:
-							if (staticcredits != null) staticcredits.alpha = 0.0001;
-							dad.alpha = 1;
-							extrachar1.alpha = 0;
-							creditsCharSwap("yuri");
-							summmonStickies(true, 8);
-						case 1616:
-							forcedPause = 'protag';
-							creditsCharSwap("protag");
-							summmonStickies(true, 8);
-						case 66 | 450 | 834 | 1218 | 1606 | 1866:
-							prepareCharSwap();
-						case 1876:
-							forcedPause = 'monika';
-							creditsCharSwap("monika");
-							cursorDDTO.visible = false;
-						case 2240:
-							FlxTween.tween(camHUD, {alpha: 0}, 5, {ease: FlxEase.sineOut});
-							FlxTween.tween(camFollow, {y: -930}, 5, {ease: FlxEase.sineOut});
-						case 2264:
-							camZooming = false;
-						case 2280:
-							FlxTween.tween(cg1, {alpha: 1}, 0.5, {ease: FlxEase.sineOut});
-						case 2322:
-							FlxTween.tween(cg1, {alpha: 0.001}, 1, {
-								ease: FlxEase.sineOut,
-								onComplete: function(tween:FlxTween)
-								{
-									cg1.loadGraphic(Paths.image('credits/DokiTakeoverLogo', 'doki'));
-									cg1.screenCenter();
-								}
-							});
-						case 2330:
-							FlxTween.tween(cg1, {alpha: 1}, 0.5, {ease: FlxEase.sineOut});
-						case 2358:
-							FlxTween.tween(cg2, {alpha: 1}, 1, {ease: FlxEase.sineOut});
-					}
-				case 'drinks on me':
-					switch (curStep)
-					{
-						case 2:
-							FlxTween.tween(cg1, {alpha: 1}, 2.5, {ease: FlxEase.sineIn});
-						case 50:
-							FlxTween.tween(cg1, {alpha: 0}, 1.2, {ease: FlxEase.sineIn});
-						case 62:
-							FlxTween.tween(cg2, {alpha: 1}, 2.5, {ease: FlxEase.sineIn});
-						case 100: // lazy
-							remove(blackScreen);
-							iconP2.alpha = 1;
-							iconP1.alpha = 1;
-							healthBar.alpha = 1;
-							healthBarBG.alpha = 1;
-							scoreTxt.alpha = 1;
-						case 111:
-							positionDisplay.tweenIn();
-							metadataDisplay.tweenIn();
-							FlxTween.tween(cg2, {alpha: 0}, 1.2, {ease: FlxEase.sineIn});
-
-							var targetAlphaOpponent:Float = 1;
-
-							if (middleScroll)
-								targetAlphaOpponent = SaveData.middleOpponent ? 0.35 : 0;
-
-							for (i in 0...4)
-							{
-								FlxTween.tween(playerStrums.members[i], {y: playerStrums.members[i].y + 10, alpha: 1}, 1,
-									{ease: FlxEase.circOut, startDelay: 0.6 + (0.2 * i)});
-								FlxTween.tween(opponentStrums.members[i], {y: opponentStrums.members[i].y + 10, alpha: targetAlphaOpponent}, 1,
-									{ease: FlxEase.circOut, startDelay: 0.6 + (0.2 * i)});
-							}
-						case 160:
-							metadataDisplay.tweenOut();
-						case 512:
-							whiteflash.alpha = 1;
-							FlxTween.tween(whiteflash, {alpha: 0.001}, CoolUtil.calcSectionLength(0.2), {ease: FlxEase.sineOut});
-							danaBop.visible = true;
-							defaultCamZoom = 1;
-						case 752:
-							defaultCamZoom = 1.4;
-						case 768:
-							defaultCamZoom = 0.85;
-							whiteflash.alpha = 1;
-							FlxTween.tween(whiteflash, {alpha: 0.001}, CoolUtil.calcSectionLength(0.2), {ease: FlxEase.sineOut});
-							dorth.visible = true;
-							alma.visible = true;
-						case 1008: // wow they're singing together
-							var placement:Float = 320;
-
-							// Not middle scroll and not mirror mode
-							// unless you really want mirror mode.
-							// i want mirror mode!
-							if (!middleScroll)
-							{
-								var player = mirrormode ? opponentStrums : playerStrums;
-								var oppo = mirrormode ? playerStrums : opponentStrums;
-
-								var playerAlpha = mirrormode ? 0 : 1;
-								var oppoAlpha = mirrormode ? 1 : 0;
-
-								var playerLay = mirrormode ? laneunderlayOpponent : laneunderlay;
-								var oppoLay = mirrormode ? laneunderlay : laneunderlayOpponent;
-
-								var playerLayAlpha = mirrormode ? 0 : SaveData.laneTransparency;
-								var oppoLayAlpha = mirrormode ? SaveData.laneTransparency : 0;
-
-								for (i in 0...4)
-								{
-									FlxTween.tween(player.members[i], {x: player.members[i].x - placement, alpha: playerAlpha}, 2.5,
-										{ease: FlxEase.smootherStepInOut});
-									FlxTween.tween(oppo.members[i], {x: oppo.members[i].x + placement, alpha: oppoAlpha}, 2.5,
-										{ease: FlxEase.smootherStepInOut});
-								}
-
-								FlxTween.tween(playerLay, {x: playerLay.x - placement, alpha: playerLayAlpha}, 1.5,
-									{ease: FlxEase.smootherStepInOut});
-								FlxTween.tween(oppoLay, {x: oppoLay.x + placement, alpha: oppoLayAlpha}, 1.5,
-									{ease: FlxEase.smootherStepInOut});
-							}
-						case 1020:
-							encoreTime = 4;
-						case 1144: // singing their own sections now
-							// Reverse placement
-							var placement:Float = -320;
-
-							if (!middleScroll)
-							{
-								var player = mirrormode ? opponentStrums : playerStrums;
-								var oppo = mirrormode ? playerStrums : opponentStrums;
-
-								var playerLay = mirrormode ? laneunderlayOpponent : laneunderlay;
-								var oppoLay = mirrormode ? laneunderlay : laneunderlayOpponent;
-
-								for (i in 0...4)
-								{
-									FlxTween.tween(player.members[i], {x: player.members[i].x - placement, alpha: 1}, 1.5,
-										{ease: FlxEase.smootherStepInOut});
-									FlxTween.tween(oppo.members[i], {x: oppo.members[i].x + placement, alpha: 1}, 1.5,
-										{ease: FlxEase.smootherStepInOut});
-								}
-
-								FlxTween.tween(playerLay, {x: playerLay.x - placement, alpha: SaveData.laneTransparency}, 1.5,
-									{ease: FlxEase.smootherStepInOut});
-								FlxTween.tween(oppoLay, {x: oppoLay.x + placement, alpha: SaveData.laneTransparency}, 1.5,
-									{ease: FlxEase.smootherStepInOut});
-							}
-						case 1276:
-							encoreTime = 0;
-						case 1280:
-							whiteflash.alpha = 1;
-							FlxTween.tween(whiteflash, {alpha: 0.001}, CoolUtil.calcSectionLength(0.2), {ease: FlxEase.sineOut});
-							dorth.visible = false;
-							alma.visible = false;
-							danaBop.visible = false;
-						case 1412:
-							anaThingie.animation.play('static');
+							health = 2;
 					}
 				case 'test':
 					switch (curStep)
@@ -7794,540 +7043,7 @@ if (note.noteType == 8 && !toggleBotplay && !note.isSustainNote) // Switcheroo M
 							defaultCamZoom = 1.05;
 							if (dokiBackdrop != null) FlxTween.tween(dokiBackdrop, {alpha: 0}, 1, {ease: FlxEase.sineIn});
 					}
-				case 'you and me':
-					switch (curStep)
-					{
-						case 1:
-							cameraSpeed = 1;
-							camFocus = false;
-						case 14:
-							FlxTween.tween(camFollow, {y: -3404, x: 589}, 15, {ease: FlxEase.linear});
-						case 16:
-							FlxTween.tween(whiteflash, {alpha: 0.001}, 3, {ease: FlxEase.sineOut});
-						case 19:
-							funnytext.resetText(LangUtil.getString('yam1', 'yam'));
-							funnytext.start(0.04);
-						case 84:
-							funnytext.resetText(LangUtil.getString('yam2', 'yam'));
-							funnytext.start(0.04);
-						case 141:
-							funnytext.resetText(LangUtil.getString('yam3', 'yam'));
-							funnytext.start(0.04);
-						case 208:
-							funnytext.resetText(LangUtil.getString('yam4', 'yam'));
-							funnytext.start(0.04);
-						case 252:
-							FlxTween.tween(funnytext, {alpha: 0}, 0.5, {ease: FlxEase.sineIn});
-						case 240:
-							if (SaveData.judgementCounter)
-								FlxTween.tween(judgementCounter, {alpha: 1}, 0.5, {ease: FlxEase.sineIn});
 
-							if (mirrormode && middleScroll)
-							{
-								// do nothing!
-							}
-							else
-							{
-								FlxTween.tween(laneunderlay, {alpha: SaveData.laneTransparency}, 0.5, {ease: FlxEase.sineIn});
-							}
-
-							FlxTween.tween(iconP1, {alpha: 1}, 0.5, {ease: FlxEase.sineIn});
-							FlxTween.tween(healthBar, {alpha: 1}, 0.5, {ease: FlxEase.sineIn});
-							FlxTween.tween(healthBarBG, {alpha: 1}, 0.5, {ease: FlxEase.sineIn});
-							FlxTween.tween(scoreTxt, {alpha: 1}, 0.5, {ease: FlxEase.sineIn});
-							camZooming = true;
-
-							var targetAlpha:Float = 1;
-
-							if (mirrormode && middleScroll)
-								targetAlpha = SaveData.middleOpponent ? 0.35 : 0;
-
-							var whichStrums:FlxTypedGroup<StrumNote> = (mirrormode ? opponentStrums : playerStrums);
-
-							for (i in 0...4)
-							{
-								FlxTween.tween(whichStrums.members[i], {y: whichStrums.members[i].y + 10, alpha: targetAlpha}, 1,
-									{ease: FlxEase.circOut, startDelay: 0.5 + (0.2 * i)});
-							}
-						case 248:
-							blackBars(true);
-							FlxTween.tween(camFollow, {y: 326}, 3, {
-								ease: FlxEase.linear,
-								onComplete: function(twn:FlxTween)
-								{
-									camFocus = true;
-								}
-							});
-						case 336:
-							if (mirrormode)
-								bringInThingie();
-						case 520:
-							defaultCamZoom = 1.1;
-						case 784:
-							if (dokiBackdrop != null)
-							{
-								FlxTween.tween(dokiBackdrop, {alpha: 1}, CoolUtil.calcSectionLength(0.5), {
-									ease: FlxEase.sineIn,
-									onComplete: function(tween:FlxTween)
-									{
-										defaultCamZoom = 1.1;
-									}
-								});
-							}
-						case 1068:
-							defaultCamZoom = 0.9;
-							if (dokiBackdrop != null) FlxTween.tween(dokiBackdrop, {alpha: 0}, 3, {ease: FlxEase.sineIn});
-						case 1122:
-							blackBars(false);
-							camFocus = false;
-							FlxTween.tween(camFollow, {y: -3404, x: 589}, 5, {ease: FlxEase.linear});
-						case 1134:
-							FlxTween.tween(camHUD, {alpha: 0}, 1, {ease: FlxEase.sineOut});
-						case 1156:
-							canPause = false;
-							openSubState(new DokiCards(!isStoryMode));
-						case 1246:
-							var targetAlpha:Float = 1;
-
-							if (!mirrormode && middleScroll)
-								targetAlpha = SaveData.middleOpponent ? 0.35 : 0;
-
-							var whichStrums:FlxTypedGroup<StrumNote> = (mirrormode ? playerStrums : opponentStrums);
-
-							for (i in 0...4)
-							{
-								FlxTween.tween(whichStrums.members[i], {y: whichStrums.members[i].y + 10, alpha: targetAlpha}, 1,
-									{ease: FlxEase.circOut, startDelay: 0.5 + (0.2 * i)});
-							}
-
-							if (!middleScroll)
-								FlxTween.tween(laneunderlayOpponent, {alpha: SaveData.laneTransparency}, 0.5, {ease: FlxEase.sineIn});
-							else if (mirrormode && middleScroll)
-								FlxTween.tween(laneunderlay, {alpha: SaveData.laneTransparency}, 0.5, {ease: FlxEase.sineIn});
-						case 1252:
-							blackBars(true);
-							FlxTween.tween(camFollow, {y: 326}, 3, {
-								ease: FlxEase.linear,
-								onComplete: function(twn:FlxTween)
-								{
-									camFocus = true;
-								}
-							});
-						case 1776:
-							defaultCamZoom = 1;
-						case 1904:
-							if (dokiBackdrop != null) FlxTween.tween(dokiBackdrop, {alpha: 1}, CoolUtil.calcSectionLength(0.5), {ease: FlxEase.sineIn});
-							defaultCamZoom = 0.9;
-						case 2160:
-							blackBars(false);
-							if (dokiBackdrop != null) FlxTween.tween(dokiBackdrop, {alpha: 0}, 3, {ease: FlxEase.sineIn});
-						case 2638:
-							camFocus = false;
-							FlxTween.tween(camFollow, {y: -3404, x: 589}, 5, {ease: FlxEase.linear});
-							FlxTween.tween(camHUD, {alpha: 0}, 2, {ease: FlxEase.sineOut});
-					}
-				case 'love n funkin' | 'love n funkin-alt':
-					// Jorge please don't kill me ~M&M
-					switch (curStep)
-					{
-						case 384:
-							dokiData = [
-								extrachar2.x,
-								extrachar2.y,
-								extrachar2.scrollFactor.x,
-								extrachar2.scrollFactor.y,
-								extrachar2.scale.x,
-								extrachar2.scale.y,
-								members.indexOf(extrachar2)
-							];
-
-							remove(extrachar2);
-							insert(members.indexOf(sideWindow) + 1, extrachar2);
-							extrachar2.setPosition(6, 200);
-							extrachar2.scrollFactor.set();
-							extrachar2.scale.set(0.8, 0.8);
-							extrachar2.updateHitbox();
-							extrachar2.cameras = [camGame2];
-							extrachar2.dance();
-
-							camZooming = false;
-							defaultCamZoom = 1;
-							camGame2.fade(FlxColor.WHITE, 0.5, true);
-							poemVideo.anim.play('hando', true);
-							poemVideo.alpha = 1;
-							sideWindow.alpha = 1;
-						case 504:
-							FlxTween.tween(extrachar2, {x: -extrachar2.width * 1.5}, CoolUtil.calcSectionLength(0.25), {ease: FlxEase.sineInOut});
-						case 508:
-							FlxTween.cancelTweensOf(extrachar2);
-							remove(extrachar2);
-							insert(Std.int(dokiData[6]), extrachar2);
-							extrachar2.setPosition(dokiData[0], dokiData[1]);
-							extrachar2.scrollFactor.set(dokiData[2], dokiData[3]);
-							extrachar2.scale.set(dokiData[4], dokiData[5]);
-							extrachar2.updateHitbox();
-							extrachar2.cameras = [camGame];
-							extrachar2.dance();
-
-							dokiData = [
-								gf.x,
-								gf.y,
-								gf.scrollFactor.x,
-								gf.scrollFactor.y,
-								gf.scale.x,
-								gf.scale.y,
-								members.indexOf(gf)
-							];
-
-							remove(gf);
-							insert(members.indexOf(sideWindow) + 1, gf);
-							gf.setPosition(-gf.width * 1.5, 170);
-							gf.scrollFactor.set();
-							gf.scale.set(0.72, 0.72);
-							gf.updateHitbox();
-							gf.cameras = [camGame2];
-							gf.dance();
-							FlxTween.tween(gf, {x: -75}, CoolUtil.calcSectionLength(0.25), {ease: FlxEase.sineInOut});
-						case 640:
-							remove(gf);
-							insert(Std.int(dokiData[6]), gf);
-							gf.setPosition(dokiData[0], dokiData[1]);
-							gf.scrollFactor.set(dokiData[2], dokiData[3]);
-							gf.scale.set(dokiData[4], dokiData[5]);
-							gf.updateHitbox();
-							gf.cameras = [camGame];
-							gf.dance();
-
-							camZooming = true;
-							camGame2.fade(FlxColor.WHITE, 0.5, true);
-							poemVideo.alpha = 0.001;
-							sideWindow.alpha = 0.001;
-					}
-					if (curSong.toLowerCase() == 'love n funkin-alt')
-					{
-						switch (curStep)
-						{
-							case 240:
-								defaultCamZoom = 1.3;
-							case 256:
-								defaultCamZoom = 1;
-							case 960:
-								defaultCamZoom = 1.1;
-							case 1024:
-								defaultCamZoom = 1;
-						}
-					}
-				case 'libitina':
-					switch (curStep)
-					{
-						case 16:
-							FlxTween.tween(blackScreen, {alpha: 0.001}, CoolUtil.calcSectionLength(2), {ease: FlxEase.sineOut});
-						case 68:
-							FlxTween.tween(deskBG2, {alpha: 1}, CoolUtil.calcSectionLength(0.25), {
-								ease: FlxEase.sineIn,
-								onComplete: function(tween:FlxTween)
-								{
-									deskBG1.alpha = 0.001;
-
-									if (!SaveData.lowEnd)
-										rainBG.alpha = 0.001;
-								}
-							});
-						case 72:
-							FlxTween.tween(FlxG.camera, {zoom: 1.5}, CoolUtil.calcSectionLength(2.25), {ease: FlxEase.quadIn});
-							FlxTween.tween(camGame2, {zoom: 1.5}, CoolUtil.calcSectionLength(2.25), {ease: FlxEase.quadIn});
-							defaultCamZoom = 1.5;
-						case 94:
-							cursorDDTO.alpha = 1;
-							FlxTween.tween(cursorDDTO, {x: 660, y: 400}, CoolUtil.calcSectionLength(0.9), {ease: FlxEase.quadOut});
-						case 110:
-							cursorDDTO.scale.set(0.9, 0.9);
-						case 111:
-							cursorDDTO.scale.set(1, 1);
-						case 112:
-							extractPopup.alpha = 1;
-							extractPopup.scale.set();
-							FlxTween.tween(extractPopup, {"scale.x": 1, "scale.y": 1}, 0.2, {ease: FlxEase.quadOut});
-						case 114:
-							FlxTween.tween(cursorDDTO, {alpha: 0.001}, 0.3, {ease: FlxEase.sineIn});
-						case 120:
-							FlxTween.tween(deskBG2, {alpha: 0.001}, CoolUtil.calcSectionLength(0.3125), {ease: FlxEase.sineIn});
-						case 126:
-							libShader();
-						case 127:
-							if (!SaveData.lowEnd)
-								testVM.bitmap.time = 0;
-							else
-								testVMLE.animation.play('idle', true);
-						case 128:
-							libShader(false);
-							FlxG.camera.zoom = 1;
-							camGame2.zoom = 1;
-							defaultCamZoom = 1;
-
-							camGame2.fade(FlxColor.WHITE, 0.2, true);
-							deskBG2.alpha = 0.001;
-							extractPopup.alpha = 0.001;
-							deskBG2Overlay.alpha = 0.15;
-							camHUD.alpha = 1;
-
-							if (!SaveData.lowEnd)
-								testVM.alpha = 1;
-							else
-								testVMLE.alpha = 1;
-						case 160 | 224 | 288 | 480 | 576 | 688 | 800 | 896 | 1024:
-							libPopup(526, Random.randUInt(88, 442), Random.randF(0.9, 1.1), Random.randF(0, 2));
-							libPopup(808, Random.randUInt(88, 442), Random.randF(0.9, 1.1), Random.randF(0, 2));
-							libPopup(184, Random.randUInt(88, 442), Random.randF(0.9, 1.1), Random.randF(0, 2));
-						case 352:
-							libiWindow.alpha = 1;
-							libiWindow.scale.set();
-							FlxTween.tween(libiWindow, {"scale.x": 1.1, "scale.y": 1.1}, 0.2, {ease: FlxEase.quadOut});
-						case 364:
-							libHando.alpha = 1;
-							libHando.animation.play('idle', true);
-						case 368:
-							if (SaveData.judgementCounter)
-								FlxTween.tween(judgementCounter, {alpha: 1}, 0.5, {ease: FlxEase.sineIn});
-
-							FlxTween.tween(laneunderlay, {alpha: SaveData.laneTransparency}, 0.5, {ease: FlxEase.sineIn});
-
-							FlxTween.tween(iconP1, {alpha: 1}, 0.5, {ease: FlxEase.sineIn});
-							FlxTween.tween(healthBar, {alpha: 1}, 0.5, {ease: FlxEase.sineIn});
-							FlxTween.tween(healthBarBG, {alpha: 1}, 0.5, {ease: FlxEase.sineIn});
-							FlxTween.tween(scoreTxt, {alpha: 1}, 0.5, {ease: FlxEase.sineIn});
-
-							for (i in 0...4)
-							{
-								FlxTween.tween(playerStrums.members[i], {y: playerStrums.members[i].y + 10, alpha: 1}, 1,
-									{ease: FlxEase.circOut, startDelay: 0.5 + (0.2 * i)});
-							}
-						case 384:
-							libHando.alpha = 0.001;
-							camGame2.fade(FlxColor.WHITE, 0.2, true);
-							libiWindow.scale.set(1, 1);
-							boyfriend.setPosition(170, -50);
-							boyfriend.cameras = [camGame2];
-							boyfriend.alpha = 1;
-							camZooming = true;
-
-							remove(grpPopups);
-							insert(members.indexOf(boyfriend) + 1, grpPopups);
-						case 520 | 1169 | 1181 | 1186 | 1197 | 1568 | 1968 | 2800 | 2864 | 2928:
-							libShader();
-						case 544 | 1172 | 1184 | 1189 | 1576 | 2816 | 2880 | 2944 | 3666:
-							libShader(false);
-						case 624:
-							if (!SaveData.lowEnd)
-								testVM.alpha = 0.001;
-							else
-								testVMLE.alpha = 0.001;
-
-							libiWindow.alpha = 0.001;
-							boyfriend.alpha = 0.001;
-							deskBG2Overlay.alpha = 0.001;
-							grpPopups.visible = false;
-							libAwaken.alpha = 1;
-							libAwaken.animation.play('idle', true);
-						case 640:
-							if (!constantScroll)
-								songSpeed += 0.2;
-
-							if (!SaveData.lowEnd)
-								testVM.alpha = 1;
-							else
-								testVMLE.alpha = 1;
-
-							boyfriend.alpha = 1;
-							deskBG2Overlay.alpha = 0.15;
-							grpPopups.visible = true;
-							libAwaken.alpha = 0.001;
-							camGame2.fade(FlxColor.WHITE, 0.2, true);
-							addcharacter('ghost-sketch', 0);
-							boyfriend.cameras = [camGame2];
-
-							remove(grpPopups);
-							insert(members.indexOf(boyfriend) + 1, grpPopups);
-
-							add(libVignette);
-						case 1152:
-							if (!SaveData.lowEnd)
-								FlxTween.tween(testVM, {alpha: 0.001}, CoolUtil.calcSectionLength(), {ease: FlxEase.sineOut});
-							else
-								FlxTween.tween(testVMLE, {alpha: 0.001}, CoolUtil.calcSectionLength(), {ease: FlxEase.sineOut});
-						case 1200:
-							libShader(false);
-							FlxTween.tween(deskBG2Overlay, {alpha: 0.001}, CoolUtil.calcSectionLength(), {ease: FlxEase.linear});
-							camGame2.fade(FlxColor.WHITE, CoolUtil.calcSectionLength(), false);
-						case 1216:
-							if (SaveData.shaders && !SaveData.lowEnd)
-							{
-								fishy.preset = 0;
-								camGame.filters = [new ShaderFilter(warpy), new ShaderFilter(fishy)];
-							}
-
-							addcharacter('ghost', 0);
-							boyfriend.cameras = [camGame2];
-
-							ghostBG.alpha = 1;
-							camGame2.fade(FlxColor.WHITE, 0.2, true);
-							noteCam = true;
-
-							remove(grpPopups);
-							insert(members.indexOf(boyfriend) + 1, grpPopups);
-
-							remove(libVignette);
-							add(libVignette);
-						case 1712:
-							ghostBG.alpha = 0.001;
-							libVignette.alpha = 0.001;
-							staticshock.alpha = 1;
-							add(staticshock);
-						case 1728:
-							if (SaveData.shaders && !SaveData.lowEnd)
-								camGame.filters = [new ShaderFilter(fishy)];
-
-							eyeBG.alpha = 1;
-							insert(members.indexOf(boyfriend) + 1, eyeShadow);
-							insert(members.indexOf(libVignette), eyeMidwayBG);
-
-							libVignette.alpha = 1;
-							staticshock.alpha = 0.001;
-						case 1984:
-							libShader(false);
-							camGame2.fade(FlxColor.WHITE, 0.2, true);
-							boyfriend.shader = inverty; // this doesn't have shader check on purpose
-							libFinaleOverlay.alpha = 0.001;
-							eyeBG.alpha = 0.001;
-							eyeShadow.alpha = 0.001;
-							eyeMidwayBG.alpha = 0.001;
-							infoBG.alpha = 1;
-						case 2240:
-							camGame2.fade(FlxColor.WHITE, 0.2, true);
-							boyfriend.shader = null; // this doesn't have shader check on purpose
-							infoBG.alpha = 0.001;
-							infoBG2.alpha = 1;
-						case 2480:
-							camGame2.fade(FlxColor.BLACK, 0, false);
-						case 2495:
-							if (!SaveData.lowEnd)
-								crackBG.bitmap.time = 0;
-						case 2496:
-							camGame2.fade(FlxColor.WHITE, 0.2, true);
-							infoBG2.alpha = 0.001;
-
-							if (!SaveData.lowEnd)
-								crackBG.alpha = 1;
-							else
-								crackBGLE.alpha = 1;
-
-							libVignette.loadGraphic(Paths.image('libitina/vignetteend', 'doki'));
-						case 2752 | 2817 | 2881 | 2945 | 2960 | 2972 | 2974 | 2976 | 2978 | 2980 | 2981 | 2982 | 2983 | 2984 | 2985 | 2986 | 2987 | 2988 | 2889 | 2890 | 2891 | 2892 | 2893:
-							// this code looks so fucking ugly
-							libPopup(Random.randUInt(386, 666), Random.randUInt(68, 482), Random.randF(0.95, 1.25), '', 'red', Random.randNF());
-							libPopup(Random.randUInt(668, 948), Random.randUInt(68, 482), Random.randF(0.95, 1.25), '', 'red', Random.randNF());
-							libPopup(Random.randUInt(44, 324), Random.randUInt(68, 482), Random.randF(0.95, 1.25), '', 'red', Random.randNF());
-						case 2994:
-							libiWindow.loadGraphic(Paths.image('libitina/granted', 'doki', true));
-							libiWindow.screenCenter();
-							libiWindow.alpha = 1;
-							libiWindow.scale.set();
-							FlxTween.tween(libiWindow, {"scale.x": 1, "scale.y": 1}, 0.2, {ease: FlxEase.quadOut});
-
-							remove(libiWindow);
-							insert(members.indexOf(boyfriend) + 69, libiWindow);
-						case 3008:
-							camGame2.fade(FlxColor.WHITE, 0, false);
-							boyfriend.alpha = 0.001;
-							libiWindow.alpha = 0.001;
-
-							if (!SaveData.lowEnd)
-								crackBG.alpha = 0.001;
-							else
-								crackBGLE.alpha = 0.001;
-
-							noteCam = false;
-							camZooming = false;
-							FlxG.camera.zoom = defaultCamZoom;
-							camGame2.zoom = defaultCamZoom;
-							camHUD.zoom = defaultHudZoom;
-
-							libVignette.loadGraphic(Paths.image('libitina/vignette', 'doki'));
-							libFinaleBG.alpha = 1;
-							libGhost.alpha = 1;
-
-							remove(grpPopups);
-						case 3020:
-							camGame2.fade(FlxColor.WHITE, CoolUtil.calcSectionLength(2), true);
-						case 3040:
-							if (!constantScroll)
-								songSpeed /= 2;
-						case 3060:
-							FlxTween.tween(libFinaleBG, {y: libFinaleBG.y - 560}, CoolUtil.calcSectionLength(6), {ease: FlxEase.sineInOut});
-							FlxTween.tween(libGhost, {y: libGhost.y - 580}, CoolUtil.calcSectionLength(5), {ease: FlxEase.sineInOut, startDelay: CoolUtil.calcSectionLength(1.1)});
-						case 3584:
-							camGame2.fade(FlxColor.WHITE, 0.2, true);
-							libParty.alpha = 1;
-							libRockIs.alpha = 1;
-						case 3624:
-							FlxTween.tween(libFinale, {alpha: 1}, CoolUtil.calcSectionLength(0.35), {
-								ease: FlxEase.sineIn,
-								onComplete: function(tween:FlxTween)
-								{
-									libFinaleBG.alpha = 0.001;
-									libGhost.alpha = 0.001;
-									libParty.alpha = 0.001;
-									libRockIs.alpha = 0.001;
-								}
-							});
-						case 3646 | 3682 | 3688 | 3710:
-							libShader(true, false);
-						case 3648:
-							// I would've used the switch case but then it wouldn't run the loadGraphic stuff
-							libShader(false);
-							libFinale.loadGraphic(Paths.image('libitina/finale/Finale3', 'doki'));
-						case 3664:
-							libShader(true, false);
-							libFinaleOverlay.alpha = 1;
-						case 3684:
-							libShader(false);
-							libFinale.loadGraphic(Paths.image('libitina/finale/Finale4', 'doki'));
-						case 3692:
-							libShader(false);
-
-							libFinaleOverlay.setGraphicSize(Std.int(FlxG.width * 0.86 / defaultCamZoom));
-							libFinaleOverlay.screenCenter();
-
-							deskBG2.loadGraphic(Paths.image('libitina/outroscreen', 'doki'));
-							camHUD.alpha = 0.001;
-							libFinale.alpha = 0.001;
-							deskBG2.alpha = 1;
-						case 3711:
-							if (!SaveData.lowEnd)
-								rainBG.bitmap.time = 0;
-						case 3712:
-							camGame2.zoom = 1.4;
-							FlxTween.tween(camGame2, {zoom: 1}, CoolUtil.calcSectionLength(2.5), {ease: FlxEase.sineInOut});
-
-							libShader(false);
-							metadataDisplay.tweenIn();
-							deskBG1.loadGraphic(Paths.image('libitina/outrodesk', 'doki'));
-							deskBG1.alpha = 1;
-
-							if (!SaveData.lowEnd)
-								rainBG.alpha = 1;
-
-							deskBG2.alpha = 0.001;
-							libFinaleOverlay.alpha = 0.001;
-						case 3760:
-							camGame2.fade(FlxColor.WHITE, 0.3, true);
-							metadataDisplay.visible = false;
-							camHUD.alpha = 0.001;
-							deskBG1.alpha = 0.001;
-
-							if (!SaveData.lowEnd)
-								rainBG.alpha = 0.001;
-					}
 			}
 		}
 
@@ -8895,9 +7611,6 @@ if (note.noteType == 8 && !toggleBotplay && !note.isSustainNote) // Switcheroo M
 					case 'clubroomevil' | 'libitina':
 						camFollow.x = 600;
 						camFollow.y = 300;
-					case 'wilted':
-						camFollow.x = 565;
-						camFollow.y = 360;
 					default:
 						if (forceCam)
 						{
@@ -8976,9 +7689,6 @@ if (note.noteType == 8 && !toggleBotplay && !note.isSustainNote) // Switcheroo M
 							case 'clubroomevil' | 'libitina':
 								camFollow.x = 600;
 								camFollow.y = 300;
-							case 'wilted':
-								camFollow.x = 730;
-								camFollow.y = 360;
 						}
 				}
 
@@ -8987,9 +7697,6 @@ if (note.noteType == 8 && !toggleBotplay && !note.isSustainNote) // Switcheroo M
 
 				switch (curStage)
 				{
-					case 'wilted':
-						camFollow.x = 720;
-						camFollow.y = 360;
 					default:
 						if (forceCam)
 						{
@@ -9395,43 +8102,6 @@ if (note.noteType == 8 && !toggleBotplay && !note.isSustainNote) // Switcheroo M
 		}
 	}
 
-	function wiltswap(swaper:Int, ?skipFlash:Bool = false)
-	{
-		remove(strumLineNotes);
-		strumLineNotes = new FlxTypedGroup<StrumNote>();
-		strumLineNotes.cameras = [camHUD];
-		add(strumLineNotes);
-
-		playerStrums = new FlxTypedGroup<StrumNote>();
-		opponentStrums = new FlxTypedGroup<StrumNote>();
-
-		if (skipFlash == false)
-		{
-			whiteflash.alpha = 1;
-			FlxTween.tween(whiteflash, {alpha: 0.001}, CoolUtil.calcSectionLength(0.2), {ease: FlxEase.sineOut});
-		}
-
-		var regStyle:String = mirrormode ? 'pixel' : SONG.noteStyle;
-		var pixStyle:String = mirrormode ? SONG.noteStyle : 'pixel';
-
-		switch (swaper)
-		{
-			case 0:
-				wiltbg.loadGraphic(Paths.image('wilt/bg', 'doki'));
-				addcharacter("senpai", 1);
-				addcharacter("monika", 0);
-				curStyle = regStyle;
-				generateStaticArrows(1, middleScroll ? regStyle : SONG.noteStyle, false);
-				generateStaticArrows(0, middleScroll ? pixStyle : 'pixel', false);
-			case 1:
-				wiltbg.loadGraphic(Paths.image('wilt/bg2', 'doki'));
-				addcharacter("senpai-nonpixel", 1);
-				addcharacter("monika-pixelnew", 0);
-				curStyle = pixStyle;
-				generateStaticArrows(1, middleScroll ? pixStyle : 'pixel', false);
-				generateStaticArrows(0, middleScroll ? regStyle : SONG.noteStyle, false);
-		}
-	}
 
 	function glitchySchool(BGswap:Int)
 	{
@@ -9584,7 +8254,7 @@ if (note.noteType == 8 && !toggleBotplay && !note.isSustainNote) // Switcheroo M
 				FlxTween.tween(redStatic, {alpha: 0.0001}, 0.2, {ease: FlxEase.linear, onComplete: function(twn:FlxTween){}});
 
 				stageVER = 0;
-				addcharacter("manuel-pixel", 1);
+				addcharacter("manuel-pixel-old-angry", 1);
 				addcharacter("", 0);
 				defaultCamZoom = 1.05;
 				evilbg.visible = true;

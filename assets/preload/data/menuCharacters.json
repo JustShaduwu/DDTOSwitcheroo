@@ -153,6 +153,22 @@
             "looped": true
         },
         {
+            "name":"sans",
+            "spritePos": [540, 110],
+            "atlas": "menucharacters/sans",
+            "prefix": "sans",
+            "scale": [0.9, 0.9],
+            "looped": true
+        },
+        {
+            "name":"secretchar1",
+            "spritePos": [540, 110],
+            "atlas": "menucharacters/secret_6",
+            "prefix": "sans_lock",
+            "scale": [0.9, 0.9],
+            "looped": true
+        },
+        {
             "name":"hex-shaduwu",
             "spritePos": [540, 200],
             "atlas": "menucharacters/hex-shaduwu",

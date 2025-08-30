@@ -37,7 +37,7 @@
 		{
 			"isCommand": false,
 			"name": "bf",
-			"expression": "angry",
+			"expression": "neutral",
 			"string": " Beep!",
 			"key": "hscEnd5",
 			"side": "right"

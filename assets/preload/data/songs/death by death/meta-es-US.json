@@ -3,7 +3,7 @@
         "name": "Muerte Por Muerte",
         "artist": "Shaduwu y DPZ",
         "icon": "pen-demise",
-        "pause": "manuel",
+        "pause": "manuel-angry",
         "introDialogue": "IntroDialogue",
         "endDialogue": "EndDialogue"
     }
