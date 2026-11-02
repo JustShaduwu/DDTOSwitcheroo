@@ -1,5 +1,6 @@
 package switcheroo.states;
 
+import SwitcherooDiscordRPC;
 import SwitcherooProgress;
 
 import LanguageManager;
@@ -95,6 +96,7 @@ public var acceptInputs:Bool = false;
     override function create():Void
     {
         super.create();
+        SwitcherooDiscordRPC.showMenu('Freeplay');
 
         instance = this;
 

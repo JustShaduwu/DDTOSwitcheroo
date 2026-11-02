@@ -24,7 +24,7 @@ import flixel.util.FlxColor;
 import funkin.Paths;
 import funkin.audio.FunkinSound;
 import funkin.ui.MusicBeatSubState;
-import funkin.api.discord.DiscordClient;
+import SwitcherooDiscordRPC;
 import funkin.util.WindowUtil;
 
 using StringTools;
@@ -88,14 +88,7 @@ class SwitcherooGallerySubState extends MusicBeatSubState
         add(new FlxSprite().makeGraphic(FlxG.width, FlxG.height, 0xFF000000));
         persistentDraw = true;
 
-        if (manageMusic) DiscordClient.setPresence(
-        {
-            state:
-                'Viewing the Art Gallery',
-
-            details:
-                'FridAnd Night Funkin\': Rebooted'
-        });
+        if (manageMusic) SwitcherooDiscordRPC.showMenu('Art Gallery');
 
 
         if (manageMusic) FunkinSound.playMusic(

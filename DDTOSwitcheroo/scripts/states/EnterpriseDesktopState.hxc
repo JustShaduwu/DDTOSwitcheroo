@@ -1,5 +1,6 @@
 package switcheroo.states;
 
+import SwitcherooDiscordRPC;
 import DesktopTheme;
 import DesktopNotifications;
 import openfl.display.Shape;
@@ -25,6 +26,9 @@ import lime.app.Application;
 import switcheroo.substates.EnterpriseWindow;
 import switcheroo.substates.EnterprisePopup;
 import flixel.util.FlxSave;
+
+import funkin.util.WindowUtil;
+import CustomIcon;
 
 import funkin.Preferences;
 
@@ -87,6 +91,14 @@ class EnterpriseDesktopState extends MusicBeatState
     override function create():Void
     {
         super.create();
+        SwitcherooDiscordRPC.showMenu('Desktop');
+
+              if (!FlxG.onMobile)
+      {
+        WindowUtil.setWindowTitle('Doki Doki Takeover: Switcheroo!');
+        CustomIcon.setIcon(Paths.image('ui/window-icons/icon-ddts'));
+      }
+
         DesktopTheme.restore();
         DesktopTheme.attach(this);
         EnterpriseSettings.restore();

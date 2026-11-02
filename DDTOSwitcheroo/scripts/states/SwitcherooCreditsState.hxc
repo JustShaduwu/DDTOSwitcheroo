@@ -1,5 +1,6 @@
 package switcheroo.states;
 
+import SwitcherooDiscordRPC;
 import LanguageManager;
 
 import haxe.Json;
@@ -88,6 +89,7 @@ class SwitcherooCreditsState extends MusicBeatState
     override function create():Void
     {
         super.create();
+        SwitcherooDiscordRPC.showMenu('Credits');
 
         persistentUpdate = true;
         persistentDraw = true;

@@ -1,0 +1,149 @@
+import funkin.modding.module.Module;
+import StringTools;
+import funkin.Paths;
+import lime.utils.Assets;
+import haxe.Json;
+import funkin.play.PlayState;
+#if FEATURE_DISCORD_RPC
+import funkin.api.discord.DiscordClient;
+#end
+
+class SwitcherooDiscordRPC extends Module
+{
+    public static var ASSET_BASE_URL:String = 'https://raw.githubusercontent.com/JustShaduwu/DDTOSwitcheroo/refs/heads/main/DDTOSwitcheroo/images';
+    public static var ASSET_VERSION:String = '2';
+    public static var MENU_IMAGE:String = 'jukebox/switcheroo_encore.png';
+    public static var ALBUM_IMAGE:String = 'jukebox/switcheroo_encore.png';
+    public static var RPC_ICONS:Array<String> = [
+        'Kaitypixel', 'Manu-pixel', 'azalea', 'duet', 'duetazalea',
+        'duetswap', 'manuel', 'manuel-demise', 'seira'
+    ];
+    public static var SONGS:Array<String> = ["college-dispute", "death-by-death", "dual-death", "our-reality", "piece-by-piece", "poems-n-pollen", "shinkyoku-switcheroo-mix", "stories-of-violets", "test-manu-mix"];
+
+    public function new() { super('SwitcherooDiscordRPC'); }
+
+    public static function imageURL(path:String):String
+    {
+        if (path == null || path == '') return null;
+        var url = path;
+        if (!StringTools.startsWith(path, 'https://') && !StringTools.startsWith(path, 'http://'))
+        {
+            if (ASSET_BASE_URL == null || ASSET_BASE_URL == '') return null;
+            while (StringTools.startsWith(path, '/')) path = path.substr(1);
+            var separator = StringTools.endsWith(ASSET_BASE_URL, '/') ? '' : '/';
+            url = ASSET_BASE_URL + separator + path;
+        }
+        return url + (url.indexOf('?') >= 0 ? '&' : '?') + 'v=' + ASSET_VERSION;
+    }
+
+    public static function showMenu(location:String):Void
+    {
+        #if FEATURE_DISCORD_RPC
+        var presence:Dynamic = {
+            state: location,
+            details: "Doki Doki Takeover: Switcheroo",
+            smallImageKey: ''
+        };
+        var image = imageURL(MENU_IMAGE);
+        if (image != null) presence.largeImageKey = image;
+        DiscordClient.setPresence(presence);
+        #end
+    }
+
+    var resolved:Bool = false;
+    var fixedIcon:String = null;
+    var fixedAlbum:String = null;
+    var pendingRefresh:Bool = false;
+
+    override public function onSongLoaded(event:ScriptEvent):Void
+    {
+        super.onSongLoaded(event);
+        resolved = false;
+        fixedIcon = null;
+        fixedAlbum = null;
+        pendingRefresh = false;
+    }
+
+    function readData(path:String):Dynamic
+    {
+        var asset = Paths.file(path);
+        if (!Assets.exists(asset)) return null;
+        try { return Json.parse(Assets.getText(asset)); }
+        catch (error:Dynamic)
+        {
+            trace('[SwitcherooDiscordRPC] Cannot read ' + path + ': ' + error);
+            return null;
+        }
+    }
+
+    function customIcon(data:Dynamic):String
+    {
+        if (data == null || data.rpcIcon == null) return null;
+        var value = StringTools.trim(Std.string(data.rpcIcon));
+        return value == '' ? null : value;
+    }
+
+    function resolveImages(play:PlayState):Void
+    {
+        resolved = true;
+        if (SONGS.indexOf(play.currentSong.id) < 0 || play.currentSong.isDiscordRPCAnonymous()) return;
+        fixedAlbum = imageURL(ALBUM_IMAGE);
+        var id = play.currentSong.id;
+        var root = 'gameplay/songs/' + id + '/' + id + '-metadata';
+        var base = readData(root + '.json');
+        var variant:Dynamic = null;
+        if (play.currentVariation != null && play.currentVariation != '' && play.currentVariation != 'default')
+            variant = readData(root + '-' + play.currentVariation + '.json');
+        var overrideIcon = customIcon(variant);
+        if (overrideIcon == null) overrideIcon = customIcon(base);
+        if (overrideIcon != null)
+        {
+            // Bare ID -> icons/ID.png; relative paths and complete URLs also work.
+            if (overrideIcon.indexOf('/') < 0 && !StringTools.endsWith(overrideIcon, '.png'))
+                overrideIcon = 'icons/' + overrideIcon + '.png';
+            fixedIcon = imageURL(overrideIcon);
+            return;
+        }
+      
+        var opponent:String = null;
+        for (metadata in [base, variant])
+        {
+            if (metadata != null && metadata.playData != null && metadata.playData.characters != null
+                && metadata.playData.characters.opponent != null)
+                opponent = metadata.playData.characters.opponent;
+        }
+        if (opponent == null) return;
+        var character = readData('gameplay/characters/' + opponent + '/' + opponent + '.json');
+        var iconId = opponent;
+        if (character != null && character.healthIcon != null && character.healthIcon.id != null)
+            iconId = character.healthIcon.id;
+        fixedIcon = RPC_ICONS.indexOf(iconId) >= 0 ? imageURL('icons/' + iconId + '.png') : 'icon-' + iconId;
+    }
+
+    override public function onUpdate(event:UpdateScriptEvent):Void
+    {
+        super.onUpdate(event);
+        #if FEATURE_DISCORD_RPC
+        var play = PlayState.instance;
+        if (play == null || play.currentStage == null || play.currentSong == null) return;
+        if (!resolved) resolveImages(play);
+        if (fixedAlbum == null) return;
+
+        if (play.discordRPCAlbum != fixedAlbum)
+        {
+            play.discordRPCAlbum = fixedAlbum;
+            pendingRefresh = true;
+        }
+        if (fixedIcon != null && play.discordRPCIcon != fixedIcon)
+        {
+            play.discordRPCIcon = fixedIcon;
+            pendingRefresh = true;
+        }
+        if (pendingRefresh && !play.isGamePaused && !play.isGameOverState && !play.isPlayerDying)
+        {
+            pendingRefresh = false;
+            play.initDiscord();
+        }
+        #end
+    }
+}

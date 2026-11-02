@@ -36,7 +36,7 @@ import funkin.ui.transition.stickers.StickerSubState;
 import funkin.ui.transition.stickers.StickerSprite;
 import funkin.save.Save;
 
-import funkin.api.discord.DiscordClient;
+import SwitcherooDiscordRPC;
 
 class SwitcherooStoryModeState extends MusicBeatState
 {
@@ -152,11 +152,7 @@ public static var pendingStickers:Array<StickerSprite> = null;
     {
         super.create();
 
-        DiscordClient.setPresence(
-        {
-            state: 'Main Menu',
-            details: 'Doki Doki Takeover\': Switcheroo'
-        });
+        SwitcherooDiscordRPC.showMenu('Story Mode');
 
         var missing = ModuleHandler.getModule('MissingMode');
         missingMode = missing != null

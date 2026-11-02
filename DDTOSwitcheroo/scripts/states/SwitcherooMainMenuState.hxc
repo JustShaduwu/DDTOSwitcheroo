@@ -27,7 +27,7 @@ import funkin.modding.PolymodHandler;
 import funkin.ui.MusicBeatState;
 import funkin.ui.ScriptedMusicBeatState;
 import funkin.ui.options.OptionsState;
-import funkin.api.discord.DiscordClient;
+import SwitcherooDiscordRPC;
 import funkin.util.WindowUtil;
 
 import flixel.addons.display.FlxRuntimeShader;
@@ -76,11 +76,7 @@ var lastMenuBeat:Int = -1;
         persistentUpdate = true;
         persistentDraw = true;
 
-        DiscordClient.setPresence(
-        {
-            state: 'Main Menu',
-            details: 'Doki Doki Takeover\': Switcheroo'
-        });
+        SwitcherooDiscordRPC.showMenu('Main Menu');
 
         createBackdrop();
         createRandomMenuCharacter();
