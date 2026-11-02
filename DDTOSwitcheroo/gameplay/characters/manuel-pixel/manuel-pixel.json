@@ -1,0 +1,214 @@
+{
+	"version": "1.0.0",
+	"renderType": "sparrow",
+	"offsets": [
+		0,
+		0
+	],
+	"danceEvery": 1,
+	"scale": 6,
+	"name": "Manuel pixel",
+	"cameraOffsets": [
+		20,
+		-30
+	],
+	"flipX": false,
+	"startingAnimation": "idle",
+	"isPixel": true,
+	"singTime": 4,
+	"flipY": false,
+	"healthIcon": {
+		"offsets": [
+			0,
+			0
+		],
+		"isPixel": false,
+		"scale": 1,
+		"flipX": false,
+		"id": "manuel"
+	},
+	"assetPath": "gameplay/characters/manuel-pixel/manuel-pixel",
+	"generatedBy": "Nova Character Editor v3.0.1",
+	"animations": [
+		{
+			"offsets": [
+				1,
+				0
+			],
+			"frameIndices": [],
+			"prefix": "ManIdle",
+			"name": "idle",
+			"looped": false,
+			"flipX": false,
+			"flipY": false,
+			"frameRate": 24,
+			"assetPath": null
+		},
+		{
+			"offsets": [
+				-1,
+				0
+			],
+			"frameIndices": [],
+			"prefix": "ManUp",
+			"name": "singUP",
+			"looped": false,
+			"flipX": false,
+			"flipY": false,
+			"frameRate": 24,
+			"assetPath": null
+		},
+		{
+			"offsets": [
+				1,
+				0
+			],
+			"frameIndices": [],
+			"prefix": "ManRight",
+			"name": "singRIGHT",
+			"looped": false,
+			"flipX": false,
+			"flipY": false,
+			"frameRate": 24,
+			"assetPath": null
+		},
+		{
+			"offsets": [
+				1,
+				0
+			],
+			"frameIndices": [],
+			"prefix": "ManLeft",
+			"name": "singLEFT",
+			"looped": false,
+			"flipX": false,
+			"flipY": false,
+			"frameRate": 24,
+			"assetPath": null
+		},
+		{
+			"offsets": [
+				-1,
+				0
+			],
+			"frameIndices": [],
+			"prefix": "ManDown",
+			"name": "singDOWN",
+			"looped": false,
+			"flipX": false,
+			"flipY": false,
+			"frameRate": 24,
+			"assetPath": null
+		},
+		{
+			"offsets": [
+				-1,
+				0
+			],
+			"frameIndices": [],
+			"prefix": "Man Alt Down",
+			"name": "singDOWN-alt",
+			"looped": false,
+			"flipX": false,
+			"flipY": false,
+			"frameRate": 24,
+			"assetPath": null
+		},
+		{
+			"offsets": [
+				-1,
+				0
+			],
+			"frameIndices": [],
+			"prefix": "Man Alt Up",
+			"name": "singUP-alt",
+			"looped": false,
+			"flipX": false,
+			"flipY": false,
+			"frameRate": 24,
+			"assetPath": null
+		},
+		{
+			"offsets": [
+				1,
+				0
+			],
+			"frameIndices": [],
+			"prefix": "Man Alt Idle",
+			"name": "idle-alt",
+			"looped": false,
+			"flipX": false,
+			"flipY": false,
+			"frameRate": 24,
+			"assetPath": null
+		},
+		{
+			"offsets": [
+				1,
+				0
+			],
+			"frameIndices": [],
+			"prefix": "Man Alt Right",
+			"name": "singRIGHT-alt",
+			"looped": false,
+			"flipX": false,
+			"flipY": false,
+			"frameRate": 24,
+			"assetPath": null
+		},
+		{
+			"offsets": [
+				1,
+				0
+			],
+			"frameIndices": [],
+			"prefix": "Man Alt Left",
+			"name": "singLEFT-alt",
+			"looped": false,
+			"flipX": false,
+			"flipY": false,
+			"frameRate": 24,
+			"assetPath": null
+		},
+		{
+			"frameIndices": [],
+			"prefix": "Man Alt Idle0",
+			"name": "idle-alt",
+			"assetPath": null
+		},
+		{
+			"frameIndices": [],
+			"prefix": "Man Alt Left0",
+			"name": "singLEFT-alt",
+			"assetPath": null
+		},
+		{
+			"frameIndices": [],
+			"prefix": "Man Alt Up0",
+			"name": "singUP-alt",
+			"assetPath": null
+		},
+		{
+			"frameIndices": [],
+			"prefix": "Man Alt Down0",
+			"name": "singDOWN-alt",
+			"assetPath": null
+		},
+		{
+			"frameIndices": [],
+			"prefix": "Man Alt Right0",
+			"name": "singRIGHT-alt",
+			"assetPath": null
+		},
+		{
+			"offsets": [
+				-70,
+				-27
+			],
+			"frameIndices": [],
+			"prefix": "shoot",
+			"name": "shoot",
+			"assetPath": null
+		}
+	]
+}

@@ -1,0 +1,345 @@
+import funkin.modding.module.Module;
+import funkin.play.PlayState;
+
+using StringTools;
+
+class MissRecolor extends Module
+{
+   
+    var recolorActive:Bool = true;
+
+    var missColor:Int = 0xFF8282FF;
+
+   
+    var recoloredCharacters:Array<Dynamic> = [];
+
+   
+    var previousColors:Array<Int> = [];
+
+
+    function new()
+    {
+        super(
+            'MissRecolor',
+            0
+        );
+    }
+
+
+
+    
+function setRecolorActive(value:Bool):Void
+    {
+        recolorActive = value;
+
+       
+        if (!recolorActive)
+        {
+            resetAll();
+        }
+    }
+
+
+    function getRecolorActive():Bool
+    {
+        return recolorActive;
+    }
+
+
+    function setMissColor(value:Int):Void
+    {
+        missColor = value;
+    }
+
+
+    
+    
+    
+
+    function getDirectionName(dir):String
+    {
+       
+        if (dir != null && dir.nameUpper != null)
+        {
+            return dir.nameUpper;
+        }
+
+       
+        return switch (Std.int(dir))
+        {
+            case 0: 'LEFT';
+            case 1: 'DOWN';
+            case 2: 'UP';
+            case 3: 'RIGHT';
+            default: 'LEFT';
+        };
+    }
+
+
+    
+    
+    
+
+    function getMissAnimationName(
+        dir,
+        suffix:String = ''
+    ):String
+    {
+        return
+            'sing' +
+            getDirectionName(dir) +
+            'miss' +
+            (
+                suffix != null &&
+                suffix != ''
+                    ? '-' + suffix
+                    : ''
+            );
+    }
+
+
+    function hasMissAnimation(
+        character,
+        dir,
+        suffix:String = ''
+    ):Bool
+    {
+        if (
+            character == null ||
+            character.animation == null
+        )
+        {
+            return false;
+        }
+
+        return character.animation.getByName(
+            getMissAnimationName(
+                dir,
+                suffix
+            )
+        ) != null;
+    }
+
+
+    
+    
+    
+
+    function getRecolorIndex(
+        character
+    ):Int
+    {
+        for (i in 0...recoloredCharacters.length)
+        {
+            if (
+                recoloredCharacters[i] ==
+                character
+            )
+            {
+                return i;
+            }
+        }
+
+        return -1;
+    }
+
+
+    function applyRecolor(
+        character
+    ):Void
+    {
+        if (
+            character == null ||
+            !recolorActive
+        )
+        {
+            return;
+        }
+
+       
+        if (
+            getRecolorIndex(character) == -1
+        )
+        {
+            recoloredCharacters.push(
+                character
+            );
+
+            previousColors.push(
+                character.color
+            );
+        }
+
+        character.color =
+            missColor;
+    }
+
+
+    function resetCharacter(
+        character
+    ):Void
+    {
+        if (character == null)
+            return;
+
+        var index:Int =
+            getRecolorIndex(
+                character
+            );
+
+       
+        if (index == -1)
+            return;
+
+        character.color =
+            previousColors[index];
+
+        recoloredCharacters.splice(
+            index,
+            1
+        );
+
+        previousColors.splice(
+            index,
+            1
+        );
+    }
+
+
+    function resetAll():Void
+    {
+        while (
+            recoloredCharacters.length > 0
+        )
+        {
+            var character =
+                recoloredCharacters[0];
+
+            resetCharacter(
+                character
+            );
+        }
+    }
+
+
+    
+    
+    
+
+   
+    function prepareSingAnimation(
+        character,
+        dir,
+        miss:Bool,
+        suffix:String = ''
+    ):Bool
+    {
+        if (character == null)
+        {
+            return miss;
+        }
+
+
+       
+        if (!miss)
+        {
+            resetCharacter(
+                character
+            );
+
+            return false;
+        }
+
+
+       
+
+        if (
+            hasMissAnimation(
+                character,
+                dir,
+                suffix
+            )
+        )
+        {
+           
+            resetCharacter(
+                character
+            );
+
+            return true;
+        }
+
+
+       
+
+        if (recolorActive)
+        {
+            applyRecolor(
+                character
+            );
+        }
+        else
+        {
+           
+            resetCharacter(
+                character
+            );
+        }
+
+        character.holdTimer = 0;
+
+        return false;
+    }
+
+function onPlayAnimation(
+        character,
+        name:String
+    ):Void
+    {
+        if (
+            character == null ||
+            name == null
+        )
+        {
+            return;
+        }
+
+        if (!name.startsWith('sing'))
+        {
+            resetCharacter(
+                character
+            );
+        }
+    }
+
+
+    override function onSongRetry(event)
+    {
+        super.onSongRetry(event);
+
+        resetAll();
+
+        recolorActive = true;
+    }
+
+
+    override function onStateChangeBegin(event)
+    {
+        super.onStateChangeBegin(event);
+
+        resetAll();
+
+        recolorActive = true;
+    }
+
+
+    override function onDestroy(event)
+    {
+        resetAll();
+
+        recoloredCharacters.resize(0);
+        previousColors.resize(0);
+
+        super.onDestroy(event);
+    }
+}

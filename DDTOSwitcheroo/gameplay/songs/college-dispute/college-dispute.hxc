@@ -1,0 +1,330 @@
+import flixel.FlxG;
+import flixel.FlxSprite;
+import flixel.util.FlxTimer;
+import flixel.tweens.FlxEase;
+import flixel.tweens.FlxTween;
+
+import funkin.graphics.FunkinSprite;
+import funkin.play.PlayState;
+import funkin.play.PlayStatePlaylist;
+import funkin.play.song.Song;
+import funkin.effects.RetroCameraFade;
+import funkin.modding.module.ModuleHandler;
+
+
+class CollegeDisputeSong extends Song
+{
+    var hasPlayedIntroCutscene:Bool;
+    var hasPlayedOutroCutscene:Bool;
+
+
+    public function new()
+    {
+        super('college-dispute');
+    }
+
+
+    public override function onCreate(event):Void
+    {
+        super.onCreate(event);
+
+        hasPlayedIntroCutscene =
+            false;
+
+        hasPlayedOutroCutscene =
+            false;
+    }
+
+
+    public override function onCountdownStart(event):Void
+    {
+        super.onCountdownStart(event);
+
+
+        if (!PlayStatePlaylist.isStoryMode)
+           hasPlayedIntroCutscene = true;
+
+
+        if (hasPlayedIntroCutscene)
+        {
+            return;
+        }
+
+
+        trace(
+            'Pausing countdown to play intro cutscene.'
+        );
+
+
+        hasPlayedIntroCutscene =
+            true;
+
+
+        event.cancelEvent();
+
+
+        PlayState.instance.isInCutscene =
+            true;
+
+
+        transitionToDialogue();
+    }
+
+
+    function transitionToDialogue():Void
+    {
+        trace(
+            'Transitioning to intro dialogue.'
+        );
+
+
+        PlayState.instance.disableKeys =
+            true;
+
+        PlayState.instance.camCutscene.visible =
+            true;
+
+
+        var black:FlxSprite =
+            new FunkinSprite(
+                -20,
+                -20
+            ).makeSolidColor(
+                FlxG.width * 1.5,
+                FlxG.height * 1.5,
+                0xFF000000
+            );
+
+
+        black.cameras =
+        [
+            PlayState.instance.camCutscene
+        ];
+
+
+        black.zIndex =
+            1000000;
+
+
+        PlayState.instance.add(
+            black
+        );
+
+
+        black.alpha =
+            1.0;
+
+
+        var tweenFunction =
+            function(x)
+            {
+                var xSnapped =
+                    Math.floor(
+                        x * 8
+                    ) / 8;
+
+
+                // Si quieres el fade del negro:
+                // black.alpha =
+                //     1.0 - xSnapped;
+            };
+
+
+        new FlxTimer().start(
+            0.25,
+
+            function(timer:FlxTimer)
+            {
+                PlayState.instance.remove(
+                    black
+                );
+
+
+                black.destroy();
+
+
+                RetroCameraFade.fadeBlack(
+                    PlayState.instance.camGame,
+                    12,
+                    2
+                );
+            }
+        );
+
+
+        FlxTween.num(
+            0.0,
+            1.0,
+            2.0,
+            {
+                ease:
+                    FlxEase.linear,
+
+                startDelay:
+                    0.25,
+
+                onComplete:
+                    function(input)
+                    {
+                        startIntroDialogue();
+                    }
+            },
+
+            tweenFunction
+        );
+    }
+
+
+    function startIntroDialogue():Void
+    {
+        var dialogueManager =
+            ModuleHandler.getModule(
+                'DialogueManager'
+            );
+
+
+        if (dialogueManager == null)
+        {
+            finishIntroCutscene();
+
+            return;
+        }
+
+
+        var missing = ModuleHandler.getModule('MissingMode');
+        var useMissingIntro = missing != null
+            && missing.scriptCall('refreshMissingMode', []) == true;
+        var introPath = 'dialogue/conversations/college dispute/'
+            + (useMissingIntro ? 'IntroDialogue-missing' : 'IntroDialogue');
+
+        dialogueManager.scriptCall(
+            'startDialogue',
+            [
+                introPath,
+
+                function()
+                {
+                    finishIntroCutscene();
+                }
+            ]
+        );
+    }
+
+
+    function finishIntroCutscene():Void
+    {
+        PlayState.instance.disableKeys =
+            false;
+
+        PlayState.instance.isInCutscene =
+            false;
+
+        PlayState.instance.startCountdown();
+    }
+
+
+    public override function onSongEnd(event):Void
+    {
+        super.onSongEnd(event);
+        var missing = ModuleHandler.getModule('MissingMode');
+        if (missing != null && missing.scriptCall('interceptSongEnd', [event]) == true) return;
+
+
+     if (!PlayStatePlaylist.isStoryMode)
+            hasPlayedOutroCutscene = true;
+
+        if (hasPlayedOutroCutscene)
+        {
+            return;
+        }
+
+
+        trace(
+            'Pausing song ending to play outro dialogue.'
+        );
+
+        hasPlayedOutroCutscene =
+            true;
+
+
+        event.cancelEvent();
+
+
+        PlayState.instance.isInCutscene =
+            true;
+
+        PlayState.instance.disableKeys =
+            true;
+
+        PlayState.instance.camCutscene.visible =
+            true;
+
+        startEndDialogue();
+    }
+
+
+    function startEndDialogue():Void
+    {
+        var dialogueManager =
+            ModuleHandler.getModule(
+                'DialogueManager'
+            );
+
+        if (dialogueManager == null)
+        {
+            finishOutroCutscene();
+
+            return;
+        }
+
+
+        dialogueManager.scriptCall(
+            'startDialogue',
+            [
+                'dialogue/conversations/college dispute/EndDialogue',
+
+                function()
+                {
+                    finishOutroCutscene();
+                }
+            ]
+        );
+    }
+
+
+    function finishOutroCutscene():Void
+    {
+        PlayState.instance.disableKeys =
+            false;
+
+        PlayState.instance.isInCutscene =
+            false;
+
+        PlayState.instance.endSong();
+    }
+
+
+        function onStepHit(event:SongTimeScriptEvent):Void
+    {
+        switch (event.step)
+        {
+            case 128:
+                ModuleHandler
+                    .getModule('Credits')
+                    .scriptCall(
+                        'manualCreditsSummon'
+                    );
+        }
+    }
+
+    public override function onSongRetry(event):Void
+    {
+        super.onSongRetry(event);
+
+        hasPlayedIntroCutscene =
+            true;
+
+        hasPlayedOutroCutscene =
+            false;
+    }
+}

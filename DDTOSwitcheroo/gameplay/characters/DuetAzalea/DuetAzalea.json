@@ -1,0 +1,303 @@
+{
+	"danceEvery": 1,
+	"offsets": [
+		-20,
+		0
+	],
+	"renderType": "sparrow",
+	"version": "1.0.0",
+	"scale": 6,
+	"flipX": false,
+	"cameraOffsets": [
+		-10,
+		0
+	],
+	"name": "Duet",
+	"flipY": false,
+	"singTime": 4,
+	"isPixel": true,
+	"startingAnimation": "idle",
+	"assetPath": "gameplay/characters/DuetAzalea/DuetAzalea",
+	"healthIcon": {
+		"isPixel": false,
+		"offsets": [
+			0,
+			0
+		],
+		"scale": 1,
+		"id": "duetazalea",
+		"flipX": false
+	},
+	"animations": [
+		{
+			"offsets": [
+				0,
+				0
+			],
+			"frameIndices": [0, 1, 2, 3, 4, 5],
+			"prefix": "Right Man",
+			"flipX": false,
+			"looped": false,
+			"name": "singRIGHT",
+			"flipY": false,
+			"assetPath": null,
+			"frameRate": 24
+		},
+		{
+			"offsets": [
+				0,
+				0
+			],
+			"frameIndices": [0, 1, 2, 3, 4, 5],
+			"prefix": "Left Man0",
+			"flipX": false,
+			"looped": false,
+			"name": "singLEFT",
+			"flipY": false,
+			"assetPath": null,
+			"frameRate": 24
+		},
+		{
+			"offsets": [
+				0,
+				0
+			],
+			"frameIndices": [0, 1, 2, 3, 4, 5],
+			"prefix": "Down Man",
+			"flipX": false,
+			"looped": false,
+			"name": "singDOWN",
+			"flipY": false,
+			"assetPath": null,
+			"frameRate": 24
+		},
+		{
+			"offsets": [
+				0,
+				0
+			],
+			"frameIndices": [0, 1, 2, 3, 4, 5],
+			"prefix": "Up Man",
+			"flipX": false,
+			"looped": false,
+			"name": "singUP",
+			"flipY": false,
+			"assetPath": null,
+			"frameRate": 24
+		},
+		{
+			"offsets": [
+				0,
+				0
+			],
+			"frameIndices": [0, 1, 2, 3, 4, 5],
+			"prefix": "Right Man",
+			"flipX": false,
+			"looped": false,
+			"name": "singRIGHT-hold",
+			"flipY": false,
+			"assetPath": null,
+			"frameRate": 24
+		},
+		{
+			"offsets": [
+				0,
+				0
+			],
+			"frameIndices": [0, 1, 2, 3, 4, 5],
+			"prefix": "Left Man0",
+			"flipX": false,
+			"looped": false,
+			"name": "singLEFT-hold",
+			"flipY": false,
+			"assetPath": null,
+			"frameRate": 24
+		},
+		{
+			"offsets": [
+				0,
+				0
+			],
+			"frameIndices": [0, 1, 2, 3, 4, 5],
+			"prefix": "Down Man",
+			"flipX": false,
+			"looped": false,
+			"name": "singDOWN-hold",
+			"flipY": false,
+			"assetPath": null,
+			"frameRate": 24
+		},
+		{
+			"offsets": [
+				0,
+				0
+			],
+			"frameIndices": [0, 1, 2, 3, 4, 5],
+			"prefix": "Up Man",
+			"flipX": false,
+			"looped": false,
+			"name": "singUP-hold",
+			"flipY": false,
+			"assetPath": null,
+			"frameRate": 24
+		},
+		{
+			"offsets": [
+				0,
+				0
+			],
+			"frameIndices": [6, 7, 7, 7],
+			"prefix": "Right Man",
+			"flipX": false,
+			"looped": false,
+			"name": "singRIGHT-end",
+			"flipY": false,
+			"assetPath": null,
+			"frameRate": 24
+		},
+		{
+			"offsets": [
+				0,
+				0
+			],
+			"frameIndices": [6, 7, 7, 7],
+			"prefix": "Left Man0",
+			"flipX": false,
+			"looped": false,
+			"name": "singLEFT-end",
+			"flipY": false,
+			"assetPath": null,
+			"frameRate": 24
+		},
+		{
+			"offsets": [
+				0,
+				0
+			],
+			"frameIndices": [6, 7, 7, 7],
+			"prefix": "Down Man",
+			"flipX": false,
+			"looped": false,
+			"name": "singDOWN-end",
+			"flipY": false,
+			"assetPath": null,
+			"frameRate": 24
+		},
+		{
+			"offsets": [
+				0,
+				0
+			],
+			"frameIndices": [6, 7, 7, 7],
+			"prefix": "Up Man",
+			"flipX": false,
+			"looped": false,
+			"name": "singUP-end",
+			"flipY": false,
+			"assetPath": null,
+			"frameRate": 24
+		},
+		{
+			"offsets": [
+				0,
+				0
+			],
+			"frameIndices": [],
+			"prefix": "Idle",
+			"flipX": false,
+			"looped": false,
+			"name": "idle",
+			"flipY": false,
+			"assetPath": null,
+			"frameRate": 18
+		},
+ {
+    "offsets": [0, 0],
+    "frameIndices": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23],
+    "prefix": "Up_Azalea",
+    "flipX": false,
+    "looped": false,
+    "name": "singUP-alt",
+    "flipY": false,
+    "assetPath": null,
+    "frameRate": 24
+  },
+  {
+    "offsets": [0, 0],
+    "frameIndices": [24, 25, 26, 27, 28, 29, 30, 31],
+    "prefix": "Up_Azalea",
+    "flipX": false,
+    "looped": false,
+    "name": "singUP-alt-end",
+    "flipY": false,
+    "assetPath": null,
+    "frameRate": 24
+  },
+  {
+    "offsets": [0, 0],
+    "frameIndices": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31],
+    "prefix": "Right_Azalea",
+    "flipX": false,
+    "looped": false,
+    "name": "singRIGHT-alt",
+    "flipY": false,
+    "assetPath": null,
+    "frameRate": 24
+  },
+  {
+    "offsets": [0, 0],
+    "frameIndices": [32, 33, 34, 35, 36, 37, 38, 39],
+    "prefix": "Right_Azalea",
+    "flipX": false,
+    "looped": false,
+    "name": "singRIGHT-alt-end",
+    "flipY": false,
+    "assetPath": null,
+    "frameRate": 24
+  },
+  {
+    "offsets": [0, 0],
+    "frameIndices": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19],
+    "prefix": "Left_Azalea",
+    "flipX": false,
+    "looped": false,
+    "name": "singLEFT-alt",
+    "flipY": false,
+    "assetPath": null,
+    "frameRate": 24
+  },
+  {
+    "offsets": [0, 0],
+    "frameIndices": [20, 21, 22, 23, 24, 25, 26, 27],
+    "prefix": "Left_Azalea",
+    "flipX": false,
+    "looped": false,
+    "name": "singLEFT-alt-end",
+    "flipY": false,
+    "assetPath": null,
+    "frameRate": 24
+  },
+  {
+    "offsets": [0, 0],
+    "frameIndices": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21],
+    "prefix": "Down_Azalea",
+    "flipX": false,
+    "looped": false,
+    "name": "singDOWN-alt",
+    "flipY": false,
+    "assetPath": null,
+    "frameRate": 24
+  },
+  {
+    "offsets": [0, 0],
+    "frameIndices": [22, 23, 24, 25, 26, 27, 28, 29],
+    "prefix": "Down_Azalea",
+    "flipX": false,
+    "looped": false,
+    "name": "singDOWN-alt-end",
+    "flipY": false,
+    "assetPath": null,
+    "frameRate": 24
+  }
+	]
+}

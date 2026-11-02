@@ -1,0 +1,50 @@
+{
+ "version": "2.2.8",
+ "songName": "Stories Of Violets Erect",
+ "artist": "SimonTheRabbit09",
+ "charter": "KamdenL2022",
+ "pause": "manuel",
+ "offsets": {
+  "vocals": {
+   "Duet": 1212120,
+   "pixelkaity-new": 1211
+  }
+ },
+ "playData": {
+  "difficulties": [
+   "erect",
+   "nightmare"
+  ],
+  "characters": {
+   "player": "pixelkaity-new",
+   "girlfriend": "Pixel Chris",
+   "opponent": "Duet",
+   "instrumental": "erect",
+   "opponentVocals": [
+    "Duet"
+   ],
+   "playerVocals": [
+    "pixelkaity-new"
+   ]
+  },
+  "stage": "schoolErect-switcheroo-erect",
+  "noteStyle": "ddtspixel",
+  "ratings": {
+   "easy": 0,
+   "hard": 0,
+   "erect": 0,
+   "player side": 0
+  },
+  "album": "volume1",
+  "previewEnd": 0
+ },
+ "generatedBy": "Friday Night Funkin' - v0.8.5",
+ "timeChanges": [
+  {
+   "t": 0,
+   "b": 0,
+   "bpm": 145,
+   "bt": [4, 4, 4, 4]
+  }
+ ]
+}

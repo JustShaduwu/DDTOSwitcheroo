@@ -1,0 +1,28 @@
+{
+  "version": "1.1.0",
+  "name": "DDTS",
+  "assetPath": "gameplay/dialogue/boxes/noone/Text_Boxes",
+  "isPixel": false,
+  "flipX": false,
+  "flipY": false,
+  "offsets": [-10, -480],
+  "scale": 1.2,
+
+  "text": {
+    "offsets": [220, 545],
+    "width": 800,
+    "color": "#FFFFFF",
+    "fontFamily": "aller",
+    "fontSize": "28",
+    "shadowColor": "#000000",
+    "shadowWidth": 1
+  },
+
+  "animations": [
+  {
+    "name": "enter",
+    "prefix": "Doki Dialogue Who",
+    "offsets": [0, 0]
+  }
+  ]
+}

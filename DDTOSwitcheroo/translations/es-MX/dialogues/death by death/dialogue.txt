@@ -1,0 +1,89 @@
+# Español (México) — death by death
+# key::texto — claves de los JSON actuales.
+
+# IntroDialogue.json
+dbdIntro1::...
+dbdIntro2::Ah... paz y tranquilidad, al fin.
+dbdIntro3::...¿bip...?
+dbdIntro4::Ah, sí. ¿En qué nos quedamos?
+dbdIntro5::Muy bien, vas a cumplir tu parte del trato, ¿no? Vamos, estoy esperando...
+dbdIntro6::*Sonidos agresivos de bip bop*
+dbdIntro7::...¿eh?
+dbdIntro8::Cómo que
+dbdIntro8.5::¿¡NO??
+dbdIntro9::*Sonidos aún más agresivos de bip bop*
+dbdIntro10::...Mmm. Es por tu novio, ¿no es asi?
+dbdIntro11::...elegiste el camino más difícil.
+dbdIntro12::Cantemos una vez más.
+dbdIntro13::Si gano, me dirás lo que quiero saber.
+dbdIntro14::Si tú ganas, todo volverá a la normalidad. Incluyendo a tu Chris. ¿Trato?
+dbdIntro15::*Bop decidido*
+dbdIntro16::...Perfecto.
+dbdIntro17::Terminemos con esto de una vez.
+
+# EndDialogue.json
+dbdEnd1::Se acabó.
+dbdEnd2::Tú... perdiste... como era de esperarse.
+dbdEnd3::Y ahora... después de todo lo que has hecho, será más difícil... Me DIRÁS lo que quiero saber.
+dbdEnd4::Y después tu y tu novio estaran juntos...
+dbdEnd5::*Bips temerosos*
+dbdEnd6::...
+dbdEnd7::...¡¡No repitas los mismos errores que yo cometí!!
+dbdEnd8::...por favor...
+dbdEnd9::...¿qué... fue eso? Yo...
+dbdEnd10::...lo siento...
+dbdEnd11::*Manuel chasquea los dedos.*
+dbdEnd12::...ja.
+dbdEnd13::De verdad soy un monstruo, ¿no?
+dbdEnd14::Oye... tú. Sentado como un perrito abandonado...
+dbdEnd15::Ah... tú...
+dbdEnd16::*Seira se sienta junto a Manuel.*
+dbdEnd17::¿Tú... estabas llorando?
+dbdEnd18::...
+dbdEnd19::...oye, oye.
+dbdEnd20::No tienes que ponerte así. Ya entendí que fue esa asquerosa mujer de cabello azul quien robó mi micrófono. No hace falta que llores...
+dbdEnd21::No se trata de eso...
+dbdEnd22::¿Eh? ¿No? Entonces, ¿por qué? ¿Pasó algo después de nuestro... poco convencional dueto?
+dbdEnd23::...me deshice de todos... Los maté a todos.
+dbdEnd24::Temporalmente, pero los maté... Y me siento horrible por eso... Me siento como un monstruo.
+dbdEnd25::Estaba tan alterado por la situación que... que simplemente hice lo primero que se me ocurrió...
+dbdEnd26::Así que... lastimé a varias personas. Lastimé a Kaity. Maté a su novio y ella estaban muy molesta conmigo...
+dbdEnd27::Solo quiero a mis amigos... Solo quiero a mi hermana... Solo quiero volver a casa... Yo...
+dbdEnd28::*Manuel comienza a llorar con más fuerza.*
+dbdEnd29::...mira.
+dbdEnd30::Voy a ser sincera contigo.
+dbdEnd31::Talvez no entiendo bien todo lo que dijiste, pero no soy tan estúpida como para no darme cuenta que estás triste.
+dbdEnd32::Puedo entender parte de lo que dices, porque tampoco soy una santa, ¿verdad? Después de todo, viste lo que ocurrió.
+dbdEnd33::...quizá no pueda ayudarte directamente, pero...
+dbdEnd34::Puedo darte consuelo... hasta cierto punto.
+dbdEnd35::...
+dbdEnd36::Sé que peleamos hace rato, pero mira... No eres tan malo. No tanto como crees.
+dbdEnd37::Ahora todos están de vuelta y se encuentran bien, así que no tienes que seguir atormentándote por cosas del pasado que ya fueron resueltas.
+dbdEnd38::¿Entiendes?
+dbdEnd39::...
+dbdEnd40::Sé de lo que hablo. He hecho muchas cosas malas en mi vida.
+dbdEnd41::También he lastimado a muchas personas, tal como dijiste.
+dbdEnd42::Pero no dejo que esos errores definan quién soy, ¿sabes? Pues me he esforzado para conseguir que las cosas sean como antes.
+dbdEnd43::O incluso mejores.
+dbdEnd44::...
+dbdEnd45::Lo siento, no soy buena consolando a la gente.
+dbdEnd46::...no... está bien...
+dbdEnd47::Yo... agradezco tu ayuda... Fue bastante reconfortante.
+dbdEnd48::Y el saber que no estoy solo en esta situación... me hace sentir más aliviado.
+dbdEnd49::Me alegra saberlo.
+dbdEnd50::*Silencio incómodo*
+dbdEnd51::...espera un segundo.
+dbdEnd52::Todo lo que ocurrió aquí...
+dbdEnd53::Este lugar, esta escuela... esta... resolución... Todo encaja...
+dbdEnd54::¿Qué pasa?
+dbdEnd55::Este es el lugar que necesitaba encontrar. Ahora todas las piezas encajan.
+dbdEnd56::¿Qué? ¿Qué piezas?
+dbdEnd57::¡Es una larga historia! ¡Pero debo irme!
+dbdEnd58::¡Espera!
+dbdEnd59::¿Eh? ¿Qué paso?
+dbdEnd60::...
+dbdEnd61::¿Es posible que volvamos a cantar? La verdad es que disfruté cantar juntos.
+dbdEnd62::No confundas esto con amistad, ¿de acuerdo? Sigues siendo molesto.
+dbdEnd63::Ja... ja. Muy bien. Cantemos otra vez.
+dbdEnd64::Talvez incluso podamos conocernos mejor.
+dbdEnd65::''Pieza por pieza''

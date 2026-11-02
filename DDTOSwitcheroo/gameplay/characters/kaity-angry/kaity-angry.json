@@ -1,0 +1,248 @@
+{
+	"danceEvery": 1,
+	"offsets": [
+		-10,
+		20
+	],
+  	"renderType": "multisparrow",
+	"version": "1.0.0",
+	"scale": 5.3,
+	"flipX": true,
+	"cameraOffsets": [
+		-60,
+		130
+	],
+	"name": "Kaity (Anrgy)",
+	"flipY": false,
+	"singTime": 2,
+	"isPixel": true,
+	"startingAnimation": "idle",
+	"assetPath": "gameplay/characters/kaity-angry/kaityangry",
+	"healthIcon": {
+		"isPixel": false,
+		"offsets": [
+			0,
+			0
+		],
+		"scale": 1,
+		"id": "Kaitypixel",
+		"flipX": false
+	},
+	"animations": [
+		{
+			"offsets": [
+				0,
+				0
+			],
+			"frameIndices": [],
+			"prefix": "idle",
+			"flipX": false,
+			"looped": false,
+			"name": "idle",
+			"flipY": false,
+			"assetPath": null,
+			"frameRate": 24
+		},
+		{
+			"offsets": [
+				0,
+				0
+			],
+			"frameIndices": [0, 1, 2, 3],
+			"prefix": "left",
+			"flipX": false,
+			"looped": false,
+			"name": "singLEFT",
+			"flipY": false,
+			"assetPath": null,
+			"frameRate": 24
+		},
+		{
+			"offsets": [
+				0,
+				0
+			],
+			"frameIndices": [0, 1, 2, 3],
+			"prefix": "right",
+			"flipX": false,
+			"looped": false,
+			"name": "singRIGHT",
+			"flipY": false,
+			"assetPath": null,
+			"frameRate": 24
+		},
+		{
+			"offsets": [
+				0,
+				0
+			],
+			"frameIndices": [0, 1, 2, 3],
+			"prefix": "up",
+			"flipX": false,
+			"looped": false,
+			"name": "singUP",
+			"flipY": false,
+			"assetPath": null,
+			"frameRate": 24
+		},
+		{
+			"offsets": [
+				0,
+				0
+			],
+			"frameIndices": [0, 1, 2, 3],
+			"prefix": "down",
+			"flipX": false,
+			"looped": false,
+			"name": "singDOWN",
+			"flipY": false,
+			"assetPath": null,
+			"frameRate": 24
+		},
+		{
+			"offsets": [
+				0,
+				0
+			],
+			"frameIndices": [0, 1, 2, 3, 4, 5],
+			"prefix": "left",
+			"flipX": false,
+			"looped": false,
+			"name": "singLEFT-hold",
+			"flipY": false,
+			"assetPath": null,
+			"frameRate": 24
+		},
+		{
+			"offsets": [
+				0,
+				0
+			],
+			"frameIndices": [0, 1, 2, 3, 4, 5],
+			"prefix": "right",
+			"flipX": false,
+			"looped": false,
+			"name": "singRIGHT-hold",
+			"flipY": false,
+			"assetPath": null,
+			"frameRate": 24
+		},
+		{
+			"offsets": [
+				0,
+				0
+			],
+			"frameIndices": [0, 1, 2, 3, 4, 5],
+			"prefix": "up",
+			"flipX": false,
+			"looped": false,
+			"name": "singUP-hold",
+			"flipY": false,
+			"assetPath": null,
+			"frameRate": 24
+		},
+		{
+			"offsets": [
+				0,
+				0
+			],
+			"frameIndices": [0, 1, 2, 3, 4, 5],
+			"prefix": "down",
+			"flipX": false,
+			"looped": false,
+			"name": "singDOWN-hold",
+			"flipY": false,
+			"assetPath": null,
+			"frameRate": 24
+		},
+		{
+			"offsets": [
+				0,
+				0
+			],
+			"frameIndices": [6, 7, 6, 7],
+			"prefix": "left",
+			"flipX": false,
+			"looped": false,
+			"name": "singLEFT-end",
+			"flipY": false,
+			"assetPath": null,
+			"frameRate": 24
+		},
+		{
+			"offsets": [
+				0,
+				0
+			],
+			"frameIndices": [6, 7, 6, 7],
+			"prefix": "right",
+			"flipX": false,
+			"looped": false,
+			"name": "singRIGHT-end",
+			"flipY": false,
+			"assetPath": null,
+			"frameRate": 24
+		},
+		{
+			"offsets": [
+				0,
+				0
+			],
+			"frameIndices": [6, 7, 6, 7],
+			"prefix": "up",
+			"flipX": false,
+			"looped": false,
+			"name": "singUP-end",
+			"flipY": false,
+			"assetPath": null,
+			"frameRate": 24
+		},
+		{
+			"offsets": [
+				0,
+				0
+			],
+			"frameIndices": [6, 7, 6, 7],
+			"prefix": "down",
+			"flipX": false,
+			"looped": false,
+			"name": "singDOWN-end",
+			"flipY": false,
+			"assetPath": null,
+			"frameRate": 24
+		},
+		{
+			"offsets": [
+				0,
+				0
+			],
+			"frameIndices": [],
+			"prefix": "dodge",
+			"flipX": false,
+			"looped": false,
+			"name": "dodge",
+			"flipY": false,
+			"assetPath": null,
+			"frameRate": 24
+		},
+    {
+      "name": "firstDeath",
+      "prefix": "DokiGameOverIntro",
+      "assetPath": "gameOver/DokiGameOver",
+      "offsets": [-48, 151]
+    },
+    {
+      "name": "deathLoop",
+      "prefix": "DokiGameOverLoop",
+      "assetPath": "gameOver/DokiGameOver",
+      "looped": true,
+      "offsets": [-72, 137]
+    },
+    {
+      "name": "deathConfirm",
+      "prefix": "DokiGameOverConfirm",
+      "assetPath": "gameOver/DokiGameOver",
+      "offsets": [-52, 153]
+    }
+	]
+}

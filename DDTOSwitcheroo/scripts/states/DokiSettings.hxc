@@ -1,0 +1,1502 @@
+package switcheroo.states;
+
+import haxe.ds.StringMap;
+
+import lime.utils.Assets;
+
+import flixel.FlxG;
+import flixel.FlxSprite;
+
+import flixel.addons.display.FlxBackdrop;
+import flixel.addons.display.FlxRuntimeShader;
+
+import flixel.math.FlxMath;
+
+import flixel.text.FlxText;
+import flixel.text.FlxTextBorderStyle;
+
+import flixel.tweens.FlxEase;
+import flixel.tweens.FlxTween;
+
+import flixel.util.FlxColor;
+import flixel.util.FlxSave;
+
+import funkin.Paths;
+import funkin.PlayerSettings;
+
+import funkin.audio.FunkinSound;
+
+import funkin.ui.MusicBeatSubState;
+import funkin.ui.ScriptedMusicBeatState;
+
+
+class DokiSettings extends MusicBeatSubState
+{
+
+    var save:FlxSave;
+
+
+    public function getProp(
+        name:String
+    ):Any
+    {
+        return save.data.dokiProps.get(
+            name
+        );
+    }
+
+
+    public function setDokiProperty(
+        name:String,
+        value:Any
+    )
+    {
+        return save.data.dokiProps.set(
+            name,
+            value
+        );
+    }
+
+
+    var PAGE_SIZE:Int = 8;
+
+
+    var settingsList:Array<Dynamic> =
+        [];
+
+
+    var curPage:Int = 0;
+
+    var curSelection:Int = 0;
+
+    var insideCategory:Bool =
+        false;
+
+    var pad:funkin.input.Controls;
+
+    var backdrop:FlxBackdrop;
+
+    var logo:FlxSprite;
+
+    var logoBump:FlxSprite;
+
+
+    var displayTexts:Array<FlxText> =
+        [];
+
+
+    var descriptionText:FlxText;
+
+    var blackBorder:FlxSprite;
+
+    var defaultColor:FlxColor =
+        0xFF1A5057;
+
+
+    var selectedColor:FlxColor =
+        0xFF37D3D5;
+
+    public function createMenus():Void
+    {
+        settingsList =
+            [];
+
+        if (save == null)
+        {
+            save =
+                new FlxSave();
+
+
+            save.bind(
+                'ddto'
+            );
+        }
+
+        if (
+            save.data.dokiProps == null ||
+            !Std.isOfType(
+                save.data.dokiProps,
+                StringMap
+            )
+        )
+        {
+            save.data.dokiProps =
+                new StringMap();
+        }
+
+        var setHud =
+            createPage(
+                'DDTO HUD SETTINGS'
+            );
+
+
+        setHud.items.push(
+            createBoolToggle(
+                'Judgement counter',
+                'ddtoNoteCounter',
+                'Do you want to enable the judgement counter?',
+                true
+            )
+        );
+
+
+        setHud.items.push(
+            createBoolToggle(
+                'Lane Underlay',
+                'ddtoUnderlay',
+                'Do you want to enable the lane underlay?',
+                true
+            )
+        );
+
+
+        setHud.items.push(
+            createFloatToggle(
+                'Underlay alpha',
+                'ddtoUnderlayAlpha',
+                'Set how transparent the lane underlay is.',
+                0.3,
+                0,
+                1,
+                0.01
+            )
+        );
+
+
+        setHud.items.push(
+            createBoolToggle(
+                'Early/Late text',
+                'noteDelay',
+                'Do you want to display the Early/Late indicator?',
+                true
+            )
+        );
+
+
+        setHud.items.push(
+            createBoolToggle(
+                'Display note Delays in ms',
+                'noteMs',
+                'Do you want to display raw ms time for Early/Late?',
+                true
+            )
+        );
+
+
+        setHud.items.push(
+            createListToggle(
+                'Main font',
+                'UIFont',
+                'What font should the UI use?',
+                'Aller.ttf',
+                [
+                    'Aller.ttf',
+                    'Journal.ttf',
+                    'Halogen.otf'
+                ]
+            )
+        );
+
+
+        setHud.items.push(
+            createListToggle(
+                'Timebar Display text',
+                'timeTxt_type',
+                'Changes what the time bar displays.',
+                'Time Left',
+                [
+                    'Time Left',
+                    'Time Elapsed',
+                    'Song progress',
+                    'Song name',
+                    'No Timebar'
+                ]
+            )
+        );
+
+        var setNotes =
+            createPage(
+                'NOTE HIT SETTINGS'
+            );
+
+
+        setNotes.items.push(
+            createBoolToggle(
+                'Note Sounds',
+                'hitSound',
+                'Do you want hitsounds?',
+                true
+            )
+        );
+
+
+        setNotes.items.push(
+            createBoolToggle(
+                'Judge Notes',
+                'judgeHitSound',
+                'Do you want hitsounds to depend on ratings?',
+                true
+            )
+        );
+
+
+        setNotes.items.push(
+            createListToggle(
+                'Judge Notes Rating',
+                'judgeMinimum',
+                'How many judgements will have hitsounds?',
+                'Sick',
+                [
+                    'Sick',
+                    'Good',
+                    'Bad'
+                ]
+            )
+        );
+
+
+        setNotes.items.push(
+            createFloatToggle(
+                'Note Sound Volume',
+                'hitSoundVolume',
+                'Hitsound volume.',
+                0.3,
+                0,
+                1,
+                0.01
+            )
+        );
+
+        var setScore =
+            createPage(
+                'SCORE BAR SETTINGS'
+            );
+
+
+        setScore.items.push(
+            createBoolToggle(
+                'DDTO score',
+                'customScoreBarText',
+                'Do you want to replace the score text with the DDTO version?',
+                true
+            )
+        );
+
+
+        setScore.items.push(
+            createBoolToggle(
+                'NPS counter',
+                'npsEnabled',
+                'Do you want to enable NPS?',
+                true
+            )
+        );
+
+        var setPsych =
+            createPage(
+                'PSYCH UTILS'
+            );
+
+
+        setPsych.items.push(
+            createFloatToggle(
+                'Scroll Speed',
+                'psych_scroll',
+                'Changes your scroll speed. 1 uses the chart speed.',
+                1,
+                1,
+                4,
+                0.05
+            )
+        );
+
+
+        setPsych.items.push(
+            createBoolToggle(
+                'Middle Scroll',
+                'psych_middlescroll',
+                'Centers the player strumline.',
+                false
+            )
+        );
+
+
+        setPsych.items.push(
+            createBoolToggle(
+                'Enhance Pause Menu',
+                'psych_pause',
+                'Adds BotPlay and Practice Mode controls to the pause menu.',
+                false
+            )
+        );
+
+        settingsList.push(
+            setHud
+        );
+
+
+        settingsList.push(
+            setMirror
+        );
+
+
+        settingsList.push(
+            setNotes
+        );
+
+
+        settingsList.push(
+            setScore
+        );
+
+
+        settingsList.push(
+            setPsych
+        );
+    }
+
+    override function create():Void
+    {
+        super.create();
+
+
+        pad =
+            PlayerSettings.player1.controls;
+
+
+        createMenus();
+
+        createBackdrop();
+
+        createLogo();
+
+        createDisplayTexts();
+
+        createDescriptionBar();
+
+        insideCategory =
+            false;
+
+
+        curSelection =
+            0;
+
+
+        renderRootMenu();
+    }
+
+    function createBackdrop():Void
+    {
+        backdrop =
+            new FlxBackdrop(
+                Paths.image(
+                    'scrollingBG'
+                )
+            );
+
+
+        backdrop.velocity.set(
+            -40,
+            -40
+        );
+
+
+        backdrop.antialiasing =
+            true;
+
+        var colorMask:FlxRuntimeShader =
+            new FlxRuntimeShader(
+                Assets.getText(
+                    Paths.frag(
+                        'ColorMaskShader'
+                    )
+                )
+            );
+
+
+        colorMask.data.color1.value =
+        [
+            0.99215686274,
+            1.0,
+            1.0
+        ];
+
+
+        colorMask.data.color2.value =
+        [
+            0.49803921568,
+            0.92941176470,
+            0.94117647058
+        ];
+
+
+        backdrop.shader =
+            colorMask;
+
+
+        add(
+            backdrop
+        );
+    }
+
+
+    function createLogo():Void
+    {
+        logo =
+            new FlxSprite(
+                -60,
+                0
+            );
+
+
+        logo.loadGraphic(
+            Paths.image(
+                'Credits_LeftSide'
+            )
+        );
+
+
+        logo.antialiasing =
+            true;
+
+
+        add(
+            logo
+        );
+
+        logoBump =
+            new FlxSprite(
+                40,
+                -40
+            );
+
+
+        logoBump.frames =
+            Paths.getSparrowAtlas(
+                'Start_Screen_AssetsPlus'
+            );
+
+
+        logoBump.antialiasing =
+            true;
+
+
+        logoBump.scale.set(
+            0.5,
+            0.5
+        );
+
+
+        logoBump.animation.addByPrefix(
+            'bump',
+            'logo bumpin',
+            24,
+            false
+        );
+
+
+        logoBump.animation.play(
+            'bump',
+            true
+        );
+
+
+        logoBump.updateHitbox();
+
+
+        add(
+            logoBump
+        );
+    }
+
+    function createDisplayTexts():Void
+    {
+        displayTexts =
+            [];
+
+
+        for (
+            i in
+            0...PAGE_SIZE
+        )
+        {
+            var option =
+                new FlxText(
+                    460,
+                    20 + (45 * i),
+                    0,
+                    '',
+                    36
+                );
+
+
+            option.setFormat(
+                Paths.font(
+                    'riffic.ttf'
+                ),
+                36,
+                FlxColor.WHITE,
+                'center'
+            );
+
+
+            option.setBorderStyle(
+                FlxTextBorderStyle.OUTLINE,
+                defaultColor,
+                2
+            );
+
+
+            option.antialiasing =
+                true;
+
+
+            option.ID =
+                i;
+
+
+            displayTexts.push(
+                option
+            );
+
+
+            add(
+                option
+            );
+        }
+    }
+
+
+    function createDescriptionBar():Void
+    {
+        descriptionText =
+            new FlxText(
+                5,
+                FlxG.height + 40,
+                0,
+                '',
+                16
+            );
+
+
+        descriptionText.scrollFactor.set();
+
+
+        descriptionText.setFormat(
+            Paths.font(
+                'Aller_Rg.ttf'
+            ),
+            16,
+            FlxColor.WHITE,
+            'left',
+            FlxTextBorderStyle.OUTLINE,
+            FlxColor.BLACK
+        );
+
+
+        descriptionText.antialiasing =
+            true;
+
+        blackBorder =
+            new FlxSprite(
+                0,
+                FlxG.height + 40
+            );
+
+
+        blackBorder.makeGraphic(
+            FlxG.width,
+            Std.int(
+                descriptionText.height +
+                600
+            ),
+            FlxColor.BLACK
+        );
+
+
+        blackBorder.alpha =
+            0.5;
+
+
+        add(
+            blackBorder
+        );
+
+
+        add(
+            descriptionText
+        );
+
+        FlxTween.tween(
+            descriptionText,
+            {
+                y:
+                    FlxG.height -
+                    22
+            },
+            2,
+            {
+                ease:
+                    FlxEase.elasticInOut
+            }
+        );
+
+
+        FlxTween.tween(
+            blackBorder,
+            {
+                y:
+                    FlxG.height -
+                    22
+            },
+            2,
+            {
+                ease:
+                    FlxEase.elasticInOut
+            }
+        );
+    }
+
+
+    override function update(
+        elapsed:Float
+    ):Void
+    {
+        super.update(
+            elapsed
+        );
+
+        if (
+            pad.UI_UP_P ||
+            pad.UI_DOWN_P
+        )
+        {
+            var direction:Int =
+                pad.UI_UP_P
+                    ? -1
+                    : 1;
+
+
+            changeSelection(
+                direction
+            );
+        }
+
+
+        if (insideCategory)
+        {
+            if (pad.UI_LEFT_P)
+            {
+                shiftValue(
+                    -1
+                );
+            }
+            else if (pad.UI_RIGHT_P)
+            {
+                shiftValue(
+                    1
+                );
+            }
+        }
+
+        if (pad.ACCEPT_P)
+        {
+            if (!insideCategory)
+            {
+                enterCategory();
+            }
+        }
+
+
+        if (pad.BACK_P)
+        {
+            handleBack();
+        }
+    }
+
+    function renderRootMenu():Void
+    {
+        insideCategory =
+            false;
+
+        for (
+            i in
+            0...PAGE_SIZE
+        )
+        {
+            var text =
+                displayTexts[i];
+
+
+            if (
+                i <
+                settingsList.length
+            )
+            {
+                text.text =
+                    settingsList[i].name;
+
+
+                text.visible =
+                    true;
+
+
+                text.alpha =
+                    0.8;
+            }
+            else
+            {
+                text.text =
+                    '';
+
+
+                text.visible =
+                    false;
+            }
+        }
+
+
+        updateSelectionVisuals();
+
+
+        refreshDescription();
+    }
+
+    function enterCategory():Void
+    {
+        if (
+            curSelection < 0 ||
+            curSelection >=
+            settingsList.length
+        )
+        {
+            return;
+        }
+
+
+        FunkinSound.playOnce(
+            Paths.sound(
+                'confirmMenu'
+            )
+        );
+
+        curPage =
+            curSelection;
+
+
+        insideCategory =
+            true;
+
+
+        curSelection =
+            0;
+
+
+        renderCurrentCategory();
+    }
+
+
+    function renderCurrentCategory():Void
+    {
+        if (
+            curPage < 0 ||
+            curPage >=
+            settingsList.length
+        )
+        {
+            return;
+        }
+
+
+        var page =
+            settingsList[
+                curPage
+            ];
+
+
+        for (
+            i in
+            0...PAGE_SIZE
+        )
+        {
+            var text =
+                displayTexts[i];
+
+
+            if (
+                i <
+                page.items.length
+            )
+            {
+                renderItem(
+                    page.items[i],
+                    text
+                );
+
+
+                text.visible =
+                    true;
+
+
+                text.alpha =
+                    0.8;
+            }
+            else
+            {
+                text.text =
+                    '';
+
+
+                text.visible =
+                    false;
+            }
+        }
+
+
+        updateSelectionVisuals();
+
+
+        refreshDescription();
+    }
+
+    function changeSelection(
+        amount:Int = 0
+    ):Void
+    {
+        var count:Int;
+        if (!insideCategory)
+        {
+            count =
+                settingsList.length;
+        }
+        else
+        {
+            count =
+                settingsList[
+                    curPage
+                ].items.length;
+        }
+
+
+        if (count <= 0)
+        {
+            return;
+        }
+
+
+        curSelection =
+            FlxMath.wrap(
+                curSelection +
+                amount,
+                0,
+                count - 1
+            );
+
+
+        if (amount != 0)
+        {
+            FunkinSound.playOnce(
+                Paths.sound(
+                    'scrollMenu'
+                )
+            );
+        }
+
+
+        updateSelectionVisuals();
+
+
+        refreshDescription();
+    }
+
+
+    function updateSelectionVisuals():Void
+    {
+        for (
+            i in
+            0...displayTexts.length
+        )
+        {
+            var text =
+                displayTexts[i];
+
+
+            if (
+                text == null ||
+                !text.visible ||
+                text.text == ''
+            )
+            {
+                continue;
+            }
+
+
+            var selected:Bool =
+                i ==
+                curSelection;
+
+
+            text.setBorderStyle(
+                FlxTextBorderStyle.OUTLINE,
+
+                selected
+                    ? selectedColor
+                    : defaultColor,
+
+                2
+            );
+
+
+            text.alpha =
+                selected
+                    ? 1
+                    : 0.8;
+        }
+    }
+
+    function handleBack():Void
+    {
+        FunkinSound.playOnce(
+            Paths.sound(
+                'cancelMenu'
+            )
+        );
+
+        if (insideCategory)
+        {
+            curSelection =
+                curPage;
+
+
+            insideCategory =
+                false;
+
+
+            renderRootMenu();
+
+
+            return;
+        }
+
+        save.flush();
+
+
+        FlxG.switchState(
+            ScriptedMusicBeatState.init(
+                'switcheroo.states.SwitcherooMainMenuState'
+            )
+        );
+    }
+
+
+    function shiftValue(
+        step:Int
+    ):Void
+    {
+        if (!insideCategory)
+        {
+            return;
+        }
+
+
+        if (
+            curPage < 0 ||
+            curPage >=
+            settingsList.length
+        )
+        {
+            return;
+        }
+
+
+        var page =
+            settingsList[
+                curPage
+            ];
+
+
+        if (
+            curSelection < 0 ||
+            curSelection >=
+            page.items.length
+        )
+        {
+            return;
+        }
+
+
+        var item =
+            page.items[
+                curSelection
+            ];
+
+
+        if (item == null)
+        {
+            return;
+        }
+
+
+        switch (item.type)
+        {
+            case 'bool':
+
+                var curVal:Bool =
+                    getProp(
+                        item.varName
+                    );
+
+
+                setDokiProperty(
+                    item.varName,
+                    !curVal
+                );
+
+            case 'float':
+
+                var curVal:Float =
+                    getProp(
+                        item.varName
+                    );
+
+
+                var newVal:Float =
+                    FlxMath.bound(
+                        curVal +
+                        (
+                            item.valStep *
+                            step
+                        ),
+                        item.minVal,
+                        item.maxVal
+                    );
+
+                newVal =
+                    Math.round(
+                        newVal *
+                        1000
+                    ) /
+                    1000;
+
+
+                setDokiProperty(
+                    item.varName,
+                    newVal
+                );
+
+            case 'list':
+
+                var curValue:String =
+                    getProp(
+                        item.varName
+                    );
+
+
+                var currentIndex:Int =
+                    item.values.indexOf(
+                        curValue
+                    );
+
+
+                if (currentIndex < 0)
+                {
+                    currentIndex =
+                        0;
+                }
+
+
+                var newIndex:Int =
+                    FlxMath.wrap(
+                        currentIndex +
+                        step,
+                        0,
+                        item.values.length -
+                        1
+                    );
+
+
+                item.curIndex =
+                    newIndex;
+
+
+                setDokiProperty(
+                    item.varName,
+                    item.values[
+                        newIndex
+                    ]
+                );
+        }
+
+        renderItem(
+            item,
+            displayTexts[
+                curSelection
+            ]
+        );
+
+
+        updateSelectionVisuals();
+
+
+        refreshDescription();
+
+
+        FunkinSound.playOnce(
+            Paths.sound(
+                'scrollMenu'
+            )
+        );
+    }
+
+    function renderItem(
+        item:Dynamic,
+        text:FlxText
+    ):Void
+    {
+        if (
+            item == null ||
+            text == null
+        )
+        {
+            return;
+        }
+
+
+        var value =
+            getProp(
+                item.varName
+            );
+
+
+        switch (item.type)
+        {
+            case 'bool':
+
+                text.text =
+                    item.ItemName +
+                    (
+                        value
+                            ? ' On'
+                            : ' Off'
+                    );
+
+
+            case 'float':
+
+                text.text =
+                    item.ItemName +
+                    ' ' +
+                    value;
+
+
+            case 'list':
+
+                text.text =
+                    item.ItemName +
+                    ' < ' +
+                    value +
+                    ' >';
+        }
+
+
+        text.updateHitbox();
+    }
+
+    function refreshDescription():Void
+    {
+        if (descriptionText == null)
+        {
+            return;
+        }
+
+        if (!insideCategory)
+        {
+            if (
+                curSelection >= 0 &&
+                curSelection <
+                settingsList.length
+            )
+            {
+                descriptionText.text =
+                    'Select ' +
+                    settingsList[
+                        curSelection
+                    ].name +
+                    '.';
+            }
+            else
+            {
+                descriptionText.text =
+                    'Select a settings category.';
+            }
+
+
+            return;
+        }
+
+        var page =
+            settingsList[
+                curPage
+            ];
+
+
+        if (
+            curSelection < 0 ||
+            curSelection >=
+            page.items.length
+        )
+        {
+            descriptionText.text =
+                '';
+
+
+            return;
+        }
+
+
+        var item =
+            page.items[
+                curSelection
+            ];
+
+
+        descriptionText.text =
+            getDisplayValue(
+                item
+            ) +
+            ' | ' +
+            item.description;
+    }
+
+    function getDisplayValue(
+        item:Dynamic
+    ):String
+    {
+        if (item == null)
+        {
+            return '';
+        }
+
+
+        var value =
+            getProp(
+                item.varName
+            );
+
+
+        switch (item.type)
+        {
+            case 'bool':
+
+                return value
+                    ? 'On'
+                    : 'Off';
+
+
+            case 'float':
+
+                return Std.string(
+                    value
+                );
+
+
+            case 'list':
+
+                return Std.string(
+                    value
+                );
+        }
+
+
+        return '';
+    }
+
+
+    override function beatHit():Void
+    {
+        super.beatHit();
+
+
+        if (
+            logoBump != null &&
+            logoBump.animation != null
+        )
+        {
+            logoBump.animation.play(
+                'bump',
+                true
+            );
+        }
+    }
+
+
+    function createPage(
+        name:String
+    ):Dynamic
+    {
+        return {
+            name:
+                name,
+
+            items:
+                []
+        };
+    }
+
+    public function createBoolToggle(
+        nameArg:String,
+        varName:String,
+        description:String,
+        defaultVal:Bool
+    ):Dynamic
+    {
+        var curVal =
+            getProp(
+                varName
+            );
+
+
+        if (
+            curVal == null ||
+            !Std.isOfType(
+                curVal,
+                Bool
+            )
+        )
+        {
+            setDokiProperty(
+                varName,
+                defaultVal
+            );
+        }
+
+
+        return {
+            ItemName:
+                nameArg,
+
+            varName:
+                varName,
+
+            description:
+                description,
+
+            type:
+                'bool'
+        };
+    }
+
+    public function createFloatToggle(
+        nameArg:String,
+        varName:String,
+        description:String,
+        defaultVal:Float,
+        minVal:Float,
+        maxVal:Float,
+        valStep:Float
+    ):Dynamic
+    {
+        var curVal =
+            getProp(
+                varName
+            );
+
+
+        if (
+            curVal == null ||
+            !Std.isOfType(
+                curVal,
+                Float
+            )
+        )
+        {
+            setDokiProperty(
+                varName,
+                defaultVal
+            );
+        }
+
+
+        return {
+            ItemName:
+                nameArg,
+
+            varName:
+                varName,
+
+            description:
+                description,
+
+            minVal:
+                minVal,
+
+            maxVal:
+                maxVal,
+
+            valStep:
+                valStep,
+
+            type:
+                'float'
+        };
+    }
+
+    public function createListToggle(
+        nameArg:String,
+        varName:String,
+        description:String,
+        defaultVal:String,
+        values:Array<String>
+    ):Dynamic
+    {
+        var curVal =
+            getProp(
+                varName
+            );
+
+
+        if (
+            curVal == null ||
+            !Std.isOfType(
+                curVal,
+                String
+            ) ||
+            values.indexOf(
+                curVal
+            ) == -1
+        )
+        {
+            curVal =
+                defaultVal;
+
+
+            setDokiProperty(
+                varName,
+                defaultVal
+            );
+        }
+
+
+        return {
+            ItemName:
+                nameArg,
+
+            varName:
+                varName,
+
+            description:
+                description,
+
+            values:
+                values,
+
+            curIndex:
+                values.indexOf(
+                    curVal
+                ),
+
+            type:
+                'list'
+        };
+    }
+}

@@ -1,0 +1,5 @@
+Bienvenido al explorador de Switcheroo.
+
+Este archivo es real: puedes editarlo en data/files/content/welcome.txt.
+
+La estructura visible de carpetas se define en data/files/explorer.json.

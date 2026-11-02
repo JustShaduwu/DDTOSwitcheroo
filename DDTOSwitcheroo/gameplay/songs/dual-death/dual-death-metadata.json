@@ -1,0 +1,48 @@
+{
+ "version": "2.2.8",
+ "songName": "Dual Death",
+ "artist": "Shaduwu / StardustTunes",
+ "charter": "KamdenL2022",
+ "pause": "manuel-angry",
+ "offsets": {
+  "altInstrumentals": {
+   "DDTO": 0
+  }
+ },
+ "playData": {
+  "stickerPack": "switcheroo-prologue-alt",
+  "difficulties": [
+   "easy", "normal", "hard"
+  ],
+  "characters": {
+   "player": "kaity-angry",
+   "girlfriend": "nospeakers",
+   "opponent": "manuel-pixel",
+   "altInstrumentals": [
+    "DDTO"
+   ],
+   "opponentVocals": [
+    "manuel-pixel"
+   ],
+   "playerVocals": [
+    "kaity-angry"
+   ]
+  },
+  "stage": "schoolErect-switcheroo",
+  "noteStyle": "glitch-ddtspixel",
+  "ratings": {
+   "hard": 10
+  },
+  "album": "switcheroo",
+  "previewEnd": 0
+ },
+ "generatedBy": "Friday Night Funkin' - v0.8.5",
+ "timeChanges": [
+  {
+   "t": 0,
+   "b": 0,
+   "bpm": 190,
+   "bt": [4, 4, 4, 4]
+  }
+ ]
+}

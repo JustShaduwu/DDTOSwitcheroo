@@ -1,0 +1,49 @@
+{
+    "popups": [
+        {
+            "key": "prologue",
+            "childs": [
+                {
+                    "key": "popup_prologue_complete",
+                    "style": "normal",
+                    "message": "Prologue songs are now available in the Freeplay menu."
+                },
+                {
+                    "key": "popup_prologue_lyrics",
+                    "style": "normal",
+                    "message": "A special version of <Q>Piece By Piece<Q> has been unlocked!<N>Check it out in the Freeplay menu."
+                },
+                {
+                    "key": "popup_prologue_test",
+                    "style": "normal",
+                    "message": "<Q>Test (Manu Mix)<Q> unlocked!<N>Access the song in the Freeplay menu."
+                },
+                {
+                    "key": "popup_prologue_extra1",
+                    "style": "normal",
+                    "message": "<Q>Poems n' Pollen<Q> unlocked!<N>Access the song in the Freeplay menu."
+                },
+                {
+                    "key": "popup_prologue_extra2",
+                    "style": "normal",
+                    "message": "<Q>Shinkyoku<Q> unlocked!<N>Access the song in the Freeplay menu."
+                },
+                {
+                    "key": "popup_prologue_extra3",
+                    "style": "normal",
+                    "message": "<Q>Dual Death<Q> unlocked!<N>Access the song in the Freeplay menu."
+                },
+                {
+                    "key": "popup_prologue_credits",
+                    "style": "normal",
+                    "message": "The credits are now accessible<N>on the main menu!"
+                },
+                {
+                    "key": "popup_prologue_gallery",
+                    "style": "normal",
+                    "message": "New art unlocked in the Desktop."
+                }
+            ]
+        }
+    ]
+}

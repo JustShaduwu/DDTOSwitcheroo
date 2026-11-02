@@ -1,0 +1,871 @@
+import funkin.play.PlayState;
+import funkin.data.event.SongEventRegistry;
+import funkin.Paths;
+import StringTools;
+import flixel.addons.display.FlxBackdrop; 
+import funkin.play.song.Song;
+import funkin.play.Countdown;
+import flixel.util.FlxTimer;
+import flixel.tweens.FlxEase;
+import flixel.tweens.FlxTween;
+
+import flixel.FlxSprite;
+import flixel.FlxCamera;
+import flixel.FlxG;
+import flixel.util.FlxColor;
+
+import funkin.graphics.video.FunkinVideoSprite;
+
+class PieceByPieceLyricsSong extends Song
+{
+    var lyricsCues:Array<Dynamic> = [];
+    var nextLyricsCue:Int = 0;
+    var lyricsTimelineReady:Bool = false;
+
+    var panoramicActive:Bool = false;
+    var panoramicCharacters:Array<Dynamic> = [];
+
+    var camMusicVideo:FlxCamera = null;
+
+    function getMusicVideoCamera():FlxCamera
+    {
+        
+        if (camMusicVideo != null && FlxG.cameras.list.indexOf(camMusicVideo) >= 0)
+            return camMusicVideo;
+
+        camMusicVideo = new FlxCamera(0, 0, FlxG.width, FlxG.height, 1);
+        camMusicVideo.bgColor = 0x00000000;
+        camMusicVideo.scroll.set(0, 0);
+        
+        var play = PlayState.instance;
+        var hudIndex = play == null ? -1 : FlxG.cameras.list.indexOf(play.camHUD);
+        if (hudIndex >= 0)
+            FlxG.cameras.insert(camMusicVideo, hudIndex, false);
+        else
+            FlxG.cameras.add(camMusicVideo, false);
+        return camMusicVideo;
+    }
+
+    var flashSprite:FlxSprite = null;
+
+    var stageVideoBackground:FlxSprite = null;
+
+    function clearStageVideoBackground():Void
+    {
+        if (stageVideoBackground == null) return;
+        var bg = stageVideoBackground;
+        stageVideoBackground = null;
+        FlxTween.cancelTweensOf(bg);
+        var play = PlayState.instance;
+        if (play != null && play.currentStage != null) play.currentStage.remove(bg, true);
+        bg.destroy();
+    }
+
+    function layoutStageVideoBackground():Void
+    {
+        if (stageVideoBackground == null || PlayState.instance == null) return;
+        var camera = PlayState.instance.camGame;
+        var bg = stageVideoBackground;
+        var zoom = Math.max(0.01, camera.zoom);
+        bg.scale.set(camera.width * 2 / zoom, camera.height * 2 / zoom);
+        bg.updateHitbox();
+        bg.setPosition((camera.width - bg.width) / 2, (camera.height - bg.height) / 2);
+    }
+
+    function showStageVideoBackground(duration:Float = 1.67):Void
+    {
+        clearStageVideoBackground();
+        var play = PlayState.instance;
+        if (play == null || play.currentStage == null) return;
+        var stage = play.currentStage;
+        var girlfriend = stage.getGirlfriend();
+        var dad = stage.getDad();
+        var boyfriend = stage.getBoyfriend();
+        var backLayer = girlfriend == null ? 100 : girlfriend.zIndex;
+        var frontLayer = Math.min(dad == null ? 200 : dad.zIndex, boyfriend == null ? 300 : boyfriend.zIndex);
+        var bg = new FlxSprite();
+        bg.makeGraphic(1, 1, FlxColor.BLACK);
+        bg.cameras = [play.camGame];
+        bg.scrollFactor.set(0, 0);
+        bg.zIndex = Std.int((backLayer + frontLayer) / 2) - 1;
+        bg.alpha = 0;
+        stageVideoBackground = bg;
+        layoutStageVideoBackground();
+        stage.add(bg);
+        stage.refresh();
+        FlxTween.tween(bg, {alpha: 1}, Math.max(0.001, duration), {ease: FlxEase.quadInOut});
+    }
+
+    function hideStageVideoBackground(duration:Float = 2.67):Void
+    {
+        if (stageVideoBackground == null) return;
+        var bg = stageVideoBackground;
+        FlxTween.cancelTweensOf(bg);
+        FlxTween.tween(bg, {alpha: 0}, Math.max(0.001, duration), {
+            ease: FlxEase.quadInOut,
+            onComplete: function(tween:FlxTween) {
+                if (stageVideoBackground == bg) clearStageVideoBackground();
+            }
+        });
+    }
+
+    var stageVideo:FunkinVideoSprite = null;
+    var stageVideoFade:FlxTween = null;
+    var stageVideoTransitionDuration:Float = 1.67;
+    var stageVideoNeedsLayout:Bool = false;
+    var stageVideoWidth:Int = 0;
+    var stageVideoX:Float = 0;
+    var stageVideoY:Float = 0;
+
+    function panoramic(enabled:Bool):Void
+    {
+        panoramicActive = enabled;
+        if (enabled)
+        {
+            updatePanoramic();
+            return;
+        }
+        for (saved in panoramicCharacters)
+            if (saved.character != null && saved.character.exists)
+                saved.character.visible = saved.visible;
+        panoramicCharacters = [];
+    }
+
+
+function showStageVideo(
+    path:String,
+    x:Float = 0,
+    y:Float = 0,
+    width:Int = 0,
+    zIndex:Int = -1
+):Void
+{
+    var play = PlayState.instance;
+    if (play == null || play.currentStage == null) return;
+
+    
+    stopStageVideo();
+
+    var stage = play.currentStage;
+    var video = new FunkinVideoSprite(x, y);
+
+    stageVideo = video;
+
+    stageVideoWidth = width;
+    stageVideoX = x;
+    stageVideoY = y;
+    stageVideoNeedsLayout = false;
+    
+    var girlfriend = stage.getGirlfriend();
+    var dad = stage.getDad();
+    var boyfriend = stage.getBoyfriend();
+    var backLayer = girlfriend == null ? 100 : girlfriend.zIndex;
+    var frontLayer = Math.min(dad == null ? 200 : dad.zIndex,
+        boyfriend == null ? 300 : boyfriend.zIndex);
+    video.zIndex = zIndex < 0 ? Std.int((backLayer + frontLayer) / 2) : zIndex;
+    video.scrollFactor.set(1, 1);
+    video.cameras = [play.camGame];
+
+    video.bitmap.onFormatSetup.add(function():Void
+    {
+        
+        
+        if (stageVideo == video) stageVideoNeedsLayout = true;
+    });
+
+    
+    video.bitmap.onEndReached.add(function():Void
+    {
+        if (stageVideo == video)
+            stopStageVideo();
+    });
+
+    
+    
+    stage.add(video);
+    stage.refresh();
+
+    
+    
+    if (video.load(Paths.file(path), [':no-audio']))
+    {
+        video.play();
+    }
+    else
+    {
+        stopStageVideo();
+    }
+}
+
+function layoutStageVideo():Void
+{
+    var video = stageVideo;
+    var play = PlayState.instance;
+    if (!stageVideoNeedsLayout || video == null || play == null
+        || video.frameWidth <= 0 || video.frameHeight <= 0) return;
+    var camera = play.camGame;
+    var zoom = Math.max(0.01, camera.zoom);
+    var factor:Float;
+    if (stageVideoWidth > 0)
+        factor = stageVideoWidth / video.frameWidth;
+    else
+        factor = Math.min(camera.width * 1.2/ zoom / video.frameWidth,
+            camera.height * 1.2 / zoom / video.frameHeight);
+    video.scale.set(factor, factor);
+    video.updateHitbox();
+    if (stageVideoWidth > 0)
+        video.setPosition(stageVideoX, stageVideoY);
+    else
+        video.setPosition(camera.scroll.x + camera.width / 2 - video.width / 2 + stageVideoX,
+            camera.scroll.y + camera.height / 2 - video.height / 2 + stageVideoY);
+    stageVideoNeedsLayout = false;
+}
+
+
+public function fadeStageVideo(duration:Float = 1.0, targetAlpha:Float = 0.0, removeWhenHidden:Bool = true):Void
+{
+    if (stageVideo == null) return;
+    if (stageVideoFade != null) { stageVideoFade.cancel(); stageVideoFade = null; }
+    var video = stageVideo;
+    var target = Math.max(0, Math.min(1, targetAlpha));
+    if (duration <= 0)
+    {
+        video.alpha = target;
+        if (target == 0 && removeWhenHidden) stopStageVideo();
+        return;
+    }
+    stageVideoFade = FlxTween.tween(video, {alpha: target}, duration, {
+        ease: FlxEase.quadInOut,
+        onComplete: function(tween:FlxTween)
+        {
+            stageVideoFade = null;
+            if (stageVideo == video && target == 0 && removeWhenHidden) stopStageVideo();
+        }
+    });
+}
+
+public function stopStageVideo():Void
+{
+    if (stageVideoFade != null) { stageVideoFade.cancel(); stageVideoFade = null; }
+    stageVideoNeedsLayout = false;
+    if (stageVideo == null) return;
+
+    var video = stageVideo;
+    stageVideo = null;
+
+    video.stop();
+
+    var play = PlayState.instance;
+
+    if (play != null && play.currentStage != null)
+        play.currentStage.remove(video, true);
+
+    video.destroy();
+}
+
+
+    function updatePanoramic():Void
+    {
+        if (!panoramicActive) return;
+        var play = PlayState.instance;
+        if (play == null || play.currentStage == null) return;
+        var stage = play.currentStage;
+        for (character in [stage.getDad(), stage.getBoyfriend(), stage.getGirlfriend()])
+        {
+            if (character == null || !character.exists) continue;
+            var tracked = false;
+            for (saved in panoramicCharacters)
+                if (saved.character == character) tracked = true;
+            if (!tracked) panoramicCharacters.push({character: character, visible: character.visible});
+            character.visible = false;
+        }
+    }
+
+
+function flashTransition(
+    color:FlxColor = FlxColor.WHITE,
+    fadeIn:Float = 0.05,
+    fadeOut:Float = 0.5
+):Void
+{
+    var play = PlayState.instance;
+    if (play == null) return;
+
+    
+    clearFlash();
+
+    flashSprite = new FlxSprite(0, 0);
+    flashSprite.makeGraphic(
+        FlxG.width,
+        FlxG.height,
+        color
+    );
+
+    flashSprite.cameras = [getMusicVideoCamera()];
+    flashSprite.scrollFactor.set(0, 0);
+    flashSprite.alpha = 0;
+
+    
+    flashSprite.zIndex = 10000;
+
+    play.add(flashSprite);
+    play.refresh();
+
+    var sprite = flashSprite;
+
+    
+    FlxTween.tween(
+        sprite,
+        {alpha: 1},
+        Math.max(0.001, fadeIn),
+        {
+            ease: FlxEase.quadOut,
+            onComplete: function(tween:FlxTween)
+            {
+                
+                FlxTween.tween(
+                    sprite,
+                    {alpha: 0},
+                    Math.max(0.001, fadeOut),
+                    {
+                        ease: FlxEase.quadInOut,
+                        onComplete: function(tween:FlxTween)
+                        {
+                            if (flashSprite == sprite)
+                                flashSprite = null;
+
+                            FlxTween.cancelTweensOf(sprite);
+
+                            if (PlayState.instance != null)
+                                PlayState.instance.remove(sprite, true);
+
+                            sprite.destroy();
+                        }
+                    }
+                );
+            }
+        }
+    );
+}
+
+function clearFlash():Void
+{
+    if (flashSprite == null) return;
+
+    FlxTween.cancelTweensOf(flashSprite);
+
+    if (PlayState.instance != null)
+        PlayState.instance.remove(flashSprite, true);
+
+    flashSprite.destroy();
+    flashSprite = null;
+}
+
+
+    public override function onSongStart(event):Void
+    {
+        super.onSongStart(event);
+        panoramic(true);
+    }
+
+    
+    public function fadeBlackBackground(duration:Float = 1, targetAlpha:Float = 0):Void
+    {
+        if (blackRect == null) return;
+        FlxTween.cancelTweensOf(blackRect);
+        var alpha:Float = Math.max(0, Math.min(1, targetAlpha));
+        if (duration <= 0)
+        {
+            blackRect.alpha = alpha;
+            return;
+        }
+        FlxTween.tween(blackRect, {alpha: alpha}, duration, {ease: FlxEase.quadInOut});
+    }
+
+    var blackRect:FlxSprite;
+    var silhouettes:Array<FlxSprite> = [];
+    var firstStart:Float = 123000;
+    var secondStart:Float = 128000;
+    var firstFadeDuration:Float = 5000;
+    var secondFadeDuration:Float = 2000;
+    var firstExit:Float = 130000;
+    var exitDuration:Float = 1000;
+    var groupStart:Float = 132000;
+    var groupEnd:Float = 141000;
+
+    function updateSilhouettes(time:Float):Void
+    {
+        if (silhouettes.length != 7) return;
+        for (i in 0...7)
+        {
+            var value:Float;
+            if (i < 2)
+            {
+                var start = i == 0 ? firstStart : secondStart;
+                value = fadeProgress(Math.min(time, firstExit), start, i == 0 ? firstFadeDuration : secondFadeDuration);
+                if (time >= firstExit) value *= 1 - fadeProgress(time, firstExit, exitDuration);
+            }
+            else
+            {
+                var duration = (groupEnd - groupStart) / 5;
+                var start = groupStart + (i - 2) * duration;
+                value = fadeProgress(time, start, duration);
+            }
+            silhouettes[i].alpha = value;
+            silhouettes[i].visible = value > 0;
+        }
+    }
+
+
+    function prepareSilhouettes():Void
+    {
+        if (silhouettes.length > 0) return;
+        var play = PlayState.instance;
+        for (i in 0...7)
+        {
+            var sprite = new FlxSprite().loadGraphic(Paths.image('music_video/sil' + (i + 1)));
+            var factor = Math.min(FlxG.width / 1280, FlxG.height / 720);
+            sprite.scale.set(factor, factor);
+            sprite.updateHitbox();
+            sprite.setPosition((FlxG.width - sprite.width) / 2, (FlxG.height - sprite.height) / 2);
+            sprite.cameras = [getMusicVideoCamera()];
+            sprite.scrollFactor.set(0, 0);
+            sprite.zIndex = -999 + i;
+            sprite.alpha = 0;
+            sprite.visible = false;
+            sprite.antialiasing = true;
+            silhouettes.push(sprite);
+            play.add(sprite);
+        }
+        play.refresh();
+    }
+
+
+function killSilhouettes():Void
+{
+    var play = PlayState.instance;
+
+    for (sprite in silhouettes)
+    {
+        if (sprite == null) continue;
+
+        FlxTween.cancelTweensOf(sprite);
+
+        if (play != null)
+            play.remove(sprite, true);
+
+        sprite.destroy();
+    }
+
+    silhouettes = [];
+}
+
+
+function clearVideoScene():Void
+{
+    clearStageVideoBackground();
+    var play = PlayState.instance;
+
+    clearFlash();
+    killSilhouettes();
+
+    if (currentImage != null)
+    {
+        destroyVideoImage(currentImage);
+        currentImage = null;
+    }
+
+    if (currentPanoramic != null)
+    {
+        destroyVideoImage(currentPanoramic);
+        currentPanoramic = null;
+    }
+
+    if (blackRect != null)
+    {
+        if (play != null)
+            play.remove(blackRect, true);
+
+        FlxTween.cancelTweensOf(blackRect);
+        blackRect.destroy();
+        blackRect = null;
+    }
+}
+
+    function fadeProgress(time:Float, start:Float, duration:Float):Float
+    {
+        return FlxEase.quadInOut(Math.max(0, Math.min(1, (time - start) / duration)));
+    }
+
+  public function new()
+  {
+    super('piece-by-piece', {
+      variation: 'lyrics'
+    });
+  }
+
+    function buildLyricsTimeline():Void
+    {
+        lyricsCues = [];
+        nextLyricsCue = 0;
+        lyricsTimelineReady = true;
+
+
+        at('00:48.50', function() {
+            showStageVideoBackground(stageVideoTransitionDuration);
+        });
+
+        at('01:06.50', function() {
+            
+            hideStageVideoBackground(stageVideoTransitionDuration + 1);
+        });
+
+                at('00:49.50', function() {
+    showStageVideo('videos/ddtsgameplay.mp4');
+    if (stageVideo != null)
+    {
+        stageVideo.alpha = 0;
+        fadeStageVideo(stageVideoTransitionDuration, 1, false);
+    }
+});
+
+        at('00:57.50', function() {
+            
+            fadeStageVideo(0.5);
+        });
+
+        at('00:58.00', function() {
+    showStageVideo('videos/seiragameplay.mp4', 250);
+});
+
+
+at('01:07.50', function() {
+    fadeStageVideo(stageVideoTransitionDuration);
+});
+
+at('02:38.00', function() {
+    fadeBlackBackground(2);
+});
+
+        at('02:02.90', function() {
+            blackRect = new FlxSprite(0, 0);
+            blackRect.makeGraphic(FlxG.width, FlxG.height, FlxColor.BLACK);
+            blackRect.cameras = [getMusicVideoCamera()];
+            blackRect.scrollFactor.set(0, 0);
+            blackRect.zIndex = -1000;
+            PlayState.instance.add(blackRect);
+            prepareSilhouettes();
+            PlayState.instance.refresh();
+        });
+
+    at('00:23.59', function() {panoramic(false);});
+    
+    
+    at('02:20.40', function() {
+    flashTransition(FlxColor.BLACK, 1, 3);
+    });
+    
+    at('02:21.00', function() {
+        killSilhouettes();
+        showImage('dialogue/bgs/hug', 1.5);
+    });
+
+    at('02:30.00', function() {
+        hideImage(1.4);
+    });
+
+        at('02:38.00', function() {
+    flashTransition(FlxColor.BLACK, 1, 6);
+    });
+
+    
+    at('01:26.00', function() {
+        showPanoramic(
+            'music_video/Sprite-0001',
+            19,    
+            300,  
+            450,   
+            1.5,   
+            1.3   
+        );
+    });
+
+    at('01:43.00', function() {
+        hidePanoramic(1.5);
+    });
+
+        at('03:10.80', function() {
+    flashTransition(FlxColor.BLACK, 5, 3);
+    });
+
+    }
+
+    function at(time:Dynamic, action:Void->Void):Void
+    {
+        var milliseconds:Float;
+        if (Std.isOfType(time, String))
+        {
+            var parts = StringTools.trim(Std.string(time)).split(':');
+            if (parts.length != 2) throw 'Lyrics cue: expected MM:SS.decimal, got ' + time;
+            var minutes = Std.parseFloat(parts[0]);
+            var seconds = Std.parseFloat(parts[1]);
+            if (Math.isNaN(minutes) || Math.isNaN(seconds) || minutes < 0 || seconds < 0 || seconds >= 60)
+                throw 'Invalid lyrics cue time: ' + time;
+            milliseconds = Math.round((minutes * 60 + seconds) * 1000);
+        }
+        else milliseconds = time;
+        if (Math.isNaN(milliseconds) || milliseconds < 0 || action == null)
+            throw 'Invalid lyrics cue: ' + time;
+        var index = 0;
+        while (index < lyricsCues.length && lyricsCues[index].time <= milliseconds) index++;
+        lyricsCues.insert(index, {time: milliseconds, action: action});
+    }
+
+    public override function onSongLoaded(event):Void
+    {
+        super.onSongLoaded(event);
+        panoramic(false);
+        lyricsTimelineReady = false;
+        lyricsCues = [];
+        nextLyricsCue = 0;
+    }
+
+
+    
+    var currentImage:FlxSprite = null;
+    var currentPanoramic:FlxSprite = null;
+
+    
+    function createVideoImage(path:String, zIndex:Int):FlxSprite
+    {
+        var play = PlayState.instance;
+        if (play == null) return null;
+
+        var sprite = new FlxSprite();
+        sprite.loadGraphic(Paths.image(path));
+
+        
+        var factor:Float = Math.min(
+            1,
+            Math.min(
+                FlxG.width / sprite.width,
+                FlxG.height / sprite.height
+            )
+        );
+
+        sprite.scale.set(factor, factor);
+        sprite.updateHitbox();
+
+        sprite.cameras = [getMusicVideoCamera()];
+        sprite.scrollFactor.set(0, 0);
+        sprite.antialiasing = true;
+        sprite.alpha = 0;
+        sprite.zIndex = zIndex;
+
+        play.add(sprite);
+        play.refresh();
+
+        return sprite;
+    }
+
+    
+    function destroyVideoImage(sprite:FlxSprite):Void
+    {
+        if (sprite == null) return;
+
+        FlxTween.cancelTweensOf(sprite);
+
+        var play = PlayState.instance;
+        if (play != null)
+            play.remove(sprite, true);
+
+        sprite.destroy();
+    }
+
+    public function showImage(
+        path:String,
+        duration:Float = 1
+    ):Void
+    {
+        if (currentImage != null)
+            destroyVideoImage(currentImage);
+
+        currentImage = createVideoImage(path, -992);
+
+        if (currentImage == null) return;
+
+        var sprite = currentImage;
+
+        
+        sprite.setPosition(
+            (FlxG.width - sprite.width) / 2,
+            (FlxG.height - sprite.height) / 2
+        );
+
+        FlxTween.tween(
+            sprite,
+            {alpha: 1},
+            Math.max(0.001, duration),
+            {ease: FlxEase.quadInOut}
+        );
+    }
+
+
+    public function hideImage(duration:Float = 1):Void
+    {
+        if (currentImage == null) return;
+
+        var sprite = currentImage;
+
+        FlxTween.cancelTweensOf(sprite);
+
+        FlxTween.tween(
+            sprite,
+            {alpha: 0},
+            Math.max(0.001, duration),
+            {
+                ease: FlxEase.quadInOut,
+                onComplete: function(tween:FlxTween)
+                {
+                    if (currentImage == sprite)
+                        currentImage = null;
+
+                    destroyVideoImage(sprite);
+                }
+            }
+        );
+    }
+    
+public function showPanoramic(
+    path:String,
+    duration:Float = 1,
+    offsetX:Float = 150,
+    moveX:Float = 200,
+    alphaDuration:Float = 1,
+    heightRatio:Float = 0.95
+):Void
+{
+    if (currentPanoramic != null)
+        destroyVideoImage(currentPanoramic);
+
+    currentPanoramic = createVideoImage(path, -991);
+
+    if (currentPanoramic == null) return;
+
+    var sprite = currentPanoramic;
+
+    
+    var factor:Float = FlxG.height * Math.max(0.01, heightRatio) / sprite.frameHeight;
+    sprite.scale.set(factor, factor);
+    sprite.updateHitbox();
+
+    
+    var startX:Float =
+        (FlxG.width - sprite.width) / 2 + offsetX;
+
+    var startY:Float =
+        (FlxG.height - sprite.height) / 2;
+
+    sprite.setPosition(startX, startY + 70);
+    sprite.alpha = 0;
+
+    
+    FlxTween.tween(
+        sprite,
+        {alpha: 1},
+        Math.max(0.001, alphaDuration),
+        {ease: FlxEase.quadInOut}
+    );
+
+    
+    FlxTween.tween(
+        sprite,
+        {x: startX - Math.abs(moveX)},
+        Math.max(0.001, duration),
+        {ease: FlxEase.quadInOut}
+    );
+}
+
+    public function hidePanoramic(duration:Float = 1):Void
+    {
+        if (currentPanoramic == null) return;
+
+        var sprite = currentPanoramic;
+
+        FlxTween.cancelTweensOf(sprite);
+
+        FlxTween.tween(
+            sprite,
+            {alpha: 0},
+            Math.max(0.001, duration),
+            {
+                ease: FlxEase.quadInOut,
+                onComplete: function(tween:FlxTween)
+                {
+                    if (currentPanoramic == sprite)
+                        currentPanoramic = null;
+
+                    destroyVideoImage(sprite);
+                }
+            }
+        );
+    }
+
+
+public override function onSongRetry(event):Void
+{
+    super.onSongRetry(event);
+
+
+    stopStageVideo();
+    panoramic(false);
+    clearVideoScene();
+
+    lyricsTimelineReady = false;
+    lyricsCues = [];
+    nextLyricsCue = 0;
+}
+
+    function skipForwardTenSeconds():Void
+    {
+        var play = PlayState.instance;
+        var music = FlxG.sound.music;
+        if (play == null || music == null || !music.playing || music.length <= 0) return;
+        var target = Math.min(music.time + 10000, Math.max(0, music.length - 1));
+        music.time = target;
+        play.conductorInUse.update(music.time);
+        play.handleSkippedNotes();
+        SongEventRegistry.handleSkippedEvents(play.songEvents, play.conductorInUse.songPosition);
+        play.resyncVocals();
+    }
+
+    public override function onUpdate(event):Void
+    {
+        super.onUpdate(event);
+        layoutStageVideoBackground();
+        layoutStageVideo();
+        updatePanoramic();
+        if (!lyricsTimelineReady) buildLyricsTimeline();
+        var play = PlayState.instance;
+        if (play == null || play.isInCutscene || play.subState != null) return;
+        var songTime = play.conductorInUse.songPosition;
+        if (songTime < 0) return;
+        while (nextLyricsCue < lyricsCues.length && songTime >= lyricsCues[nextLyricsCue].time)
+        {
+            var cue = lyricsCues[nextLyricsCue];
+            nextLyricsCue = nextLyricsCue + 1;
+            cue.action();
+            if (PlayState.instance != play || play.subState != null) return;
+        }
+        updateSilhouettes(songTime);
+    }
+
+	public function onCountdownStart(event):Void {
+		super.onCountdownStart(event);
+		new FlxTimer().start(0.9, function(tmr) 
+			{
+                		if (!PlayState.instance.isMinimalMode)
+				Countdown.skipCountdown();
+			});
+	}
+}

@@ -1,0 +1,111 @@
+{
+    "characters": [
+        {
+            "name": "and-og",
+            "spritePos": [520, 200],
+            "atlas": "menucharacters/and-og",
+            "prefix": "and-og",
+            "scale": [0.9, 0.9],
+            "looped": false
+        },
+        {
+            "name": "secretchar3",
+            "spritePos": [520, 200],
+            "atlas": "menucharacters/and-og",
+            "prefix": "and-og",
+            "scale": [0.9, 0.9],
+            "looped": false,
+            "locked": true
+        },
+        {
+            "name":"giffany",
+            "spritePos": [540, 110],
+            "atlas": "menucharacters/giffany",
+            "prefix": "giffany",
+            "scale": [0.9, 0.9],
+            "looped": true
+        },
+        {
+            "name":"secretchar1",
+            "spritePos": [540, 110],
+            "atlas": "menucharacters/giffany",
+            "prefix": "giffany",
+            "locked": true,
+            "scale": [0.9, 0.9],
+            "looped": true
+        },
+        {
+            "name": "manuel_old",
+            "spritePos": [540, 110],
+            "atlas": "menucharacters/manuel",
+            "prefix": "MonikaAnim_gif",
+            "scale": [0.9, 0.9],
+            "looped": false
+        },
+        {
+            "name": "manuel",
+            "spritePos": [540, 160],
+            "atlas": "menucharacters/manuel_new",
+            "prefix": "MonikaAnim_gif",
+            "scale": [0.9, 0.9],
+            "looped": false
+        },
+        {
+            "name": "manuel-shaduwu",
+            "spritePos": [100, 110],
+            "atlas": "menucharacters/manuel-shaduwu",
+            "prefix": "manuel-shaduwu",
+            "scale": [0.9, 0.9],
+            "looped": false
+        },
+        {
+            "name": "seira",
+            "spritePos": [550, 130],
+            "atlas": "menucharacters/seira",
+            "prefix": "seira",
+            "scale": [0.9, 0.9],
+            "looped": false
+        },
+        {
+            "name": "manuandmanuel",
+            "spritePos": [540, 110],
+            "atlas": "menucharacters/manuandmanuel",
+            "prefix": "manuandmanuel",
+            "scale": [0.9, 0.9],
+            "looped": false
+        },
+        {
+            "name":"hex",
+            "spritePos": [540, 200],
+            "atlas": "menucharacters/hex",
+            "prefix": "hex",
+            "scale": [0.9, 0.9],
+            "looped": true
+        },
+        {
+            "name":"sans",
+            "spritePos": [540, 150],
+            "atlas": "menucharacters/sans",
+            "prefix": "sans",
+            "scale": [0.8, 0.8],
+            "looped": true
+        },
+        {
+            "name":"secretchar2",
+            "spritePos": [540, 150],
+            "atlas": "menucharacters/sans",
+            "prefix": "sans",
+            "scale": [0.8, 0.8],
+            "locked": true,
+            "looped": true
+        },
+        {
+            "name":"hex-shaduwu",
+            "spritePos": [540, 200],
+            "atlas": "menucharacters/hex-shaduwu",
+            "prefix": "hex-shaduwu",
+            "scale": [0.9, 0.9],
+            "looped": true
+        }
+    ]
+}

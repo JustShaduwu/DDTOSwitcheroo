@@ -1,0 +1,44 @@
+{
+ "version": "2.2.8",
+ "songName": "Death By Death",
+ "artist": "STR09",
+ "pause": "manuel",
+ "charter": "Xandvier",
+ "offsets": { },
+ "playData": {
+  "difficulties": [
+   "easy",
+   "normal",
+   "hard"
+  ],
+  "characters": {
+   "player": "kaity-angry",
+   "girlfriend": "nospeakers",
+   "opponent": "manuel-pixel",
+   "opponentVocals": [
+    "manuel-pixel"
+   ],
+   "playerVocals": [
+    "kaity-pixel"
+   ]
+  },
+  "stage": "schoolErect-switcheroo",
+  "noteStyle": "glitch-ddtspixel",
+  "ratings": {
+   "easy": 0,
+   "normal": 0,
+   "hard": 0
+  },
+  "album": "volume1",
+  "previewEnd": 0
+ },
+ "generatedBy": "Friday Night Funkin' - v0.8.5",
+ "timeChanges": [
+  {
+   "t": 0,
+   "b": 0,
+   "bpm": 190,
+   "bt": [4, 4, 4, 4]
+  }
+ ]
+}

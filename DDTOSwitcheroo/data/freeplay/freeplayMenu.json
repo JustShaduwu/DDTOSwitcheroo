@@ -1,0 +1,62 @@
+{
+  "version": "1.0.0",
+  "pages": [
+    {
+      "id": "main",
+      "title": "Main Songs",
+      "background": "freeplay/freeplaybook1",
+      "songs": [
+        {
+          "songId": "college-dispute",
+          "icon": "manuel"
+        },
+        {
+          "songId": "stories-of-violets",
+          "icon": "duetswap"
+        },
+        {
+          "songId": "death-by-death",
+          "icon": "manuel-demise"
+        }
+      ]
+    },
+    {
+      "id": "extras",
+      "title": "Extras",
+      "background": "freeplay/freeplaybook2",
+      "songs": [
+        {
+          "songId": "poems-n-pollen",
+          "icon": "duetswap"
+        },
+        {
+          "songId": "dual-death",
+          "icon": "dualdeath"
+        },
+        {
+          "songId": "shinkyoku-switcheroo-mix",
+          "icon": "duet"
+        },
+        {
+          "songId": "our-reality",
+          "icon": "manuel"
+        },
+        {
+          "songId": "test-manu-mix",
+          "icon": "Manu-pixel"
+        }
+      ]
+    },
+    {
+      "id": "epilogues",
+      "title": "Epilogue Songs",
+      "background": "freeplay/freeplaybook3",
+      "songs": [
+        {
+          "songId": "piece-by-piece",
+          "icon": "manuel"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,345 @@
+import funkin.play.PlayState;
+import funkin.play.event.ScriptedSongEvent;
+
+import flixel.FlxG;
+import flixel.text.FlxText;
+import flixel.tweens.FlxTween;
+import flixel.tweens.FlxEase;
+import flixel.util.FlxColor;
+
+import openfl.utils.Assets;
+
+using StringTools;
+
+
+class NicoLightsEvent extends ScriptedSongEvent
+{
+    var nicoLightsActive:Bool = false;
+    var funnyColor:FlxColor = FlxColor.WHITE;
+
+
+    public function new()
+    {
+        super('NicoLightsEvent');
+    }
+
+
+    public override function handleEvent(data):Void
+    {
+        if (
+            PlayState.instance == null ||
+            PlayState.instance.isMinimalMode
+        )
+        {
+            return;
+        }
+
+
+        var mode:Int =
+            Std.int(
+                data.value.mode ?? 0
+            );
+
+
+        switch (mode)
+        {
+            case 0:
+                nicoLightsActive = false;
+
+            case 1:
+                nicoLightsActive = true;
+
+            case 2:
+                funnyColor =
+                    parseColor(
+                        Std.string(
+                            data.value.color ?? '#FFFFFF'
+                        )
+                    );
+        }
+    }
+
+
+    public static function coolTextFile():Array<String>
+    {
+        var fullText:String =
+            Assets.getText(
+                Paths.txt('nicoText')
+            );
+
+
+        return fullText
+            .split('\n')
+            .filter(
+                function(s:String)
+                {
+                    return s.trim() != '';
+                }
+            );
+    }
+
+
+    function niconicoLights():Void
+    {
+        if (PlayState.instance == null)
+            return;
+
+
+        var nicoText:Array<String> =
+            coolTextFile();
+
+
+        if (PlayState.instance.deathCounter > 0)
+        {
+            nicoText.push(
+                "You don't give up, do you?"
+            );
+
+            nicoText.push(
+                "You died and came back?"
+            );
+
+            nicoText.push(
+                "Damned cheater."
+            );
+        }
+
+
+        if (nicoText.length <= 0)
+            return;
+
+
+        var randomText:String =
+            nicoText[
+                FlxG.random.int(
+                    0,
+                    nicoText.length - 1
+                )
+            ];
+
+
+        var funnyText:FlxText =
+            new FlxText(
+                0,
+                0,
+                0,
+                randomText,
+                40
+            );
+
+
+        funnyText.scrollFactor.set();
+
+        funnyText.font =
+            Paths.font(
+                'vcr.ttf'
+            );
+
+        funnyText.color =
+            funnyColor;
+
+
+        funnyText.setPosition(
+            FlxG.width + funnyText.width,
+            FlxG.random.float(
+                0,
+                650
+            )
+        );
+
+
+        funnyText.antialiasing =
+            false;
+
+
+        funnyText.cameras =
+        [
+            PlayState.instance.camHUD
+        ];
+
+
+        PlayState.instance.add(
+            funnyText
+        );
+
+
+        FlxTween.tween(
+            funnyText,
+            {
+                x:
+                    -funnyText.width *
+                    1.5 /
+                    PlayState.instance.currentCameraZoom
+            },
+
+            FlxG.random.float(
+                4,
+                12
+            ),
+
+            {
+                ease:
+                    FlxEase.linear,
+
+                onComplete:
+                    function(tween:FlxTween)
+                    {
+                        if (funnyText == null)
+                            return;
+
+                        if (PlayState.instance != null)
+                        {
+                            PlayState.instance.remove(
+                                funnyText,
+                                true
+                            );
+                        }
+
+                        funnyText.destroy();
+                    }
+            }
+        );
+    }
+
+
+    public function onBeatHit(
+        event:SongTimeScriptEvent
+    ):Void
+    {
+        if (
+            nicoLightsActive &&
+            event.beat % 2 == 0
+        )
+        {
+            niconicoLights();
+        }
+    }
+
+
+    function parseColor(
+        value:String
+    ):FlxColor
+    {
+        if (
+            value == null ||
+            value == ''
+        )
+        {
+            return FlxColor.WHITE;
+        }
+
+
+        var clean:String =
+            value.replace(
+                '#',
+                ''
+            );
+
+
+        if (clean.length == 6)
+        {
+            clean =
+                'FF' +
+                clean;
+        }
+
+
+        var parsed =
+            Std.parseInt(
+                '0x' +
+                clean
+            );
+
+
+        if (parsed == null)
+        {
+            return FlxColor.WHITE;
+        }
+
+
+        return parsed;
+    }
+
+
+    function resetNicoLights():Void
+    {
+        nicoLightsActive =
+            false;
+
+        funnyColor =
+            FlxColor.WHITE;
+    }
+
+
+    public function onCountdownStart(
+        event
+    ):Void
+    {
+        super.onCountdownStart(event);
+
+        resetNicoLights();
+    }
+
+
+    public function onSongRetry(
+        event
+    ):Void
+    {
+        resetNicoLights();
+    }
+
+
+    public function onStateChangeBegin(
+        event
+    ):Void
+    {
+        resetNicoLights();
+    }
+
+
+    public function getEventSchema()
+    {
+        return [
+            {
+                name:
+                    'mode',
+
+                title:
+                    'Mode',
+
+                defaultValue:
+                    0,
+
+                type:
+                    'enum',
+
+                keys:
+                [
+                    'Off' => 0,
+                    'On' => 1,
+                    'Set color' => 2
+                ]
+            },
+
+            {
+                name:
+                    'color',
+
+                title:
+                    'Color',
+
+                defaultValue:
+                    '#FFFFFF',
+
+                type:
+                    'string'
+            }
+        ];
+    }
+
+
+    public function getTitle():String
+    {
+        return 'Nico Lights';
+    }
+}

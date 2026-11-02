@@ -1,0 +1,365 @@
+{ 
+	"dialogue": 
+	[
+		{
+			"isCommand": false,
+			"name": "no_one",
+			"expression": "gone",
+			"string": "UAAAAAAGH",
+			"key": "cdIntro1",
+			"side": "left"
+		},
+		{
+			"isCommand": false,
+			"name": "no_one",
+			"expression": "gone",
+			"string": "*Thud*",
+			"key": "cdIntro2",
+			"side": "left"
+		},
+		{
+			"isCommand": false,
+			"name": "no_one",
+			"expression": "gone",
+			"string": "Ugh... what... was that?",
+			"key": "cdIntro3",
+			"side": "left"
+		},
+		{
+			"isCommand": false,
+			"name": "no_one",
+			"expression": "gone",
+			"string": "*the man runs his hand over his head* ",
+			"key": "cdIntro4",
+			"side": "left"
+		},
+		{
+			"isCommand": false,
+			"name": "manuel",
+			"expression": "worried",
+			"string": "My resolution... damn. It's so low.",
+			"key": "cdIntro5",
+			"side": "left"
+		},
+		{
+			"isCommand": false,
+			"name": "manuel",
+			"expression": "neutral",
+			"string": "Oh god, how ''cool''",
+			"key": "cdIntro6",
+			"side": "left"
+		},
+		{
+			"isCommand": false,
+			"name": "manuel",
+			"expression": "sad",
+			"string": "This is definitely NOT Kansas",
+			"key": "cdIntro7",
+			"side": "left"
+		},
+		{
+			"isCommand": false,
+			"name": "manuel",
+			"expression": "uhoh",
+			"string": "(That's a school...?)",
+			"key": "cdIntro8",
+			"side": "left"
+		},
+		{
+			"isCommand": false,
+			"name": "manuel",
+			"expression": "worried",
+			"string": "Heh.",
+			"key": "cdIntro9",
+			"side": "left"
+		},
+		{
+			"isCommand": false,
+			"name": "manuel",
+			"expression": "sad",
+			"string": "(And I thought I'd never see one of those again...)",
+			"key": "cdIntro10",
+			"side": "left"
+                },
+		{
+			"isCommand": false,
+			"name": "manuel",
+			"expression": "sad",
+			"string": "...",
+			"key": "cdIntro11",
+			"side": "left"
+                },
+		{
+			"isCommand": false,
+			"name": "manuel",
+			"expression": "worried",
+			"string": "(Wait...)",
+			"key": "cdIntro12",
+			"side": "left"
+                },
+		{
+			"isCommand": false,
+			"name": "manuel",
+			"expression": "uhoh",
+			"string": "(This place looks a little familiar...)",
+			"key": "cdIntro13",
+			"side": "left"
+                },
+		{
+			"isCommand": false,
+			"name": "manuel",
+			"expression": "worried",
+			"string": "(...my school...)",
+			"key": "cdIntro14",
+			"side": "left"
+                },
+		{
+			"isCommand": false,
+			"name": "manuel",
+			"expression": "uhoh",
+			"string": "(...maybe this place is related to her somehow...)",
+			"key": "cdIntro15",
+			"side": "left"
+                },
+		{
+			"isCommand": false,
+			"name": "no_one",
+			"expression": "gone",
+			"string": "*Manuel walks around the school and, as he turns a corner, almost bumps into a blue hair girl.*",
+			"key": "cdIntro16",
+			"side": "left"
+                },
+		{
+			"isCommand": true,
+			"name": "shake",
+			"duration": "0.5"
+		},
+		{
+			"isCommand": false,
+			"name": "manuel",
+			"expression": "ugh",
+			"string": "AUGH!",
+			"key": "cdIntro17",
+			"side": "left"
+                },
+		{
+			"isCommand": false,
+			"name": "bf",
+			"expression": "what",
+			"string": "*surprised beep*",
+			"key": "cdIntro18",
+			"side": "right"
+		},
+		{
+			"isCommand": true,
+			"name": "playcutscene",
+			"string": "showbf",
+			"duration": 0
+        },
+		{
+			"isCommand": false,
+			"name": "manuel",
+			"expression": "sad",
+			"string": "Oh my God...sorry! Are you fine?",
+			"key": "cdIntro19",
+			"side": "left"
+		},
+		{
+			"isCommand": false,
+			"name": "bf",
+			"expression": "neutral",
+			"string": "Beep!",
+			"key": "cdIntro20",
+			"side": "right"
+		},
+		{
+			"isCommand": true,
+			"name": "shake",
+			"duration": "0.2"
+		},
+		{
+			"isCommand": false,
+			"name": "no_one",
+			"expression": "gone",
+			"string": "*Chris takes Kaity's hand to help her*",
+			"key": "cdIntro21",
+			"side": "left"
+		},
+		{
+			"isCommand": false,
+			"name": "manuel",
+			"expression": "sad",
+			"string": "Phew...sorry...",
+			"key": "cdIntro22",
+			"side": "left"
+		},
+		{
+			"isCommand": false,
+			"name": "manuel",
+			"expression": "sad",
+			"string": ". . .",
+			"key": "cdIntro23",
+			"side": "left"
+                },
+		{
+			"isCommand": false,
+			"name": "no_one",
+			"expression": "gone",
+			"string": "*Manuel is delighted with the couple's harmonious dynamic*",
+			"key": "cdIntro24",
+			"side": "left"
+		},
+		{
+			"isCommand": false,
+			"name": "bf",
+			"expression": "neutral",
+			"string": "Beep?",
+			"key": "cdIntro25",
+			"side": "right"
+		},
+		{
+			"isCommand": false,
+			"name": "manuel",
+			"expression": "worried",
+			"string": "Ah! Sorry, sorry... I ended up being a little inattentive...",
+			"key": "cdIntro26",
+			"side": "left"
+		},
+		{
+			"isCommand": false,
+			"name": "manuel",
+			"expression": "worried",
+			"string": "(...they seem to be from around here...can I ask them about some things?)",
+			"key": "cdIntro27",
+			"side": "left"
+		},
+		{
+			"isCommand": false,
+			"name": "manuel",
+			"expression": "uhoh",  
+			"string": "(Like, what the HELL kind of place is this?)",
+			"key": "cdIntro28",
+			"side": "left"
+		},
+		{
+			"isCommand": false,
+			"name": "manuel",
+			"expression": "neutral",
+			"string": "Hey...just a minute",
+			"key": "cdIntro29",
+			"side": "left"
+		},
+		{
+			"isCommand": false,
+			"name": "bf",
+			"expression": "happy",
+			"string": "Bap?",
+			"key": "cdIntro30",
+			"side": "right"
+		},
+		{
+			"isCommand": false,
+			"name": "manuel",
+			"expression": "uhoh",
+			"string": "Can you guys tell me what this place is? And...how do I get out of here?",
+			"key": "cdIntro31",
+			"side": "left"
+                },
+		{
+			"isCommand": false,
+			"name": "no_one",
+			"expression": "gone",
+			"string": "*Kaity looks at Chris with a smile*",
+			"key": "cdIntro32",
+			"side": "right"
+		},
+		{
+			"isCommand": false,
+			"name": "bf",
+			"expression": "happy",
+			"string": "Bip bop!",
+			"key": "cdIntro33",
+			"side": "right"
+		},
+		{
+			"isCommand": false,
+			"name": "manuel",
+			"expression": "sad",
+			"string": "what-",
+			"key": "cdIntro34",
+			"side": "left"
+                },
+		{
+			"isCommand": false,
+			"name": "manuel",
+			"expression": "worried",
+			"string": "Do you want me to sing with you?",
+			"key": "cdIntro35",
+			"side": "left"
+		},
+		{
+			"isCommand": false,
+			"name": "manuel",
+			"expression": "sad",
+			"string": "Seriously?",
+			"key": "cdIntro36",
+			"side": "left"
+		},
+		{
+			"isCommand": false,
+			"name": "manuel",
+			"expression": "uhoh",
+			"string": "...but why?-",
+			"key": "cdIntro37",
+			"side": "left"
+                },
+		{
+			"isCommand": false,
+			"name": "manuel",
+			"expression": "worried",
+			"string": "(Wait...I can't refuse!)",
+			"key": "cdIntro38",
+			"side": "left"
+		},
+		{
+			"isCommand": false,
+			"name": "manuel",
+			"expression": "worried",
+			"string": "(They might be my only chance to understand this place!)?",
+			"key": "cdIntro39",
+			"side": "left"
+		},
+		{
+			"isCommand": false,
+			"name": "manuel",
+			"expression": "happy",
+			"string": "...okay. Maybe.",
+			"key": "cdIntro40",
+			"side": "left"
+                },
+		{
+			"isCommand": false,
+			"name": "bf",
+			"expression": "happy",
+			"string": "*happy beep bop noises*",
+			"key": "cdIntro41",
+			"side": "right"
+		},
+		{
+			"isCommand": false,
+			"name": "manuel",
+			"expression": "uhoh",
+			"string": " (...I feel like they're important pieces to understanding all of this.)",
+			"key": "cdIntro42",
+			"side": "left"
+		},
+		{
+			"isCommand": false,
+			"name": "manuel",
+			"expression": "sad",
+			"string": "(And find my sister.)",
+			"key": "cdIntro43",
+			"side": "left"
+		}
+	]
+}

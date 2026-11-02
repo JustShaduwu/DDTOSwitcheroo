@@ -1,0 +1,251 @@
+import funkin.modding.module.Module;
+import funkin.Paths;
+import funkin.save.Save;
+import lime.utils.Assets;
+import haxe.ds.StringMap;
+import StringTools;
+
+class LanguageManager extends Module
+{
+    static var uiLocale:String = null;
+    static var uiTranslations:Dynamic = null;
+
+    // Returns a resolved asset path for greaphic, not a key of paths image.
+    public static function getImagePath(imageKey:String):String
+    {
+        var fallback = Paths.image(imageKey);
+        var saved = Save.instance.modOptions.get('switcherooLanguage');
+        if (saved == null) return fallback;
+        var locale = StringTools.trim(Std.string(saved));
+        var lower = locale.toLowerCase();
+        if (locale == '' || lower == 'null' || lower == 'en' || lower == 'english'
+            || StringTools.startsWith(lower, 'en-') || StringTools.startsWith(lower, 'en_')) return fallback;
+        if (locale == 'es-US') locale = 'es-MX';
+        if (locale.indexOf('/') >= 0 || locale.indexOf('\\') >= 0 || locale.indexOf('..') >= 0) return fallback;
+        try
+        {
+            var translated = Paths.file('translations/' + locale + '/images/' + imageKey + '.png');
+            if (Assets.exists(translated)) return translated;
+        }
+        catch (error:Dynamic)
+        {
+            trace('[LanguageManager] Image fallback: ' + error);
+        }
+        return fallback;
+    }
+
+    public static function getTranslation(key:String, fallback:String):String
+    {
+        var saved = Save.instance.modOptions.get('switcherooLanguage');
+        if (saved == null) return fallback;
+        var locale = StringTools.trim(Std.string(saved));
+        var lower = locale.toLowerCase();
+        if (locale == '' || lower == 'null' || lower == 'en' || lower == 'english'
+            || StringTools.startsWith(lower, 'en-') || StringTools.startsWith(lower, 'en_')) return fallback;
+        if (locale == 'es-US') locale = 'es-MX';
+        if (locale.indexOf('/') >= 0 || locale.indexOf('\\') >= 0 || locale.indexOf('..') >= 0) return fallback;
+        if (uiTranslations == null || uiLocale != locale)
+        {
+            uiLocale = locale;
+            uiTranslations = new StringMap();
+            try
+            {
+                var path = Paths.file('translations/' + locale + '/translations.txt');
+                if (Assets.exists(path)) uiTranslations = parseTranslations(Assets.getText(path));
+            }
+            catch (error:Dynamic)
+            {
+                trace('[LanguageManager] UI translation fallback: ' + error);
+            }
+        }
+        if (key == null) return fallback;
+        var value = uiTranslations.get(key);
+        return value == null || value == '' ? fallback : value;
+    }
+
+    public function new()
+    {
+        super('LanguageManager');
+    }
+
+    public static function loadSubtitleTranslation(songId:String, fileName:String):Array<Dynamic>
+    {
+        var saved = Save.instance.modOptions.get('switcherooLanguage');
+        if (saved == null) return null;
+        var locale = StringTools.trim(Std.string(saved));
+        var lower = locale.toLowerCase();
+        if (locale == '' || lower == 'null' || lower == 'en' || lower == 'english'
+            || StringTools.startsWith(lower, 'en-') || StringTools.startsWith(lower, 'en_')) return null;
+        if (locale == 'es-US') locale = 'es-MX';
+        if (locale.indexOf('/') >= 0 || locale.indexOf('\\') >= 0 || locale.indexOf('..') >= 0) return null;
+        try
+        {
+            var path = Paths.file('translations/' + locale + '/subtitles/' + songId + '/' + fileName);
+            if (!Assets.exists(path))
+            {
+                trace('[LanguageManager] Subtitle asset not found: ' + path);
+                return null;
+            }
+            var cues = parseSubtitleTranslation(Assets.getText(path));
+            if (cues == null) trace('[LanguageManager] Invalid subtitle SRT: ' + path);
+            return cues;
+        }
+        catch (error:Dynamic)
+        {
+            trace('[LanguageManager] Subtitle fallback: ' + error);
+            return null;
+        }
+    }
+
+public static function translatedSparrow(imageKey:String):Dynamic
+{
+    var fallback = Paths.getSparrowAtlas(imageKey);
+    var saved = Save.instance.modOptions.get('switcherooLanguage');
+
+    if (saved == null) return fallback;
+
+    var locale = StringTools.trim(Std.string(saved));
+    var lower = locale.toLowerCase();
+
+    if (locale == '' || lower == 'null' || lower == 'en' || lower == 'english'
+        || StringTools.startsWith(lower, 'en-')
+        || StringTools.startsWith(lower, 'en_'))
+        return fallback;
+
+    if (locale == 'es-US') locale = 'es-MX';
+
+    if (locale.indexOf('/') >= 0
+        || locale.indexOf('\\') >= 0
+        || locale.indexOf('..') >= 0)
+        return fallback;
+
+    try
+    {
+        var translatedKey = 'translations/' + locale + '/images/' + imageKey;
+
+        var pngPath = Paths.file(translatedKey + '.png');
+        var xmlPath = Paths.file(translatedKey + '.xml');
+
+        if (Assets.exists(pngPath) && Assets.exists(xmlPath))
+        {
+            return Paths.getSparrowAtlas(translatedKey);
+        }
+    }
+    catch (error:Dynamic)
+    {
+        trace('[LanguageManager] Sparrow fallback: ' + error);
+    }
+
+    return fallback;
+}
+
+
+    public static function parseSubtitleTranslation(text:String):Array<Dynamic>
+    {
+        if (text == null) return null;
+        if (text.charCodeAt(0) == 0xFEFF) text = text.substr(1);
+        text = StringTools.replace(text, '\r\n', '\n');
+        text = StringTools.replace(text, '\r', '\n');
+        var lines = text.split('\n');
+        var entries:Array<Dynamic> = [];
+        var i = 0;
+        while (i < lines.length)
+        {
+            if (StringTools.trim(lines[i]) == '') { i++; continue; }
+            var id = Std.parseInt(StringTools.trim(lines[i++]));
+            if (id == null || i >= lines.length) return null;
+            var times = lines[i++].split('-->');
+            if (times.length != 2) return null;
+            var start = subtitleTime(times[0]);
+            var end = subtitleTime(times[1]);
+            if (start < 0 || end <= start) return null;
+            var caption = '';
+            while (i < lines.length && StringTools.trim(lines[i]) != '')
+            {
+                if (caption != '') caption += '\n';
+                caption += lines[i++];
+            }
+            if (caption == '') return null;
+            entries.push({id: id, start: start, end: end, text: caption});
+        }
+        return entries.length == 0 ? null : entries;
+    }
+
+    static function subtitleTime(value:String):Float
+    {
+        var parts = StringTools.replace(StringTools.trim(value), ',', ':').split(':');
+        if (parts.length != 4) return -1;
+        var numbers:Array<Int> = [];
+        for (part in parts)
+        {
+            if (part == '') return -1;
+            for (i in 0...part.length)
+            {
+                var digit = part.charCodeAt(i);
+                if (digit < 48 || digit > 57) return -1;
+            }
+            var number = Std.parseInt(part);
+            if (number == null) return -1;
+            numbers.push(number);
+        }
+        if (numbers[1] > 59 || numbers[2] > 59 || numbers[3] > 999) return -1;
+        return numbers[0] * 3600000.0 + numbers[1] * 60000 + numbers[2] * 1000 + numbers[3];
+    }
+
+    public function loadDialogueTranslations(dialoguePath:String):StringMap<String>
+    {
+        var result:StringMap<String> = new StringMap();
+        var saved = Save.instance.modOptions.get('switcherooLanguage');
+        if (saved == null || dialoguePath == null) return result;
+        var locale = StringTools.trim(Std.string(saved));
+        var lower = locale.toLowerCase();
+        if (locale == '' || lower == 'null' || lower == 'en' || lower == 'english'
+            || StringTools.startsWith(lower, 'en-') || StringTools.startsWith(lower, 'en_')) return result;
+        if (locale == 'es-US') locale = 'es-MX';
+        if (locale.indexOf('/') >= 0 || locale.indexOf('\\') >= 0 || locale.indexOf('..') >= 0) return result;
+
+        var normalized = StringTools.replace(dialoguePath, '\\', '/');
+        var marker = 'dialogue/conversations/';
+        var markerIndex = normalized.indexOf(marker);
+        if (markerIndex < 0) return result;
+        var relative = normalized.substr(markerIndex + marker.length);
+        var slash = relative.lastIndexOf('/');
+        if (slash < 1) return result;
+        var folder = relative.substr(0, slash);
+        if (folder.indexOf('..') >= 0) return result;
+
+        var path = Paths.file('translations/' + locale + '/dialogues/' + folder + '/dialogue.txt');
+        try
+        {
+            if (!Assets.exists(path)) return result;
+            var text = Assets.getText(path);
+            if (text == null) return result;
+            return parseTranslations(text);
+        }
+        catch (error:Dynamic)
+        {
+            trace('[LanguageManager] Could not read ' + path + ': ' + error);
+        }
+        return result;
+    }
+
+    public static function parseTranslations(text:String):StringMap<String>
+    {
+        var result:StringMap<String> = new StringMap();
+        if (text == null) return result;
+        if (text.charCodeAt(0) == 0xFEFF) text = text.substr(1);
+        for (rawLine in text.split('\n'))
+        {
+            var line = StringTools.trim(rawLine);
+            if (line == '' || StringTools.startsWith(line, '#') || StringTools.startsWith(line, '//')) continue;
+            var separator = line.indexOf('::');
+            if (separator <= 0) continue;
+            var key = StringTools.trim(line.substr(0, separator));
+            var value = StringTools.trim(line.substr(separator + 2));
+            // Empty or malformed entries should keep the original JSON text.
+            if (key == '' || value == '') continue;
+            result.set(key, StringTools.replace(value, '\\n', '\n'));
+        }
+        return result;
+    }
+}

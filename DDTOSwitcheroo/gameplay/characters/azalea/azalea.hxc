@@ -1,0 +1,192 @@
+import funkin.play.character.SparrowCharacter;
+import funkin.play.character.CharacterType;
+import funkin.play.PlayState;
+import funkin.modding.module.ModuleHandler;
+import flixel.addons.effects.FlxTrail;
+import funkin.effects.FunkTrail;
+
+class AzaleaCharacter extends SparrowCharacter
+{
+    var evilTrail:FunkTrail = null;
+    function new()
+    {
+        super('azalea');
+    }
+
+      function onCreate(event:ScriptEvent)
+  {
+    super.onCreate(event);
+
+    
+    evilTrail = new FunkTrail(this.superClass, null, 4, 0.4, 0.3, 0.069);
+
+    
+    evilTrail.zIndex = 190;
+    addToStage(evilTrail);
+  }
+
+
+    override public function destroy():Void
+    {
+        // El escenario puede haber destruido la estela antes que al personaje.
+        var trail = evilTrail;
+        evilTrail = null;
+        if (trail != null && trail.target != null)
+        {
+            trail.kill();
+            if (currentStage != null && currentStage.group != null && currentStage.members != null)
+            {
+                // No desplazar los índices mientras el escenario destruye sus miembros.
+                currentStage.remove(trail, false);
+            }
+            trail.destroy();
+        }
+        super.destroy();
+    }
+
+    function missingDualDeath():Bool
+    {
+        var missing = ModuleHandler.getModule('MissingMode');
+        return missing != null && missing.scriptCall('isMissingDualDeath', []) == true;
+    }
+
+    function missingReplacement():Bool
+    {
+        var missing = ModuleHandler.getModule('MissingMode');
+        return missing != null && missing.scriptCall('isMissingAzalea', [this]) == true;
+    }
+
+    function manuelSide(noteData:Dynamic):Bool
+    {
+        var missing = ModuleHandler.getModule('MissingMode');
+        return missing != null && missing.scriptCall('isManuelSide', [noteData]) == true;
+    }
+
+    function onNoteMiss(event)
+    {
+        if ((missingDualDeath() || missingReplacement()) && manuelSide(event.note.noteData)) return;
+        super.onNoteMiss(event);
+    }
+
+    function onNoteHoldDrop(event)
+    {
+        if ((missingDualDeath() || missingReplacement()) && event.holdNote != null && manuelSide(event.holdNote.noteData)) return;
+        super.onNoteHoldDrop(event);
+    }
+
+    function onNoteHit(event:HitNoteScriptEvent)
+    {
+        if (missingReplacement() || missingDualDeath())
+        {
+            var allowedKind = missingReplacement() ? 'mom' : 'azalea';
+            if (!manuelSide(event.note.noteData) || event.note.kind != allowedKind) return;
+            holdTimer = 0;
+            playSingAnimation(event.note.noteData.getDirection(), false);
+            return;
+        }
+        var isMyNote =
+            (
+                !event.note.noteData.getMustHitNote() &&
+                (
+                    characterType == CharacterType.DAD ||
+                    characterType == CharacterType.GF || characterType == CharacterType.OTHER
+                )
+            )
+            ||
+            (
+                event.note.noteData.getMustHitNote() &&
+                characterType == CharacterType.BF
+            );
+
+        if (isMyNote && event.note.kind == "azalea")
+        {
+            holdTimer = 0;
+
+            this.playSingAnimation(
+                event.note.noteData.getDirection(),
+                false
+            );
+
+            return;
+        }
+
+        super.onNoteHit(event);
+    }
+
+    override public function playSingAnimation(
+        dir:NoteDirection,
+        miss:Bool = false,
+        ?suffix:String = ''
+    ):Void
+    {
+        if (miss && (missingDualDeath() || missingReplacement())) return;
+        holdTimer = 0;
+
+        if (flipX)
+        {
+            if (dir == 0)
+                dir = 3;
+            else if (dir == 3)
+                dir = 0;
+        }
+
+        var missRecolor =
+            ModuleHandler.getModule('MissRecolor');
+
+        if (missRecolor != null)
+        {
+            miss =
+                missRecolor.scriptCall(
+                    'prepareSingAnimation',
+                    [
+                        this,
+                        dir,
+                        miss,
+                        suffix
+                    ]
+                );
+        }
+
+        super.playSingAnimation(
+            dir,
+            miss,
+            suffix
+        );
+    }
+
+    override public function playAnimation(
+        name:String,
+        restart:Bool = false,
+        ignoreOther:Bool = false,
+        reversed:Bool = false
+    ):Void
+    {
+        var missRecolor =
+            ModuleHandler.getModule('MissRecolor');
+
+        if (missRecolor != null)
+        {
+            missRecolor.scriptCall(
+                'onPlayAnimation',
+                [
+                    this,
+                    name
+                ]
+            );
+        }
+
+        super.playAnimation(
+            name,
+            restart,
+            ignoreOther,
+            reversed
+        );
+    }
+
+  function addToStage(sprite:FlxSprite)
+  {
+    if (this.debug || PlayState.instance == null || currentStage == null) return;
+
+    currentStage.add(sprite);
+  }
+}

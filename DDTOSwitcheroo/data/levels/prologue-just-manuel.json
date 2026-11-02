@@ -1,0 +1,52 @@
+{
+	"version": "1.0.0",
+	"titleAsset": "storymenu/titles/prologue",
+	"props": [
+		{
+			"danceEvery": 2,
+			"offsets": [
+				470,
+				80
+			],
+			"isPixel": false,
+			"assetPath": "storymenu/props/PrologueWeek",
+			"alpha": 1,
+			"scale": 1,
+			"animations": [
+				{
+					"renderType": "",
+					"offsets": [
+						0,
+						0
+					],
+					"frameIndices": [],
+					"prefix": "idle0",
+					"looped": false,
+					"name": "idle",
+					"flipX": false,
+					"animType": "framelabel",
+					"flipY": false,
+					"frameRate": 24,
+					"assetPath": null,
+					"atlasSettings": null
+				}
+			]
+		}
+	],
+	"capsule": {
+		"offsets": [
+			6,
+			0
+		],
+		"name": "Only Manuel"
+	},
+	"background": "#B8DDFF",
+	"songs": [
+		"college-dispute",
+		"stories-of-violets",
+		"death-by-death",
+		"piece-by-piece"
+	],
+	"visible": true,
+	"name": "Only Manuel"
+}

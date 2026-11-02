@@ -1,0 +1,216 @@
+import funkin.play.PlayState;
+import funkin.play.song.Song;
+import funkin.modding.module.ModuleHandler;
+import flixel.tweens.FlxTween;
+import flixel.FlxSprite;
+import flixel.util.FlxTimer;
+import flixel.addons.display.FlxRuntimeShader;
+import funkin.play.character.CharacterDataParser;
+import funkin.play.character.CharacterType;
+
+class DualDeathSong extends Song
+{
+    var blackScreen:FlxSprite;
+
+    public function new()
+    {
+        super('dual-death');
+    }
+
+    public override function onCreate(event):Void
+    {
+        super.onCreate(event);
+
+        blackScreen = new FlxSprite(
+            -FlxG.width * FlxG.camera.zoom,
+            -FlxG.height * FlxG.camera.zoom
+        ).makeGraphic(
+            FlxG.width * 3,
+            FlxG.height * 3,
+            0xFF000000
+        );
+
+        blackScreen.scrollFactor.set();
+        blackScreen.alpha = 1;
+        PlayState.instance.add(blackScreen);
+
+        setEvil();
+    }
+
+    function setEvil():Void
+    {
+        if (
+            PlayState.instance == null ||
+            PlayState.instance.currentStage == null
+        )
+        {
+            return;
+        }
+
+        if (PlayState.instance.isMinimalMode)
+        {
+            return;
+        }
+
+        PlayState.instance.currentStage.evilSchool();
+    }
+
+    public override function onSongRetry(event):Void
+    {
+        super.onSongRetry(event);
+
+        blackScreen.alpha = 1;
+
+        setEvil();
+    }
+
+	public function onCountdownStart(event):Void {
+		super.onCountdownStart(event);
+		if (PlayState.instance == null || PlayState.instance.currentStage == null) return;
+		if (PlayState.instance.isMinimalMode) return;
+        
+		PlayState.instance.iconP2.loadCharacter('duetazalea');
+	}
+    
+    override function onSongLoaded(event)
+    {
+        super.onSongLoaded(event);
+
+        if (
+            PlayState.instance == null ||
+            PlayState.instance.currentStage == null
+        )
+        {
+            return;
+        }
+
+        if (PlayState.instance.isMinimalMode)
+        {
+            return;
+        }
+
+        createSpirit();
+    }
+
+    function onStepHit(event:SongTimeScriptEvent):Void
+    {
+        switch (event.step)
+        {
+            case 0:
+                FlxTween.tween(
+                    blackScreen,
+                    {alpha: 0},
+                    0.5
+                );
+
+            case 1864:
+                FlxTween.tween(
+                    blackScreen,
+                    {alpha: 1},
+                    0.5
+                );
+        }
+    }
+
+    var spirit;
+
+    function createSpirit()
+    {
+        if (spirit != null)
+        {
+            spirit.kill();
+        }
+
+        spirit =
+            CharacterDataParser.fetchCharacter('azalea');
+
+        if (spirit == null)
+        {
+            return;
+        }
+
+        spirit.set_characterType(
+            CharacterType.OTHER
+        );
+
+        PlayState.instance.currentStage.addCharacter(
+            spirit,
+            CharacterType.OTHER
+        );
+
+        spirit.zIndex =
+            PlayState.instance.currentStage.getDad().zIndex + 1;
+
+        var stageCharData =
+            PlayState.instance.currentStage._data.characters.dad;
+
+        spirit.x =
+            (stageCharData.position[0] -
+             spirit.characterOrigin.x) - 100;
+
+        spirit.y =
+            (stageCharData.position[1] -
+             spirit.characterOrigin.y) - 150;
+
+        spirit.originalPosition.set(
+            spirit.x,
+            spirit.y
+        );
+        
+        var dropShaduwuModule =
+            ModuleHandler.getModule(
+                'DropShaduwuShader'
+            );
+
+        if (dropShaduwuModule != null)
+        {
+            var rim:FlxRuntimeShader =
+                cast dropShaduwuModule.scriptCall(
+                    'attach',
+                    [
+                        spirit,
+
+                        // brightness
+                        -66,
+
+                        // hue
+                        -10,
+
+                        // contrast
+                        24,
+
+                        // saturation
+                        -23,
+
+                        // color
+                        0xFF52351D,
+
+                        // rim settings
+                        90,
+                        5,
+                        0.1,
+                        1,
+                        2
+                    ]
+                );
+
+            if (rim != null)
+            {
+                PlayState.instance.currentStage.registerRim(
+                    rim,
+                    cast spirit,
+                    true,
+
+                    -66,
+                    -10,
+                    24,
+                    -23,
+
+                    0xFF52351D
+                );
+            }
+        }
+
+        PlayState.instance.currentStage.refresh();
+    }
+}

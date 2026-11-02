@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TextureAtlas imagePath="UnknownPerson.png">
+	<!-- Created using the Spritesheet and XML generator -->
+	<!-- https://uncertainprod.github.io/FNF-Spritesheet-XML-generator-Web -->
+	<SubTexture name="sorry0000" x="0" y="0" width="413" height="499" frameX="-66" frameY="-3" frameWidth="500" frameHeight="500"/>
+</TextureAtlas>

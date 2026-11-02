@@ -1,0 +1,41 @@
+import funkin.play.PlayState;
+import funkin.play.song.Song;
+import flixel.FlxG;
+import funkin.graphics.FunkinSprite;
+
+class PoemsNPollenSong extends Song
+{
+    var hasPlayedIntroCutscene:Bool;
+    var hasPlayedOutroCutscene:Bool;
+
+
+    function new()
+    {
+        super('poems-n-pollen');
+    }
+
+    override function onCreate(event)
+    {
+        super.onCreate(event);
+
+        if (
+            PlayState.instance == null ||
+            PlayState.instance.currentStage == null
+        )
+        {
+            return;
+        }
+
+        if (PlayState.instance.isMinimalMode)
+            return;
+
+
+        if (
+            PlayState.instance.currentStage.freaksSprite != null
+        )
+        {
+            PlayState.instance.currentStage.freaksSprite.alpha =
+                1;
+        }
+    }
+}

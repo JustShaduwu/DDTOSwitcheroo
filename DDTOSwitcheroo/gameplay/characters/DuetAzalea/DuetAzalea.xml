@@ -1,0 +1,175 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<TextureAtlas imagePath="DuetAzalea.png">
+	<SubTexture name="Idle0000" x="0" y="0" width="140" height="126" frameX="-5" frameY="-18" frameWidth="150" frameHeight="144" />
+	<SubTexture name="Idle0001" x="0" y="0" width="140" height="126" frameX="-5" frameY="-18" frameWidth="150" frameHeight="144" />
+	<SubTexture name="Idle0002" x="140" y="0" width="140" height="126" frameX="-5" frameY="-18" frameWidth="150" frameHeight="144" />
+	<SubTexture name="Idle0003" x="140" y="0" width="140" height="126" frameX="-5" frameY="-18" frameWidth="150" frameHeight="144" />
+	<SubTexture name="Idle0004" x="280" y="0" width="140" height="126" frameX="-5" frameY="-18" frameWidth="150" frameHeight="144" />
+	<SubTexture name="Idle0005" x="280" y="0" width="140" height="126" frameX="-5" frameY="-18" frameWidth="150" frameHeight="144" />
+	<SubTexture name="Idle0006" x="420" y="0" width="140" height="126" frameX="-5" frameY="-18" frameWidth="150" frameHeight="144" />
+	<SubTexture name="Idle0007" x="420" y="0" width="140" height="126" frameX="-5" frameY="-18" frameWidth="150" frameHeight="144" />
+	<SubTexture name="Idle0008" x="560" y="0" width="140" height="126" frameX="-5" frameY="-18" frameWidth="150" frameHeight="144" />
+	<SubTexture name="Idle0009" x="560" y="0" width="140" height="126" frameX="-5" frameY="-18" frameWidth="150" frameHeight="144" />
+	<SubTexture name="Down_Azalea0000" x="700" y="0" width="140" height="126" frameX="-5" frameY="-18" frameWidth="150" frameHeight="144" />
+	<SubTexture name="Down_Azalea0001" x="700" y="0" width="140" height="126" frameX="-5" frameY="-18" frameWidth="150" frameHeight="144" />
+	<SubTexture name="Down_Azalea0002" x="840" y="0" width="140" height="126" frameX="-5" frameY="-18" frameWidth="150" frameHeight="144" />
+	<SubTexture name="Down_Azalea0003" x="840" y="0" width="140" height="126" frameX="-5" frameY="-18" frameWidth="150" frameHeight="144" />
+	<SubTexture name="Down_Azalea0004" x="980" y="0" width="140" height="126" frameX="-5" frameY="-18" frameWidth="150" frameHeight="144" />
+	<SubTexture name="Down_Azalea0005" x="980" y="0" width="140" height="126" frameX="-5" frameY="-18" frameWidth="150" frameHeight="144" />
+	<SubTexture name="Down_Azalea0006" x="1120" y="0" width="140" height="126" frameX="-5" frameY="-18" frameWidth="150" frameHeight="144" />
+	<SubTexture name="Down_Azalea0007" x="1120" y="0" width="140" height="126" frameX="-5" frameY="-18" frameWidth="150" frameHeight="144" />
+	<SubTexture name="Down_Azalea0008" x="1260" y="0" width="140" height="126" frameX="-5" frameY="-18" frameWidth="150" frameHeight="144" />
+	<SubTexture name="Down_Azalea0009" x="1260" y="0" width="140" height="126" frameX="-5" frameY="-18" frameWidth="150" frameHeight="144" />
+	<SubTexture name="Down_Azalea0010" x="0" y="126" width="140" height="126" frameX="-5" frameY="-18" frameWidth="150" frameHeight="144" />
+	<SubTexture name="Down_Azalea0011" x="0" y="126" width="140" height="126" frameX="-5" frameY="-18" frameWidth="150" frameHeight="144" />
+	<SubTexture name="Down_Azalea0012" x="140" y="126" width="140" height="126" frameX="-5" frameY="-18" frameWidth="150" frameHeight="144" />
+	<SubTexture name="Down_Azalea0013" x="140" y="126" width="140" height="126" frameX="-5" frameY="-18" frameWidth="150" frameHeight="144" />
+	<SubTexture name="Down_Azalea0014" x="280" y="126" width="140" height="126" frameX="-5" frameY="-18" frameWidth="150" frameHeight="144" />
+	<SubTexture name="Down_Azalea0015" x="280" y="126" width="140" height="126" frameX="-5" frameY="-18" frameWidth="150" frameHeight="144" />
+	<SubTexture name="Down_Azalea0016" x="420" y="126" width="140" height="126" frameX="-5" frameY="-18" frameWidth="150" frameHeight="144" />
+	<SubTexture name="Down_Azalea0017" x="420" y="126" width="140" height="126" frameX="-5" frameY="-18" frameWidth="150" frameHeight="144" />
+	<SubTexture name="Down_Azalea0018" x="560" y="126" width="140" height="126" frameX="-5" frameY="-18" frameWidth="150" frameHeight="144" />
+	<SubTexture name="Down_Azalea0019" x="560" y="126" width="140" height="126" frameX="-5" frameY="-18" frameWidth="150" frameHeight="144" />
+	<SubTexture name="Down_Azalea0020" x="700" y="126" width="140" height="126" frameX="-5" frameY="-18" frameWidth="150" frameHeight="144" />
+	<SubTexture name="Down_Azalea0021" x="700" y="126" width="140" height="126" frameX="-5" frameY="-18" frameWidth="150" frameHeight="144" />
+	<SubTexture name="Down_Azalea0022" x="840" y="126" width="140" height="126" frameX="-5" frameY="-18" frameWidth="150" frameHeight="144" />
+	<SubTexture name="Down_Azalea0023" x="840" y="126" width="140" height="126" frameX="-5" frameY="-18" frameWidth="150" frameHeight="144" />
+	<SubTexture name="Down_Azalea0024" x="980" y="126" width="140" height="126" frameX="-5" frameY="-18" frameWidth="150" frameHeight="144" />
+	<SubTexture name="Down_Azalea0025" x="980" y="126" width="140" height="126" frameX="-5" frameY="-18" frameWidth="150" frameHeight="144" />
+	<SubTexture name="Down_Azalea0026" x="1120" y="126" width="140" height="126" frameX="-5" frameY="-18" frameWidth="150" frameHeight="144" />
+	<SubTexture name="Down_Azalea0027" x="1120" y="126" width="140" height="126" frameX="-5" frameY="-18" frameWidth="150" frameHeight="144" />
+	<SubTexture name="Down_Azalea0028" x="1260" y="126" width="140" height="126" frameX="-5" frameY="-18" frameWidth="150" frameHeight="144" />
+	<SubTexture name="Down_Azalea0029" x="1260" y="126" width="140" height="126" frameX="-5" frameY="-18" frameWidth="150" frameHeight="144" />
+	<SubTexture name="Left_Azalea0000" x="0" y="252" width="140" height="126" frameX="-5" frameY="-18" frameWidth="150" frameHeight="144" />
+	<SubTexture name="Left_Azalea0001" x="0" y="252" width="140" height="126" frameX="-5" frameY="-18" frameWidth="150" frameHeight="144" />
+	<SubTexture name="Left_Azalea0002" x="140" y="252" width="140" height="126" frameX="-5" frameY="-18" frameWidth="150" frameHeight="144" />
+	<SubTexture name="Left_Azalea0003" x="140" y="252" width="140" height="126" frameX="-5" frameY="-18" frameWidth="150" frameHeight="144" />
+	<SubTexture name="Left_Azalea0004" x="280" y="252" width="140" height="126" frameX="-5" frameY="-18" frameWidth="150" frameHeight="144" />
+	<SubTexture name="Left_Azalea0005" x="280" y="252" width="140" height="126" frameX="-5" frameY="-18" frameWidth="150" frameHeight="144" />
+	<SubTexture name="Left_Azalea0006" x="420" y="252" width="140" height="126" frameX="-5" frameY="-18" frameWidth="150" frameHeight="144" />
+	<SubTexture name="Left_Azalea0007" x="420" y="252" width="140" height="126" frameX="-5" frameY="-18" frameWidth="150" frameHeight="144" />
+	<SubTexture name="Left_Azalea0008" x="560" y="252" width="140" height="126" frameX="-5" frameY="-18" frameWidth="150" frameHeight="144" />
+	<SubTexture name="Left_Azalea0009" x="560" y="252" width="140" height="126" frameX="-5" frameY="-18" frameWidth="150" frameHeight="144" />
+	<SubTexture name="Left_Azalea0010" x="700" y="252" width="140" height="126" frameX="-5" frameY="-18" frameWidth="150" frameHeight="144" />
+	<SubTexture name="Left_Azalea0011" x="700" y="252" width="140" height="126" frameX="-5" frameY="-18" frameWidth="150" frameHeight="144" />
+	<SubTexture name="Left_Azalea0012" x="840" y="252" width="140" height="126" frameX="-5" frameY="-18" frameWidth="150" frameHeight="144" />
+	<SubTexture name="Left_Azalea0013" x="840" y="252" width="140" height="126" frameX="-5" frameY="-18" frameWidth="150" frameHeight="144" />
+	<SubTexture name="Left_Azalea0014" x="980" y="252" width="140" height="126" frameX="-5" frameY="-18" frameWidth="150" frameHeight="144" />
+	<SubTexture name="Left_Azalea0015" x="980" y="252" width="140" height="126" frameX="-5" frameY="-18" frameWidth="150" frameHeight="144" />
+	<SubTexture name="Left_Azalea0016" x="1120" y="252" width="140" height="126" frameX="-5" frameY="-18" frameWidth="150" frameHeight="144" />
+	<SubTexture name="Left_Azalea0017" x="1120" y="252" width="140" height="126" frameX="-5" frameY="-18" frameWidth="150" frameHeight="144" />
+	<SubTexture name="Left_Azalea0018" x="1260" y="252" width="140" height="126" frameX="-5" frameY="-18" frameWidth="150" frameHeight="144" />
+	<SubTexture name="Left_Azalea0019" x="1260" y="252" width="140" height="126" frameX="-5" frameY="-18" frameWidth="150" frameHeight="144" />
+	<SubTexture name="Left_Azalea0020" x="0" y="378" width="140" height="126" frameX="-5" frameY="-18" frameWidth="150" frameHeight="144" />
+	<SubTexture name="Left_Azalea0021" x="0" y="378" width="140" height="126" frameX="-5" frameY="-18" frameWidth="150" frameHeight="144" />
+	<SubTexture name="Left_Azalea0022" x="140" y="378" width="140" height="126" frameX="-5" frameY="-18" frameWidth="150" frameHeight="144" />
+	<SubTexture name="Left_Azalea0023" x="140" y="378" width="140" height="126" frameX="-5" frameY="-18" frameWidth="150" frameHeight="144" />
+	<SubTexture name="Left_Azalea0024" x="280" y="378" width="140" height="126" frameX="-5" frameY="-18" frameWidth="150" frameHeight="144" />
+	<SubTexture name="Left_Azalea0025" x="280" y="378" width="140" height="126" frameX="-5" frameY="-18" frameWidth="150" frameHeight="144" />
+	<SubTexture name="Left_Azalea0026" x="420" y="378" width="140" height="126" frameX="-5" frameY="-18" frameWidth="150" frameHeight="144" />
+	<SubTexture name="Left_Azalea0027" x="420" y="378" width="140" height="126" frameX="-5" frameY="-18" frameWidth="150" frameHeight="144" />
+	<SubTexture name="Right_Azalea0000" x="560" y="378" width="140" height="126" frameX="-5" frameY="-18" frameWidth="150" frameHeight="144" />
+	<SubTexture name="Right_Azalea0001" x="560" y="378" width="140" height="126" frameX="-5" frameY="-18" frameWidth="150" frameHeight="144" />
+	<SubTexture name="Right_Azalea0002" x="700" y="378" width="140" height="126" frameX="-5" frameY="-18" frameWidth="150" frameHeight="144" />
+	<SubTexture name="Right_Azalea0003" x="700" y="378" width="140" height="126" frameX="-5" frameY="-18" frameWidth="150" frameHeight="144" />
+	<SubTexture name="Right_Azalea0004" x="840" y="378" width="140" height="126" frameX="-5" frameY="-18" frameWidth="150" frameHeight="144" />
+	<SubTexture name="Right_Azalea0005" x="840" y="378" width="140" height="126" frameX="-5" frameY="-18" frameWidth="150" frameHeight="144" />
+	<SubTexture name="Right_Azalea0006" x="980" y="378" width="140" height="126" frameX="-5" frameY="-18" frameWidth="150" frameHeight="144" />
+	<SubTexture name="Right_Azalea0007" x="980" y="378" width="140" height="126" frameX="-5" frameY="-18" frameWidth="150" frameHeight="144" />
+	<SubTexture name="Right_Azalea0008" x="1120" y="378" width="140" height="126" frameX="-5" frameY="-18" frameWidth="150" frameHeight="144" />
+	<SubTexture name="Right_Azalea0009" x="1120" y="378" width="140" height="126" frameX="-5" frameY="-18" frameWidth="150" frameHeight="144" />
+	<SubTexture name="Right_Azalea0010" x="1260" y="378" width="140" height="126" frameX="-5" frameY="-18" frameWidth="150" frameHeight="144" />
+	<SubTexture name="Right_Azalea0011" x="1260" y="378" width="140" height="126" frameX="-5" frameY="-18" frameWidth="150" frameHeight="144" />
+	<SubTexture name="Right_Azalea0012" x="0" y="504" width="140" height="126" frameX="-5" frameY="-18" frameWidth="150" frameHeight="144" />
+	<SubTexture name="Right_Azalea0013" x="0" y="504" width="140" height="126" frameX="-5" frameY="-18" frameWidth="150" frameHeight="144" />
+	<SubTexture name="Right_Azalea0014" x="140" y="504" width="140" height="126" frameX="-5" frameY="-18" frameWidth="150" frameHeight="144" />
+	<SubTexture name="Right_Azalea0015" x="140" y="504" width="140" height="126" frameX="-5" frameY="-18" frameWidth="150" frameHeight="144" />
+	<SubTexture name="Right_Azalea0016" x="280" y="504" width="140" height="126" frameX="-5" frameY="-18" frameWidth="150" frameHeight="144" />
+	<SubTexture name="Right_Azalea0017" x="280" y="504" width="140" height="126" frameX="-5" frameY="-18" frameWidth="150" frameHeight="144" />
+	<SubTexture name="Right_Azalea0018" x="420" y="504" width="140" height="126" frameX="-5" frameY="-18" frameWidth="150" frameHeight="144" />
+	<SubTexture name="Right_Azalea0019" x="420" y="504" width="140" height="126" frameX="-5" frameY="-18" frameWidth="150" frameHeight="144" />
+	<SubTexture name="Right_Azalea0020" x="560" y="504" width="140" height="126" frameX="-5" frameY="-18" frameWidth="150" frameHeight="144" />
+	<SubTexture name="Right_Azalea0021" x="560" y="504" width="140" height="126" frameX="-5" frameY="-18" frameWidth="150" frameHeight="144" />
+	<SubTexture name="Right_Azalea0022" x="700" y="504" width="140" height="126" frameX="-5" frameY="-18" frameWidth="150" frameHeight="144" />
+	<SubTexture name="Right_Azalea0023" x="700" y="504" width="140" height="126" frameX="-5" frameY="-18" frameWidth="150" frameHeight="144" />
+	<SubTexture name="Right_Azalea0024" x="840" y="504" width="140" height="126" frameX="-5" frameY="-18" frameWidth="150" frameHeight="144" />
+	<SubTexture name="Right_Azalea0025" x="840" y="504" width="140" height="126" frameX="-5" frameY="-18" frameWidth="150" frameHeight="144" />
+	<SubTexture name="Right_Azalea0026" x="980" y="504" width="140" height="126" frameX="-5" frameY="-18" frameWidth="150" frameHeight="144" />
+	<SubTexture name="Right_Azalea0027" x="980" y="504" width="140" height="126" frameX="-5" frameY="-18" frameWidth="150" frameHeight="144" />
+	<SubTexture name="Right_Azalea0028" x="1120" y="504" width="140" height="126" frameX="-5" frameY="-18" frameWidth="150" frameHeight="144" />
+	<SubTexture name="Right_Azalea0029" x="1120" y="504" width="140" height="126" frameX="-5" frameY="-18" frameWidth="150" frameHeight="144" />
+	<SubTexture name="Right_Azalea0030" x="1260" y="504" width="140" height="126" frameX="-5" frameY="-18" frameWidth="150" frameHeight="144" />
+	<SubTexture name="Right_Azalea0031" x="1260" y="504" width="140" height="126" frameX="-5" frameY="-18" frameWidth="150" frameHeight="144" />
+	<SubTexture name="Right_Azalea0032" x="0" y="630" width="140" height="126" frameX="-5" frameY="-18" frameWidth="150" frameHeight="144" />
+	<SubTexture name="Right_Azalea0033" x="0" y="630" width="140" height="126" frameX="-5" frameY="-18" frameWidth="150" frameHeight="144" />
+	<SubTexture name="Right_Azalea0034" x="140" y="630" width="140" height="126" frameX="-5" frameY="-18" frameWidth="150" frameHeight="144" />
+	<SubTexture name="Right_Azalea0035" x="140" y="630" width="140" height="126" frameX="-5" frameY="-18" frameWidth="150" frameHeight="144" />
+	<SubTexture name="Right_Azalea0036" x="280" y="630" width="140" height="126" frameX="-5" frameY="-18" frameWidth="150" frameHeight="144" />
+	<SubTexture name="Right_Azalea0037" x="280" y="630" width="140" height="126" frameX="-5" frameY="-18" frameWidth="150" frameHeight="144" />
+	<SubTexture name="Right_Azalea0038" x="420" y="630" width="140" height="126" frameX="-5" frameY="-18" frameWidth="150" frameHeight="144" />
+	<SubTexture name="Right_Azalea0039" x="420" y="630" width="140" height="126" frameX="-5" frameY="-18" frameWidth="150" frameHeight="144" />
+	<SubTexture name="Up_Azalea0000" x="560" y="630" width="140" height="126" frameX="-5" frameY="-18" frameWidth="150" frameHeight="144" />
+	<SubTexture name="Up_Azalea0001" x="560" y="630" width="140" height="126" frameX="-5" frameY="-18" frameWidth="150" frameHeight="144" />
+	<SubTexture name="Up_Azalea0002" x="700" y="630" width="140" height="126" frameX="-5" frameY="-18" frameWidth="150" frameHeight="144" />
+	<SubTexture name="Up_Azalea0003" x="700" y="630" width="140" height="126" frameX="-5" frameY="-18" frameWidth="150" frameHeight="144" />
+	<SubTexture name="Up_Azalea0004" x="840" y="630" width="140" height="126" frameX="-5" frameY="-18" frameWidth="150" frameHeight="144" />
+	<SubTexture name="Up_Azalea0005" x="840" y="630" width="140" height="126" frameX="-5" frameY="-18" frameWidth="150" frameHeight="144" />
+	<SubTexture name="Up_Azalea0006" x="980" y="630" width="140" height="126" frameX="-5" frameY="-18" frameWidth="150" frameHeight="144" />
+	<SubTexture name="Up_Azalea0007" x="980" y="630" width="140" height="126" frameX="-5" frameY="-18" frameWidth="150" frameHeight="144" />
+	<SubTexture name="Up_Azalea0008" x="1120" y="630" width="140" height="126" frameX="-5" frameY="-18" frameWidth="150" frameHeight="144" />
+	<SubTexture name="Up_Azalea0009" x="1120" y="630" width="140" height="126" frameX="-5" frameY="-18" frameWidth="150" frameHeight="144" />
+	<SubTexture name="Up_Azalea0010" x="1260" y="630" width="140" height="126" frameX="-5" frameY="-18" frameWidth="150" frameHeight="144" />
+	<SubTexture name="Up_Azalea0011" x="1260" y="630" width="140" height="126" frameX="-5" frameY="-18" frameWidth="150" frameHeight="144" />
+	<SubTexture name="Up_Azalea0012" x="0" y="756" width="140" height="126" frameX="-5" frameY="-18" frameWidth="150" frameHeight="144" />
+	<SubTexture name="Up_Azalea0013" x="0" y="756" width="140" height="126" frameX="-5" frameY="-18" frameWidth="150" frameHeight="144" />
+	<SubTexture name="Up_Azalea0014" x="140" y="756" width="140" height="126" frameX="-5" frameY="-18" frameWidth="150" frameHeight="144" />
+	<SubTexture name="Up_Azalea0015" x="140" y="756" width="140" height="126" frameX="-5" frameY="-18" frameWidth="150" frameHeight="144" />
+	<SubTexture name="Up_Azalea0016" x="280" y="756" width="140" height="126" frameX="-5" frameY="-18" frameWidth="150" frameHeight="144" />
+	<SubTexture name="Up_Azalea0017" x="280" y="756" width="140" height="126" frameX="-5" frameY="-18" frameWidth="150" frameHeight="144" />
+	<SubTexture name="Up_Azalea0018" x="420" y="756" width="140" height="126" frameX="-5" frameY="-18" frameWidth="150" frameHeight="144" />
+	<SubTexture name="Up_Azalea0019" x="420" y="756" width="140" height="126" frameX="-5" frameY="-18" frameWidth="150" frameHeight="144" />
+	<SubTexture name="Up_Azalea0020" x="560" y="756" width="140" height="126" frameX="-5" frameY="-18" frameWidth="150" frameHeight="144" />
+	<SubTexture name="Up_Azalea0021" x="560" y="756" width="140" height="126" frameX="-5" frameY="-18" frameWidth="150" frameHeight="144" />
+	<SubTexture name="Up_Azalea0022" x="700" y="756" width="140" height="126" frameX="-5" frameY="-18" frameWidth="150" frameHeight="144" />
+	<SubTexture name="Up_Azalea0023" x="700" y="756" width="140" height="126" frameX="-5" frameY="-18" frameWidth="150" frameHeight="144" />
+	<SubTexture name="Up_Azalea0024" x="840" y="756" width="140" height="126" frameX="-5" frameY="-18" frameWidth="150" frameHeight="144" />
+	<SubTexture name="Up_Azalea0025" x="840" y="756" width="140" height="126" frameX="-5" frameY="-18" frameWidth="150" frameHeight="144" />
+	<SubTexture name="Up_Azalea0026" x="980" y="756" width="140" height="126" frameX="-5" frameY="-18" frameWidth="150" frameHeight="144" />
+	<SubTexture name="Up_Azalea0027" x="980" y="756" width="140" height="126" frameX="-5" frameY="-18" frameWidth="150" frameHeight="144" />
+	<SubTexture name="Up_Azalea0028" x="1120" y="756" width="140" height="126" frameX="-5" frameY="-18" frameWidth="150" frameHeight="144" />
+	<SubTexture name="Up_Azalea0029" x="1120" y="756" width="140" height="126" frameX="-5" frameY="-18" frameWidth="150" frameHeight="144" />
+	<SubTexture name="Up_Azalea0030" x="1260" y="756" width="140" height="126" frameX="-5" frameY="-18" frameWidth="150" frameHeight="144" />
+	<SubTexture name="Up_Azalea0031" x="1260" y="756" width="140" height="126" frameX="-5" frameY="-18" frameWidth="150" frameHeight="144" />
+	<SubTexture name="Down Man0000" x="0" y="882" width="140" height="126" frameX="-5" frameY="-18" frameWidth="150" frameHeight="144" />
+	<SubTexture name="Down Man0001" x="0" y="882" width="140" height="126" frameX="-5" frameY="-18" frameWidth="150" frameHeight="144" />
+	<SubTexture name="Down Man0002" x="140" y="882" width="140" height="126" frameX="-5" frameY="-18" frameWidth="150" frameHeight="144" />
+	<SubTexture name="Down Man0003" x="140" y="882" width="140" height="126" frameX="-5" frameY="-18" frameWidth="150" frameHeight="144" />
+	<SubTexture name="Down Man0004" x="280" y="882" width="140" height="126" frameX="-5" frameY="-18" frameWidth="150" frameHeight="144" />
+	<SubTexture name="Down Man0005" x="280" y="882" width="140" height="126" frameX="-5" frameY="-18" frameWidth="150" frameHeight="144" />
+	<SubTexture name="Down Man0006" x="420" y="882" width="140" height="126" frameX="-5" frameY="-18" frameWidth="150" frameHeight="144" />
+	<SubTexture name="Down Man0007" x="420" y="882" width="140" height="126" frameX="-5" frameY="-18" frameWidth="150" frameHeight="144" />
+	<SubTexture name="Left Man0000" x="560" y="882" width="140" height="126" frameX="-5" frameY="-18" frameWidth="150" frameHeight="144" />
+	<SubTexture name="Left Man0001" x="560" y="882" width="140" height="126" frameX="-5" frameY="-18" frameWidth="150" frameHeight="144" />
+	<SubTexture name="Left Man0002" x="700" y="882" width="140" height="126" frameX="-5" frameY="-18" frameWidth="150" frameHeight="144" />
+	<SubTexture name="Left Man0003" x="700" y="882" width="140" height="126" frameX="-5" frameY="-18" frameWidth="150" frameHeight="144" />
+	<SubTexture name="Left Man0004" x="840" y="882" width="140" height="126" frameX="-5" frameY="-18" frameWidth="150" frameHeight="144" />
+	<SubTexture name="Left Man0005" x="840" y="882" width="140" height="126" frameX="-5" frameY="-18" frameWidth="150" frameHeight="144" />
+	<SubTexture name="Left Man0006" x="980" y="882" width="140" height="126" frameX="-5" frameY="-18" frameWidth="150" frameHeight="144" />
+	<SubTexture name="Left Man0007" x="980" y="882" width="140" height="126" frameX="-5" frameY="-18" frameWidth="150" frameHeight="144" />
+	<SubTexture name="Up Man0000" x="1120" y="882" width="140" height="126" frameX="-5" frameY="-18" frameWidth="150" frameHeight="144" />
+	<SubTexture name="Up Man0001" x="1120" y="882" width="140" height="126" frameX="-5" frameY="-18" frameWidth="150" frameHeight="144" />
+	<SubTexture name="Up Man0002" x="1260" y="882" width="140" height="126" frameX="-5" frameY="-18" frameWidth="150" frameHeight="144" />
+	<SubTexture name="Up Man0003" x="1260" y="882" width="140" height="126" frameX="-5" frameY="-18" frameWidth="150" frameHeight="144" />
+	<SubTexture name="Up Man0004" x="0" y="1008" width="140" height="126" frameX="-5" frameY="-18" frameWidth="150" frameHeight="144" />
+	<SubTexture name="Up Man0005" x="0" y="1008" width="140" height="126" frameX="-5" frameY="-18" frameWidth="150" frameHeight="144" />
+	<SubTexture name="Up Man0006" x="140" y="1008" width="140" height="126" frameX="-5" frameY="-18" frameWidth="150" frameHeight="144" />
+	<SubTexture name="Up Man0007" x="140" y="1008" width="140" height="126" frameX="-5" frameY="-18" frameWidth="150" frameHeight="144" />
+	<SubTexture name="Right Man0000" x="280" y="1008" width="140" height="126" frameX="-5" frameY="-18" frameWidth="150" frameHeight="144" />
+	<SubTexture name="Right Man0001" x="280" y="1008" width="140" height="126" frameX="-5" frameY="-18" frameWidth="150" frameHeight="144" />
+	<SubTexture name="Right Man0002" x="420" y="1008" width="140" height="126" frameX="-5" frameY="-18" frameWidth="150" frameHeight="144" />
+	<SubTexture name="Right Man0003" x="420" y="1008" width="140" height="126" frameX="-5" frameY="-18" frameWidth="150" frameHeight="144" />
+	<SubTexture name="Right Man0004" x="560" y="1008" width="140" height="126" frameX="-5" frameY="-18" frameWidth="150" frameHeight="144" />
+	<SubTexture name="Right Man0005" x="560" y="1008" width="140" height="126" frameX="-5" frameY="-18" frameWidth="150" frameHeight="144" />
+	<SubTexture name="Right Man0006" x="700" y="1008" width="140" height="126" frameX="-5" frameY="-18" frameWidth="150" frameHeight="144" />
+	<SubTexture name="Right Man0007" x="700" y="1008" width="140" height="126" frameX="-5" frameY="-18" frameWidth="150" frameHeight="144" />
+</TextureAtlas>

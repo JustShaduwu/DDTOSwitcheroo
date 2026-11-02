@@ -1,0 +1,160 @@
+{
+	"version": "1.0.0",
+	"renderType": "sparrow",
+	"offsets": [
+		0,
+		0
+	],
+	"danceEvery": 1,
+	"scale": 6,
+	"name": "DuetNorm",
+	"cameraOffsets": [
+		0,
+		0
+	],
+	"flipX": false,
+	"startingAnimation": "idle",
+	"isPixel": true,
+	"singTime": 4,
+	"flipY": false,
+	"healthIcon": {
+		"isPixel": false,
+		"offsets": [
+			0,
+			0
+		],
+		"scale": 1.2,
+		"flipX": false,
+		"id": "duet"
+	},
+	"assetPath": "gameplay/characters/Duet_Original/Duet",
+	"generatedBy": "Nova Character Editor v3.0.1",
+	"animations": [
+		{
+			"offsets": [
+				2,
+				0
+			],
+			"frameIndices": [],
+			"prefix": "MkaUp",
+			"name": "singUP",
+			"looped": false,
+			"flipX": false,
+			"flipY": false,
+			"frameRate": 24,
+			"assetPath": null
+		},
+		{
+			"offsets": [
+				2,
+				0
+			],
+			"frameIndices": [],
+			"prefix": "MkaDown",
+			"name": "singDOWN",
+			"looped": false,
+			"flipX": false,
+			"flipY": false,
+			"frameRate": 24,
+			"assetPath": null
+		},
+		{
+			"offsets": [
+				2,
+				0
+			],
+			"frameIndices": [],
+			"prefix": "MkaLeft",
+			"name": "singLEFT",
+			"looped": false,
+			"flipX": false,
+			"flipY": false,
+			"frameRate": 24,
+			"assetPath": null
+		},
+		{
+			"offsets": [
+				2,
+				0
+			],
+			"frameIndices": [],
+			"prefix": "MkaRight",
+			"name": "singRIGHT",
+			"looped": false,
+			"flipX": false,
+			"flipY": false,
+			"frameRate": 24,
+			"assetPath": null
+		},
+		{
+			"offsets": [
+				2,
+				0
+			],
+			"frameIndices": [],
+			"prefix": "SenLeft",
+			"name": "singLEFT-alt",
+			"looped": false,
+			"flipX": false,
+			"flipY": false,
+			"frameRate": 24,
+			"assetPath": null
+		},
+		{
+			"offsets": [
+				2,
+				0
+			],
+			"frameIndices": [],
+			"prefix": "SenRight",
+			"name": "singRIGHT-alt",
+			"looped": false,
+			"flipX": false,
+			"flipY": false,
+			"frameRate": 24,
+			"assetPath": null
+		},
+		{
+			"offsets": [
+				2,
+				0
+			],
+			"frameIndices": [],
+			"prefix": "SenUp",
+			"name": "singUP-alt",
+			"looped": false,
+			"flipX": false,
+			"flipY": false,
+			"frameRate": 24,
+			"assetPath": null
+		},
+		{
+			"offsets": [
+				2,
+				0
+			],
+			"frameIndices": [],
+			"prefix": "SenDown",
+			"name": "singDOWN-alt",
+			"looped": false,
+			"flipX": false,
+			"flipY": false,
+			"frameRate": 24,
+			"assetPath": null
+		},
+		{
+			"offsets": [
+				2,
+				0
+			],
+			"frameIndices": [],
+			"prefix": "FightIdle",
+			"name": "idle",
+			"looped": false,
+			"flipX": false,
+			"flipY": false,
+			"frameRate": 24,
+			"assetPath": null
+		}
+	]
+}

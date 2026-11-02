@@ -1,0 +1,346 @@
+import funkin.play.PlayState;
+import funkin.play.event.ScriptedSongEvent;
+
+import flixel.FlxG;
+import flixel.FlxSprite;
+
+import flixel.tweens.FlxTween;
+import flixel.tweens.FlxEase;
+
+
+class MarkovEyesEvent extends ScriptedSongEvent
+{
+    var funnyEyes:FlxSprite = null;
+
+
+    public function new()
+    {
+        super('MarkovEyesEvent');
+    }
+
+
+    public override function handleEvent(
+        data
+    ):Void
+    {
+        if (
+            PlayState.instance == null ||
+            PlayState.instance.isMinimalMode
+        )
+        {
+            return;
+        }
+
+
+        ensureFunnyEyes();
+
+        var activation:Int = 1;
+
+        if (
+            data != null &&
+            data.value != null &&
+            data.value.activation != null
+        )
+        {
+            activation =
+                Std.int(
+                    data.value.activation
+                );
+        }
+
+        var speed:Float = 1;
+
+        if (
+            data != null &&
+            data.value != null &&
+            data.value.speed != null
+        )
+        {
+            speed =
+                Std.parseFloat(
+                    Std.string(
+                        data.value.speed
+                    )
+                );
+
+            if (Math.isNaN(speed))
+            {
+                speed = 1;
+            }
+        }
+
+        speed =
+            Math.max(
+                0,
+                speed
+            );
+
+
+        switch (activation)
+        {
+            case 0:
+                hideEyes(
+                    speed
+                );
+
+            case 1:
+                showEyes(
+                    speed
+                );
+
+            default:
+                showEyes(
+                    speed
+                );
+        }
+    }
+
+    function ensureFunnyEyes():Void
+    {
+        if (
+            PlayState.instance == null ||
+            funnyEyes != null
+        )
+        {
+            return;
+        }
+
+
+        funnyEyes =
+            new FlxSprite(
+                0,
+                0
+            );
+
+
+        funnyEyes.frames =
+            Paths.getSparrowAtlas(
+                'EyeMidwayBG'
+            );
+
+
+        funnyEyes.animation.addByPrefix(
+            'iseeu',
+            'MidwayBG',
+            24,
+            true
+        );
+
+
+        funnyEyes.antialiasing =
+            true;
+
+
+        funnyEyes.alpha =
+            0.0001;
+
+
+        funnyEyes.visible =
+            true;
+
+
+        funnyEyes.cameras =
+        [
+            PlayState.instance.camHUD
+        ];
+
+
+        funnyEyes.setGraphicSize(
+            FlxG.width
+        );
+
+
+        funnyEyes.scrollFactor.set();
+
+
+        funnyEyes.updateHitbox();
+
+
+        funnyEyes.screenCenter();
+
+
+        PlayState.instance.add(
+            funnyEyes
+        );
+    }
+
+    function showEyes(
+        speed:Float
+    ):Void
+    {
+        if (funnyEyes == null)
+            return;
+
+
+        FlxTween.cancelTweensOf(
+            funnyEyes
+        );
+
+
+        funnyEyes.visible =
+            true;
+
+
+        funnyEyes.animation.play(
+            'iseeu',
+            true
+        );
+
+
+        /*
+         * Speed 0 = instantáneo.
+         */
+        if (speed <= 0)
+        {
+            funnyEyes.alpha =
+                1;
+
+            return;
+        }
+
+
+        FlxTween.tween(
+            funnyEyes,
+            {
+                alpha: 1
+            },
+            speed,
+            {
+                ease:
+                    FlxEase.sineOut
+            }
+        );
+    }
+
+    function hideEyes(
+        speed:Float
+    ):Void
+    {
+        if (funnyEyes == null)
+            return;
+
+
+        FlxTween.cancelTweensOf(
+            funnyEyes
+        );
+
+
+        /*
+         * Speed 0 = instantáneo.
+         */
+        if (speed <= 0)
+        {
+            funnyEyes.alpha =
+                0.0001;
+
+            return;
+        }
+
+
+        FlxTween.tween(
+            funnyEyes,
+            {
+                alpha: 0.0001
+            },
+            speed,
+            {
+                ease:
+                    FlxEase.sineOut
+            }
+        );
+    }
+
+    function destroyEyes():Void
+    {
+        if (funnyEyes == null)
+            return;
+
+
+        FlxTween.cancelTweensOf(
+            funnyEyes
+        );
+
+
+        if (PlayState.instance != null)
+        {
+            PlayState.instance.remove(
+                funnyEyes,
+                true
+            );
+        }
+
+
+        funnyEyes.destroy();
+
+
+        funnyEyes =
+            null;
+    }
+
+
+    public function onSongRetry(
+        event
+    ):Void
+    {
+        destroyEyes();
+    }
+
+
+    public function onStateChangeBegin(
+        event
+    ):Void
+    {
+        destroyEyes();
+    }
+
+    public function getEventSchema()
+    {
+        return [
+            {
+                name:
+                    'activation',
+
+                title:
+                    'Mode',
+
+                defaultValue:
+                    1,
+
+                type:
+                    'enum',
+
+                keys:
+                [
+                    'Off' => 0,
+                    'On' => 1
+                ]
+            },
+
+            {
+                name:
+                    'speed',
+
+                title:
+                    'Tween Speed',
+
+                defaultValue:
+                    1.0,
+
+                type:
+                    'float',
+
+                step:
+                    0.1,
+
+                min:
+                    0
+            }
+        ];
+    }
+
+
+    public function getTitle():String
+    {
+        return 'Markov Eyes';
+    }
+}

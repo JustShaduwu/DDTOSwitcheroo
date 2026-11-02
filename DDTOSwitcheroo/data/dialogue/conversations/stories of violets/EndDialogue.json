@@ -1,0 +1,179 @@
+{
+	"canSkip": false,
+	"startingMusic": "",
+	"initStyle": "pixel",
+	"dialogue": 
+	[
+		{
+			"isCommand": false,
+			"name": "manuel",
+			"expression": "mad",
+			"string": "What...What the hell was that!?",
+			"key": "sovEnd1",
+			"stringCensored": "What...What was that!?",
+			"keyCensored": "sovEndCensored1",
+			"side": "right"
+		},
+		{
+			"isCommand": false,
+			"name": "seira",
+			"expression": "angry",
+			"string": "None of your business, you useless thief! Now give it back!",
+			"key": "sovEnd2",
+			"stringCensored": "None of your business, you ugly thief! Now give it back!",
+			"keyCensored": "sovEndCensored2",
+			"side": "left"
+		},
+		{
+			"isCommand": false,
+			"name": "no_one",
+			"expression": "gone",
+			"string": "*Seira takes the microphone and hits Manuel with her bag*",
+			"key": "sovEnd3",
+			"keyCensored": "sovEndCensored3",
+			"side": "right"
+		},
+		{
+			"isCommand": false,
+			"name": "manuel",
+			"expression": "pissed",
+			"string": "...",
+			"key": "sovEnd4",
+			"keyCensored": "sovEndCensored4",
+			"side": "right"
+		},
+		{
+			"isCommand": false,
+			"name": "manuel",
+			"expression": "cry",
+			"string": "ouch",
+			"key": "sovEnd5",
+			"keyCensored": "sovEndCensored5",
+			"side": "right"
+		},
+		{
+			"isCommand": false,
+			"name": "seira",
+			"expression": "angry",
+			"string": "''Ouch''?!",
+			"key": "sovEnd6",
+			"keyCensored": "sovEndCensored6",
+			"side": "left"
+		},
+		{
+			"isCommand": false,
+			"name": "seira",
+			"expression": "angry",
+			"string": "Are you going to cry now?",
+			"key": "sovEnd7",
+			"keyCensored": "sovEndCensored7",
+			"side": "left"
+		},
+		{
+			"isCommand": false,
+			"name": "manuel",
+			"expression": "sad",
+			"string": "...",
+			"key": "sovEnd8",
+			"stringCensored": "...",
+			"keyCensored": "sovEndCensored8",
+			"side": "right"
+		},
+		{
+			"isCommand": false,
+			"name": "seira",
+			"expression": "neutral",
+			"string": "I should have known a little thief like you would be a wimp, right guys?",
+			"key": "sovEnd9",
+			"stringCensored": "I should have known a little thief like you would be a wimp, right guys?",
+			"keyCensored": "sovEndCensored9",
+			"side": "left"
+                },
+		{
+			"isCommand": false,
+			"name": "no_one",
+			"expression": "gone",
+			"string": "Seira's Fans: Yes! *Laughter*",
+			"key": "sovEnd10",
+			"stringCensored": "Seira's Fans: Yes! *Laughter*",
+			"keyCensored": "sovEndCensored10",
+			"side": "left"
+                },
+		{
+			"isCommand": false,
+			"name": "no_one",
+			"expression": "gone",
+			"string": "*Laughter intensifies*",
+			"key": "sovEnd11",
+			"stringCensored": "*Laughter intensifies*",
+			"keyCensored": "sovEndCensored11",
+ 			"side": "right"
+                },
+		{
+			"isCommand": false,
+			"name": "manuel",
+			"expression": "sad",
+			"string": "...",
+			"key": "sovEnd12",
+			"stringCensored": "...",
+			"keyCensored": "sovEndCensored12",
+			"side": "right"
+		},
+		{
+			"isCommand": false,
+			"name": "manuel",
+			"expression": "happy",
+			"string": "...ha.",
+			"key": "sovEnd13",
+			"stringCensored": "...ha.",
+			"keyCensored": "sovEndCensored13",
+			"side": "right"
+                },
+		{
+			"isCommand": false,
+			"name": "manuel",
+			"expression": "happy",
+			"string": "...Ha ha ha...",
+			"key": "sovEnd14",
+			"stringCensored": "...Ha ha ha...",
+			"keyCensored": "sovEndCensored14",
+			"side": "right"
+                },
+		{
+			"isCommand": false,
+			"name": "no_one",
+			"expression": "gone",
+			"string": "*Manuel raises his hand*",
+			"key": "sovEnd15",
+			"stringCensored": "*Manuel raises his hand*",
+			"keyCensored": "sovEndCensored15",
+ 			"side": "right"
+                },
+		{
+			"isCommand": false,
+			"name": "seira",
+			"expression": "hmm",
+			"string": "Huh?",
+			"key": "sovEnd16",
+			"stringCensored": "Huh?",
+			"keyCensored": "sovEndCensored16",
+			"side": "left"
+                },
+		{
+			"isCommand": false,
+			"name": "bf",
+			"expression": "what",
+			"string": "Be-",
+			"key": "sovEnd17",
+			"stringCensored": "Be-",
+			"keyCensored": "sovEndCensored17",
+			"side": "right"
+		},
+		{
+			"isCommand": true,
+			"name": "playcutscene",
+			"string": "fakeout",
+			"duration": 100000
+		}
+	]
+}

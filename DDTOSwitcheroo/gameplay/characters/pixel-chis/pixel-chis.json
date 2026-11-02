@@ -1,0 +1,59 @@
+{
+	"version": "1.0.0",
+	"renderType": "sparrow",
+	"offsets": [
+		0,
+		0
+	],
+	"danceEvery": 2,
+	"scale": 5,
+	"name": "Pixel Chis",
+	"cameraOffsets": [
+		0,
+		0
+	],
+	"flipX": false,
+	"startingAnimation": "danceRight",
+	"isPixel": true,
+	"singTime": 8,
+	"flipY": false,
+	"healthIcon": {
+		"isPixel": false,
+		"offsets": [
+			0,
+			0
+		],
+		"scale": 1,
+		"id": "face",
+		"flipX": false
+	},
+	"assetPath": "gameplay/characters/pixel-chis/Chis",
+	"generatedBy": "Nova Character Editor v3.0.1",
+	"animations": [
+    {
+      "name": "danceLeft",
+	  "frameRate": 12,
+      "prefix": "Chis Idle",
+      "frameIndices":[
+				10,
+				0,
+				1,
+				2,
+				3,
+				4,
+				5
+			]
+    },
+    {
+      "name": "danceRight",
+	  "frameRate": 12,
+      "prefix": "Chis Idle",
+      "frameIndices": [
+6,
+7,
+8,
+9
+			]
+    }
+	]
+}

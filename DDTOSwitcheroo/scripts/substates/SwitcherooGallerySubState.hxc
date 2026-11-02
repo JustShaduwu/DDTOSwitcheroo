@@ -1,0 +1,758 @@
+package switcheroo.substates;
+
+import LanguageManager;
+import GalleryCatalog;
+import GalleryThumbnailCache;
+import EnterpriseSettings;
+import switcheroo.substates.EnterprisePopup;
+import funkin.PlayerSettings;
+
+import lime.utils.Assets;
+
+import DesktopTheme;
+import flixel.FlxG;
+import flixel.FlxSprite;
+
+import flixel.addons.display.FlxBackdrop;
+import flixel.addons.display.FlxRuntimeShader;
+
+import flixel.text.FlxText;
+import flixel.text.FlxTextBorderStyle;
+
+import flixel.util.FlxColor;
+
+import funkin.Paths;
+import funkin.audio.FunkinSound;
+import funkin.ui.MusicBeatSubState;
+import funkin.api.discord.DiscordClient;
+import funkin.util.WindowUtil;
+
+using StringTools;
+
+
+class SwitcherooGallerySubState extends MusicBeatSubState
+{
+    var curSelected:Int = 0;
+    var wallpaperChanged:Void->Void;
+    var artworkPaths:Array<String> = [];
+    var manageMusic:Bool = false;
+    var galleryInputReady:Bool = false;
+
+    public function new(initialIndex:Int = 0, withGalleryMusic:Bool = false, onWallpaperChanged:Void->Void = null)
+    {
+        super();
+        curSelected = initialIndex;
+        manageMusic = withGalleryMusic;
+        wallpaperChanged = onWallpaperChanged;
+    }
+
+    var backdrop:FlxBackdrop;
+
+    var gradient:FlxSprite;
+
+    var artwork:FlxSprite;
+    var artworkFrame:FlxSprite;
+    var galleryScale:Float = 1;
+    var thumbnails:Array<Dynamic> = [];
+    var thumbnailMarker:FlxSprite;
+    var previousArrow:FlxText;
+    var nextArrow:FlxText;
+    var backButton:FlxText;
+    var wallpaperButton:FlxText;
+    var linkButton:FlxText;
+    var descriptionBar:FlxSprite;
+    var hoverButtons:Array<Dynamic> = [];
+    var fullscreenPreview:Bool = false;
+    var previewBackground:FlxSprite;
+    var previewArtwork:FlxSprite;
+
+    var authorText:FlxText;
+
+
+    var artworkData:Array<String> = [];
+
+    var authorData:Array<String> = [];
+
+    var urlData:Array<String> = [];
+
+
+
+    var dontSpam:Bool = false;
+
+    var acceptInputs:Bool = true;
+
+
+    override function create():Void
+    {
+        persistentUpdate = false;
+        add(new FlxSprite().makeGraphic(FlxG.width, FlxG.height, 0xFF000000));
+        persistentDraw = true;
+
+        if (manageMusic) DiscordClient.setPresence(
+        {
+            state:
+                'Viewing the Art Gallery',
+
+            details:
+                'FridAnd Night Funkin\': Rebooted'
+        });
+
+
+        if (manageMusic) FunkinSound.playMusic(
+            'teseoSwitcheroo',
+            {
+                overrideExisting: true,
+                restartTrack: true,
+                persist: true
+            }
+        );
+
+
+        if (manageMusic && FlxG.sound.music != null)
+        {
+            FlxG.sound.music.volume = 0;
+        }
+
+
+        loadGalleryData();
+
+        createBackdrop();
+
+        createGradient();
+
+        createArtwork();
+
+        createAuthorText();
+        createFilmstrip();
+
+
+        changeItem(
+            0,
+            false
+        );
+
+
+        FlxG.mouse.visible = true;
+
+
+        super.create();
+        DesktopTheme.attach(this);
+    }
+
+
+    function loadGalleryData():Void
+    {
+        artworkData = [];
+        artworkPaths = [];
+        authorData = [];
+        urlData = [];
+        var catalog = GalleryCatalog.read();
+        for (entry in catalog.entries)
+        {
+            artworkData.push(entry.image);
+            artworkPaths.push(entry.path);
+            authorData.push(entry.description);
+            urlData.push(entry.url);
+        }
+        curSelected = Std.int(Math.max(0, Math.min(artworkData.length - 1, curSelected)));
+    }
+
+    function createBackdrop():Void
+    {
+        backdrop =
+            new FlxBackdrop(
+                Paths.image(
+                    'scrollingBG'
+                )
+            );
+
+
+        backdrop.velocity.set(
+            -16,
+            0
+        );
+
+
+        backdrop.scale.set(
+            0.5,
+            0.5
+        );
+
+
+        backdrop.antialiasing =
+            true;
+
+
+        var colorMask:FlxRuntimeShader =
+            new FlxRuntimeShader(
+                Assets.getText(
+                    Paths.frag(
+                        'ColorMaskShader'
+                    )
+                )
+            );
+
+        colorMask.data.color1.value =
+        [
+            13 / 255,
+            120 / 255,
+            115 / 255
+        ];
+
+
+        colorMask.data.color2.value =
+        [
+            35 / 255,
+            135 / 255,
+            127 / 255
+        ];
+
+
+        backdrop.shader =
+            colorMask;
+
+
+        add(
+            backdrop
+        );
+    }
+
+
+    function createGradient():Void
+    {
+        gradient =
+            new FlxSprite(
+                0,
+                0
+            );
+
+
+        gradient.loadGraphic(
+            Paths.image(
+                'gradient'
+            )
+        );
+
+
+        gradient.antialiasing =
+            true;
+
+
+        gradient.color =
+            0xFF114A46;
+
+
+        add(
+            gradient
+        );
+    }
+
+    function createArtwork():Void
+    {
+        galleryScale = Math.min(FlxG.width / 1280, FlxG.height / 720);
+        artworkFrame = new FlxSprite((FlxG.width - 960 * galleryScale) / 2, 12 * galleryScale);
+        artworkFrame.makeGraphic(Std.int(960 * galleryScale), Std.int(540 * galleryScale), 0xFF000000);
+        add(artworkFrame);
+        artwork =
+            new FlxSprite();
+
+
+        artwork.antialiasing =
+            true;
+
+
+        add(
+            artwork
+        );
+    }
+
+
+    function createAuthorText():Void
+    {
+        authorText =
+            new FlxText(
+                0,
+                0,
+                FlxG.width,
+                '',
+                29
+            );
+
+
+        authorText.setFormat(
+            Paths.font(
+                'Aller_Rg.ttf'
+            ),
+            29,
+            FlxColor.WHITE,
+            'center',
+            FlxTextBorderStyle.OUTLINE,
+            FlxColor.BLACK
+        );
+
+
+        authorText.antialiasing =
+            true;
+
+
+        add(
+            authorText
+        );
+    }
+
+
+    override function update(
+        elapsed:Float
+    ):Void
+    {
+        super.update(
+            elapsed
+        );
+
+
+        if (subState != null) return;
+
+
+        if (
+            manageMusic && FlxG.sound.music != null &&
+            FlxG.sound.music.volume < 0.8
+        )
+        {
+            FlxG.sound.music.volume +=
+                0.5 *
+                elapsed;
+
+
+            if (
+                FlxG.sound.music.volume >
+                0.8
+            )
+            {
+                FlxG.sound.music.volume =
+                    0.8;
+            }
+        }
+
+
+        var controls = PlayerSettings.player1.controls;
+        if (!galleryInputReady)
+        {
+            galleryInputReady = !FlxG.mouse.pressed && !controls.ACCEPT_P && !controls.BACK_P;
+            return;
+        }
+        if (!acceptInputs)
+        {
+            return;
+        }
+
+        if (fullscreenPreview)
+        {
+            if (FlxG.mouse.justPressed || controls.BACK_P || controls.ACCEPT_P)
+            {
+                fullscreenPreview = false;
+                previewBackground.visible = false;
+                previewArtwork.visible = false;
+            }
+            return;
+        }
+        for (button in hoverButtons)
+            button.background.visible = button.target.visible && FlxG.mouse.overlaps(button.target);
+
+        if (FlxG.mouse.justPressed)
+        {
+            if (FlxG.mouse.overlaps(previousArrow)) { changeItem(-1); return; }
+            if (FlxG.mouse.overlaps(nextArrow)) { changeItem(1); return; }
+            if (FlxG.mouse.overlaps(backButton)) { exitGallery(); return; }
+            if (FlxG.mouse.overlaps(wallpaperButton))
+            {
+                if (artworkPaths.length == 0) return;
+                var wallpaperPath = artworkPaths[curSelected];
+                galleryInputReady = false;
+                openSubState(new EnterprisePopup(
+                    LanguageManager.getTranslation('gallery_set_wallpaper', 'Set as wallpaper'),
+                    LanguageManager.getTranslation('gallery_confirm_wallpaper', 'Set as wallpaper?'),
+                    function(confirmed:Bool)
+                    {
+                        if (!confirmed) return;
+                        EnterpriseSettings.setWallpaper(wallpaperPath);
+                        if (wallpaperChanged != null) wallpaperChanged();
+                    }));
+                return;
+            }
+            if (linkButton.visible && FlxG.mouse.overlaps(linkButton)) { openCurrentURL(); return; }
+            for (thumb in thumbnails)
+                if (thumb.frame.visible && FlxG.mouse.overlaps(thumb.frame))
+                {
+                    changeItem(thumb.index - curSelected);
+                    return;
+                }
+            if (artworkData.length > 0 && FlxG.mouse.overlaps(artworkFrame))
+            {
+                updateArtworkMouse();
+                previewArtwork.loadGraphic(Paths.image(artworkPaths[curSelected]));
+                fitArtwork(previewArtwork, 0, 0, FlxG.width, FlxG.height);
+                previewBackground.visible = true;
+                previewArtwork.visible = true;
+                fullscreenPreview = true;
+                return;
+            }
+        }
+        if (FlxG.mouse.wheel != 0) changeItem(FlxG.mouse.wheel < 0 ? 1 : -1);
+
+
+        if (controls.BACK_P)
+        {
+            exitGallery();
+
+            return;
+        }
+
+
+  
+
+        if (controls.UI_LEFT_P)
+        {
+            changeItem(
+                -1
+            );
+        }
+
+
+        if (controls.UI_RIGHT_P)
+        {
+            changeItem(
+                1
+            );
+        }
+
+        if (controls.ACCEPT_P)
+        {
+            openCurrentURL();
+        }
+
+
+        updateArtworkMouse();
+    }
+
+
+    function exitGallery():Void
+    {
+        if (!acceptInputs) return;
+        acceptInputs = false;
+        if (manageMusic)
+        {
+            if (FlxG.sound.music != null) FlxG.sound.music.stop();
+            FunkinSound.playMusic('gettinSwitched', {overrideExisting: true, restartTrack: false, persist: true});
+        }
+        close();
+    }
+
+    function openCurrentURL():Void
+    {
+        if (
+            curSelected < 0 ||
+            curSelected >=
+            urlData.length
+        )
+        {
+            return;
+        }
+
+
+        var url:String =
+            urlData[
+                curSelected
+            ];
+
+
+        if (
+            url == null ||
+            url.length == 0
+        )
+        {
+            return;
+        }
+
+
+        galleryInputReady = false;
+        openSubState(new EnterprisePopup(
+            LanguageManager.getTranslation('gallery_open_link', 'Open link'),
+            LanguageManager.getTranslation('gallery_confirm_link', 'Open link?'),
+            function(confirmed:Bool) { if (confirmed) WindowUtil.openURL(url); }));
+    }
+
+    function updateArtworkMouse():Void
+    {
+        if (
+            artwork == null ||
+            !FlxG.mouse.overlaps(
+                artwork
+            ) ||
+            !FlxG.mouse.justPressed ||
+            dontSpam
+        )
+        {
+            return;
+        }
+
+
+        if (
+            curSelected < 0 ||
+            curSelected >=
+            artworkData.length
+        )
+        {
+            return;
+        }
+
+
+        var artworkName:String =
+            artworkData[
+                curSelected
+            ];
+
+        if (
+            artworkName.contains(
+                'antipathy'
+            )
+        )
+        {
+            FlxG.camera.fade(
+                FlxColor.WHITE,
+                1,
+                true,
+                true
+            );
+
+
+            FlxG.sound.play(
+                Paths.sound(
+                    'antipathyUnlock'
+                )
+            );
+
+            dontSpam =
+                true;
+
+
+            return;
+        }
+
+        if (
+            artworkName.contains(
+                'fridand'
+            )
+        )
+        {
+            FlxG.camera.fade(
+                FlxColor.WHITE,
+                1,
+                true,
+                true
+            );
+
+
+            WindowUtil.openURL(
+                'https://gamebanana.com/mods/445859'
+            );
+
+
+            dontSpam =
+                true;
+        }
+    }
+
+    function fitArtwork(sprite:FlxSprite, x:Float, y:Float, width:Float, height:Float):Void
+    {
+        var factor = Math.min(width / sprite.frameWidth, height / sprite.frameHeight);
+        sprite.scale.set(factor, factor);
+        sprite.updateHitbox();
+        sprite.setPosition(x + (width - sprite.width) / 2, y + (height - sprite.height) / 2);
+    }
+
+    function filmstripText(value:String, x:Float, y:Float, width:Float, size:Int):FlxText
+    {
+        var text = new FlxText(x, y, width, value);
+        text.setFormat(Paths.font('GoNotoCurrent.ttf'), Std.int(size * galleryScale), DesktopTheme.getColor('selected_text'), 'center');
+        text.antialiasing = true;
+        add(text);
+        return text;
+    }
+
+    function createFilmstrip():Void
+    {
+        descriptionBar = new FlxSprite().makeGraphic(Std.int(artworkFrame.width), 1, 0xCC000000);
+        insert(members.indexOf(authorText), descriptionBar);
+        var left = (FlxG.width - 704 * galleryScale) / 2;
+        for (i in 0...5)
+        {
+            var frame = new FlxSprite(left + i * 144 * galleryScale, 568 * galleryScale);
+            frame.makeGraphic(Std.int(128 * galleryScale), Std.int(72 * galleryScale), 0xFF000000);
+            add(frame);
+            var image = new FlxSprite();
+            image.antialiasing = true;
+            add(image);
+            thumbnails.push({frame: frame, image: image, index: -1});
+        }
+        thumbnailMarker = DesktopTheme.solid(new FlxSprite(), Std.int(128 * galleryScale), Std.int(Math.max(1, 3 * galleryScale)), DesktopTheme.getColor('desktop_color2'));
+        add(thumbnailMarker);
+        previousArrow = filmstripText('◀', left - 65 * galleryScale, 582 * galleryScale, 50 * galleryScale, 32);
+        nextArrow = filmstripText('▶', left + 719 * galleryScale, 582 * galleryScale, 50 * galleryScale, 32);
+        previousArrow.color = DesktopTheme.getColor('desktop_color2');
+        nextArrow.color = DesktopTheme.getColor('desktop_color2');
+        backButton = filmstripText(LanguageManager.getTranslation('back', 'Back'), FlxG.width - 125 * galleryScale, 680 * galleryScale, 110 * galleryScale, 17);
+        wallpaperButton = filmstripText(LanguageManager.getTranslation('gallery_set_wallpaper', 'Set as wallpaper'), FlxG.width - 400 * galleryScale, 680 * galleryScale, 265 * galleryScale, 17);
+        linkButton = filmstripText(LanguageManager.getTranslation('gallery_open_link', 'Open link'), FlxG.width - 595 * galleryScale, 680 * galleryScale, 180 * galleryScale, 17);
+        linkButton.visible = false;
+        for (target in [previousArrow, nextArrow, linkButton, wallpaperButton, backButton]) addButtonHover(target);
+        for (thumb in thumbnails) addButtonHover(thumb.frame);
+        authorText.size = Std.int(15 * galleryScale);
+        authorText.fieldWidth = artworkFrame.width - 24 * galleryScale;
+        authorText.x = artworkFrame.x + 12 * galleryScale;
+        previewBackground = new FlxSprite().makeGraphic(FlxG.width, FlxG.height, 0xFF000000);
+        previewBackground.visible = false;
+        add(previewBackground);
+        previewArtwork = new FlxSprite();
+        previewArtwork.antialiasing = true;
+        previewArtwork.visible = false;
+        add(previewArtwork);
+    }
+
+    function addButtonHover(target:FlxSprite):Void
+    {
+        var background = new FlxSprite(target.x - 4 * galleryScale, target.y - 3 * galleryScale);
+        background.makeGraphic(Std.int(target.width + 8 * galleryScale), Std.int(target.height + 6 * galleryScale), 0x44FFFFFF);
+        background.visible = false;
+        insert(members.indexOf(target), background);
+        hoverButtons.push({target: target, background: background});
+    }
+
+    function refreshThumbnails():Void
+    {
+        var first = Std.int(Math.max(0, Math.min(curSelected - 2, artworkData.length - 5)));
+        thumbnailMarker.visible = false;
+        for (i in 0...thumbnails.length)
+        {
+            var thumb = thumbnails[i];
+            var index = first + i;
+            thumb.frame.visible = index < artworkData.length;
+            thumb.image.visible = thumb.frame.visible;
+            if (!thumb.frame.visible) continue;
+            if (thumb.index != index)
+            {
+                thumb.image.loadGraphic(GalleryThumbnailCache.get(artworkPaths[index]));
+                fitArtwork(thumb.image, thumb.frame.x, thumb.frame.y, thumb.frame.width, thumb.frame.height);
+                thumb.index = index;
+            }
+            thumb.image.alpha = index == curSelected ? 1 : 0.7;
+            if (index == curSelected)
+            {
+                thumbnailMarker.visible = true;
+                thumbnailMarker.setPosition(thumb.frame.x, thumb.frame.y + thumb.frame.height + 4 * galleryScale);
+            }
+        }
+    }
+
+    function changeItem(
+        amount:Int = 0,
+        playSound:Bool = true
+    ):Void
+    {
+        if (
+            artworkData.length == 0
+        )
+        {
+            artwork.visible =
+                false;
+
+
+            authorText.text =
+                LanguageManager.getTranslation("gallery_empty", "No gallery entries found.");
+
+
+            authorText.screenCenter();
+
+
+            return;
+        }
+
+
+        if (
+            playSound &&
+            amount != 0
+        )
+        {
+            FlxG.sound.play(
+                Paths.sound(
+                    'scrollMenu'
+                )
+            );
+        }
+
+
+        curSelected +=
+            amount;
+
+
+        /*
+         * IMPORTANTE:
+         *
+         * Usamos artworkData.length,
+         * NO galleryData.length.
+         *
+         * Las líneas // fueron eliminadas al
+         * parsear, así que galleryData.length
+         * podría no coincidir.
+         */
+
+        if (
+            curSelected >=
+            artworkData.length
+        )
+        {
+            curSelected =
+                0;
+        }
+
+
+        if (
+            curSelected < 0
+        )
+        {
+            curSelected =
+                artworkData.length -
+                1;
+        }
+
+        artwork.visible =
+            true;
+
+
+        artwork.loadGraphic(
+            Paths.image(
+                artworkPaths[
+                    curSelected
+                ]
+            )
+        );
+
+
+        fitArtwork(artwork, artworkFrame.x, artworkFrame.y, artworkFrame.width, artworkFrame.height);
+        linkButton.visible = urlData[curSelected] != null && urlData[curSelected].length > 0;
+        authorText.text = authorData[curSelected];
+        authorText.x = artworkFrame.x + 12 * galleryScale;
+        var captionHeight = Math.min(artworkFrame.height / 3, authorText.height + 10 * galleryScale);
+        descriptionBar.scale.y = captionHeight;
+        descriptionBar.updateHitbox();
+        descriptionBar.setPosition(artworkFrame.x, artworkFrame.y + artworkFrame.height - captionHeight);
+        authorText.y = descriptionBar.y + 5 * galleryScale;
+        refreshThumbnails();
+        dontSpam =
+            false;
+    }
+    override function destroy():Void
+    {
+        DesktopTheme.release(this);
+        super.destroy();
+    }
+}

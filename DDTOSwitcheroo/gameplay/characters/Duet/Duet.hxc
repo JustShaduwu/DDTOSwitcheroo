@@ -1,0 +1,131 @@
+import funkin.play.character.SparrowCharacter;
+import funkin.play.character.CharacterType;
+import funkin.play.PlayState;
+import funkin.modding.module.ModuleHandler;
+
+class DuetCharacter extends SparrowCharacter
+{
+  function new()
+  {
+    super('Duet');
+  }
+
+function onNoteHit(event:HitNoteScriptEvent)
+{
+	var isMyNote =
+		(!event.note.noteData.getMustHitNote() && characterType == CharacterType.DAD)
+		|| (event.note.noteData.getMustHitNote() && characterType == CharacterType.BF);
+
+	if (isMyNote && event.note.kind == "mom")
+	{
+		holdTimer = 0;
+		this.playSingAnimation(event.note.noteData.getDirection(), false, 'alt');
+		return;
+	}
+
+	super.onNoteHit(event);
+}
+
+
+function onNoteMiss(event:NoteScriptEvent)
+{
+    
+    if (event.eventCanceled)
+        return;
+
+    var isMyNote =
+        (!event.note.noteData.getMustHitNote() &&
+            characterType == CharacterType.DAD)
+        ||
+        (event.note.noteData.getMustHitNote() &&
+            characterType == CharacterType.BF);
+
+    if (!isMyNote)
+        return;
+
+    var suffix:String =
+        event.note.kind == 'mom'
+            ? 'alt'
+            : '';
+
+    this.playSingAnimation(
+        event.note.noteData.getDirection(),
+        true,
+        suffix
+    );
+}
+
+    override public function playSingAnimation(
+        dir:NoteDirection,
+        miss:Bool = false,
+        ?suffix:String = ''
+    ):Void
+    {
+
+		holdTimer = 0;
+		if (flipX) {
+			if (dir == 0) {dir = 3;} else if (dir == 3) {dir = 0;}
+		}
+
+        var missRecolor =
+            ModuleHandler.getModule(
+                'MissRecolor'
+            );
+			
+
+        if (missRecolor != null)
+        {
+            miss =
+                missRecolor.scriptCall(
+                    'prepareSingAnimation',
+                    [
+                        this,
+                        dir,
+                        miss,
+                        suffix
+                    ]
+                );
+        }
+
+        super.playSingAnimation(
+            dir,
+            miss,
+            suffix
+        );
+    }
+
+
+   
+
+    override public function playAnimation(
+        name:String,
+        restart:Bool = false,
+        ignoreOther:Bool = false,
+        reversed:Bool = false
+    ):Void
+    {
+        var missRecolor =
+            ModuleHandler.getModule(
+                'MissRecolor'
+            );
+
+        if (missRecolor != null)
+        {
+            missRecolor.scriptCall(
+                'onPlayAnimation',
+                [
+                    this,
+                    name
+                ]
+            );
+        }
+
+        super.playAnimation(
+            name,
+            restart,
+            ignoreOther,
+            reversed
+        );
+    }
+}
+

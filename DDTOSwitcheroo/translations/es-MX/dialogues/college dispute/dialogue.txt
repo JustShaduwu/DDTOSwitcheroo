@@ -1,0 +1,58 @@
+# Español (México) — college dispute
+# key::texto — claves de los JSON actuales.
+
+# IntroDialogue.json
+cdIntro1::¡UAAAAAAGH!
+cdIntro2::*Golpe en seco*
+cdIntro3::Ugh... ¿qué... fue eso?
+cdIntro4::*Aquel sujeto se pasa una mano por la cabeza.*
+cdIntro5::Mi resolución... diablos. Es bajísima.
+cdIntro6::Wow, qué ''genial''.
+cdIntro7::Creo que ya NO estamos en Kansas.
+cdIntro8::(¿Eso es una escuela...?)
+cdIntro9::Je.
+cdIntro10::(Creí que nunca volvería a ver una de esas...)
+cdIntro12::(Espera...)
+cdIntro13::(Este lugar me resulta familiar...)
+cdIntro14::(...mi escuela...)
+cdIntro15::(...quizá este lugar esté relacionado con ella de alguna manera...)
+cdIntro16::*Manuel camina por la escuela y, al doblar una esquina, casi choca con una chica de cabello azul.*
+cdIntro17::¡AUGH!
+cdIntro18::*Bip sorprendido*
+cdIntro19::¡Dios santo... perdón! ¿Estás bien?
+cdIntro20::¡Bip!
+cdIntro21::*Chris toma la mano de Kaity para ayudarla a levantarse.*
+cdIntro22::Uf... perdón...
+cdIntro24::*Manuel contempla con agrado la armoniosa dinámica de la pareja.*
+cdIntro25::¿Bip?
+cdIntro26::¡Ah! ¡Lo siento! Terminé distrayéndome un poco...
+cdIntro27::(...parece que son de aquí... ¿podría preguntarles algunas cosas?)
+cdIntro28::(Talvez ¿qué CLASE de lugar es este?)
+cdIntro29::Oigan... esperen un momento.
+cdIntro31::¿Pueden decirme qué es este lugar? Y... ¿cómo salgo de aquí?
+cdIntro32::*Kaity mira a Chris con una sonrisa.*
+cdIntro34::¿Qué?
+cdIntro35::¿Quieres que cante contigo?
+cdIntro36::¿En serio?
+cdIntro37::...pero ¿por qué...?
+cdIntro38::(Espera... ¡no puedo negarme!)
+cdIntro39::(¡Puede que sean mi única oportunidad para entender este lugar!)
+cdIntro40::...está bien. Tal vez.
+cdIntro41::*Sonidos felices de bip bop*
+cdIntro42::(...siento que son piezas importantes para entender todo esto.)
+cdIntro43::(Y para encontrar a mi hermana.)
+
+# EndDialogue.json
+cdEnd1::Wow..
+cdEnd2::¡Eso fue muy
+cdEnd3::divertido!
+cdEnd4::Tanto que creo que ni siquiera recuerdo la última vez que me sentí así...
+cdEnd5::¡Bip!
+cdEnd6::...está bien.
+cdEnd7::Pero ya fue suficiente de juegos.
+cdEnd8::Ya cantamos, así que ahora deberan cumplir su parte del trato, ¿de acuerdo...?
+cdEnd9::Suena la campana de la escuela.
+cdEnd10::En medio de la multitud, alguien se percata de que su preciado micrófono ha desaparecido.
+cdEnd11::¿¡Quién diablos te crees que eres!?
+cdEnd12::¿Qué cara...?
+cdIntroMissing2::Pero no vino nadie..

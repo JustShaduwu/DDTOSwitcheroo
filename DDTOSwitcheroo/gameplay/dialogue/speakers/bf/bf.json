@@ -1,0 +1,25 @@
+{
+  "version": "1.0.0",
+  "name": "Kaity",
+  "assetPath": "gameplay/dialogue/speakers/bf/bf",
+  "flipX": false,
+  "isPixel": true,
+  "scale": 5.4,
+  "box": "seira",
+  "textSound": "dialogue/pixelText",
+  "offsets": [0, 0],
+  "animations": [
+    {
+      "name": "neutral",
+      "prefix": "bf_neutral"
+    },
+    {
+      "name": "angry",
+      "prefix": "bf_angry"
+    },
+    {
+      "name": "what",
+      "prefix": "bf_what"
+    }
+  ]
+}

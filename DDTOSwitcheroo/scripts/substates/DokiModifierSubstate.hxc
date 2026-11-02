@@ -1,0 +1,431 @@
+package switcheroo.substates;
+
+import flixel.FlxG;
+import flixel.FlxSprite;
+import flixel.group.FlxGroup.FlxTypedGroup;
+import flixel.input.mouse.FlxMouseEventManager;
+import flixel.math.FlxMath;
+import flixel.text.FlxText;
+import flixel.util.FlxTimer;
+import funkin.save.Save;
+import funkin.ui.MusicBeatSubState;
+import funkin.ui.ScriptedMusicBeatState;
+import switcheroo.states.SwitcherooFreeplayState;
+
+class DokiModifierSubState extends MusicBeatSubState
+{
+	var modifierData:Array<Array<Dynamic>> = [
+		// internal, name, unlock, saveKey, type, default
+	    ['offset', "Global Offset", true, 'offset', 'float', 0],
+		['botplay', "Botplay", true, 'botplay', 'bool', false],
+		['mirror', "Mirror Mode", true, 'mirrorMode', 'bool', false],
+		['ghost', "Ghost Tapping", true, 'ghostTapping', 'bool', true],
+		['death', "Sudden Death", true, 'missModeType', 'int', 0],
+		['random', "Randomized Notes", true, 'randomMode', 'bool', false],
+	    ['scroll', "Scroll Speed", true, 'scrollSpeed', 'float', 1],
+		['down', "Downscroll", true, 'downScroll', 'bool', false],
+		['middle', "Middlescroll", true, 'middleScroll', 'bool', false],
+		['speed', "Song Speed", true, 'songSpeed', 'float', 1],
+		['selfAware', "Self Awareness", true, 'selfAware', 'bool', true],
+		['unfair', 'UNFAIR MODE', true, 'unfairMode', 'bool', false],
+		['cool', 'Cool gameplay!!!', true, 'coolGameplay', 'bool', false]
+	];
+
+	var curSelected:Int = 0;
+	var acceptInput:Bool = false;
+
+	var mouseManager:FlxMouseEventManager = new FlxMouseEventManager();
+	var txtGrp:FlxTypedGroup = new FlxTypedGroup();
+
+	public static var instance:DokiModifierSubState;
+
+var parentState:SwitcherooFreeplayState;
+
+public function new(parentState:SwitcherooFreeplayState)
+{
+    super();
+
+    this.parentState = parentState;
+
+		instance = this;
+
+		// Crear los valores que todavía no existan.
+for (mod in modifierData)
+{
+	var id:String = mod[0];
+	var saveKey:String = mod[3];
+	var defaultValue:Dynamic = mod[5];
+
+	if (id == 'down')
+	{
+		Save.instance.modOptions.set(saveKey, Preferences.downscroll);
+
+		trace(
+			'DOWNSCROLL INIT | Preferences.downscroll=${Preferences.downscroll} | modOptions=${Save.instance.modOptions.get(saveKey)}'
+		);
+	}
+	else if (id == 'offset')
+	{
+		Save.instance.modOptions.set(saveKey, Preferences.globalOffset);
+
+		trace(
+			'GLOBAL OFFSET INIT | Preferences.globalOffset=${Preferences.globalOffset} | modOptions=${Save.instance.modOptions.get(saveKey)}'
+		);
+	}
+	else if (!Save.instance.modOptions.exists(saveKey))
+	{
+		Save.instance.modOptions.set(saveKey, defaultValue);
+	}
+}
+
+		trace('=== MODIFIER VALUES ON OPEN ===');
+
+for (mod in modifierData)
+{
+    var saveKey:String = mod[3];
+
+    trace(
+        '${mod[0]} | key=${saveKey} | value=${Save.instance.modOptions.get(saveKey)} | default=${mod[5]}'
+    );
+}
+
+		var background:FlxSprite = new FlxSprite(0, 0).makeGraphic(
+			FlxG.width,
+			FlxG.height,
+			0xFFF38CC5
+		);
+		background.alpha = 0.4;
+		add(background);
+
+		var menuBG:FlxSprite = new FlxSprite(0, 0)
+			.loadGraphic(Paths.image('freeplay/extra/modifiersmenu'));
+
+	//	menuBG.antialiasing = SaveData.globalAntialiasing;
+		add(menuBG);
+
+		for (i in 0...modifierData.length)
+		{
+			var modText:FlxText = new FlxText(
+				280,
+				129 + (i * 36),
+				714,
+				modifierData[i][1],
+				26
+			);
+
+			modText.setFormat(
+				Paths.font("HKGrotesk-Bold.otf"),
+				26,
+				0xFF1A5057,
+				"left"
+			);
+
+			modText.y += 0;
+		//	modText.antialiasing = SaveData.globalAntialiasing;
+			modText.ID = i;
+
+			txtGrp.add(modText);
+			mouseManager.add(modText, onMouseDown, null, onMouseOver);
+		}
+
+		add(txtGrp);
+		add(mouseManager);
+
+		new FlxTimer().start(0.1, function(tmr:FlxTimer)
+		{
+			acceptInput = true;
+		});
+
+		changeSelection();
+        
+	}
+
+	override function update(elapsed:Float):Void
+	{
+		super.update(elapsed);
+
+		if (!acceptInput)
+			return;
+
+if (controls.BACK_P)
+{
+    FlxG.sound.play(Paths.sound('cancelMenu'));
+
+    Save.instance.flush();
+
+    parentState.acceptInputs = true;
+    parentState.persistentUpdate = true;
+
+    close();
+    return;
+}
+
+if (controls.UI_UP_P)
+    changeSelection(-1);
+
+if (controls.UI_DOWN_P)
+    changeSelection(1);
+
+if (FlxG.keys.pressed.SHIFT ? controls.UI_LEFT : controls.UI_LEFT_P)
+{
+    changeModifier(-1);
+}
+
+if (FlxG.keys.pressed.SHIFT ? controls.UI_RIGHT : controls.UI_RIGHT_P)
+{
+    changeModifier(1);
+}
+
+		if (FlxG.keys.justPressed.R)
+		{
+			FlxG.sound.play(Paths.sound('scrollMenu'));
+
+			setValue(modifierData[curSelected][5]);
+			updateText();
+		}
+	}
+
+	function changeSelection(amt:Int = 0):Void
+	{
+		var prevSelected:Int = curSelected;
+
+		curSelected += amt;
+
+		if (prevSelected != curSelected)
+			FlxG.sound.play(Paths.sound('scrollMenu'));
+
+		if (curSelected >= modifierData.length)
+			curSelected = 0;
+
+		if (curSelected < 0)
+			curSelected = modifierData.length - 1;
+
+		updateText();
+	}
+
+	function updateText():Void
+	{
+		txtGrp.forEach(function(txt:FlxText)
+		{
+			if (txt.ID == curSelected)
+			{
+				txt.text =
+					'> ${modifierData[txt.ID][1]}: < ${displayValue(txt.ID)} >';
+			}
+			else
+			{
+				txt.text =
+					'${modifierData[txt.ID][1]}: < ${displayValue(txt.ID)} >';
+			}
+		});
+	}
+function changeModifier(amt:Int = 0):Void
+{
+    switch (modifierData[curSelected][4])
+    {
+        case 'bool':
+            if (amt != 0)
+                setValue(amt > 0);
+
+        case 'int':
+        {
+            var min:Int = 0;
+            var max:Int = 1;
+
+            switch (modifierData[curSelected][0])
+            {
+                case 'death':
+                    max = 2;
+            }
+
+            setValue(getValue(curSelected) + amt);
+
+            if (getValue(curSelected) > max)
+                setValue(min);
+
+            if (getValue(curSelected) < min)
+                setValue(max);
+        }
+
+        case 'float':
+        {
+            var min:Float = 0;
+            var max:Float = 1;
+            var step:Float = 1;
+
+            switch (modifierData[curSelected][0])
+            {
+                case 'offset':
+                {
+                    min = -670000;
+                    max = FlxMath.MAX_VALUE_FLOAT;
+                    step = 1;
+                }
+
+                case 'scroll':
+                {
+                    min = 0.9;
+                    max = 4;
+                    step = 0.1;
+                }
+
+                case 'speed':
+                {
+                    min = 0.5;
+                    max = 2;
+                    step = 0.05;
+                }
+            }
+
+            var current:Float = Std.parseFloat(
+                Std.string(getValue(curSelected))
+            );
+
+            trace('FLOAT BEFORE | id=' + modifierData[curSelected][0]
+                + ' | current=' + current
+                + ' | amt=' + amt
+                + ' | step=' + step);
+
+            current += amt * step;
+
+            trace('FLOAT AFTER STEP | current=' + current);
+
+            if (current < min)
+                current = min;
+
+            if (current > max)
+                current = max;
+
+            trace('FLOAT FINAL | current=' + current
+                + ' | min=' + min
+                + ' | max=' + max);
+
+            setValue(
+                FlxMath.roundDecimal(current, 2)
+            );
+        }
+    }
+
+    if (!FlxG.keys.pressed.SHIFT)
+        FlxG.sound.play(Paths.sound('scrollMenu'));
+
+    updateText();
+}
+
+	function onMouseOver(txt:FlxText):Void
+	{
+		if (acceptInput && curSelected != txt.ID)
+		{
+			FlxG.sound.play(Paths.sound('scrollMenu'));
+
+			curSelected = txt.ID;
+			changeSelection();
+		}
+	}
+
+	function onMouseDown(txt:FlxText):Void
+	{
+		if (acceptInput && modifierData[curSelected][4] != 'float')
+			changeModifier(1);
+	}
+
+function setValue(value:Dynamic):Void
+{
+	var id:String = modifierData[curSelected][0];
+	var saveKey:String = modifierData[curSelected][3];
+	var before:Dynamic = Save.instance.modOptions.get(saveKey);
+
+	if (modifierData[curSelected][4] == 'float')
+		value = FlxMath.roundDecimal(value, 2);
+
+	// Downscroll también modifica la preferencia global.
+	if (id == 'down')
+	{
+		Preferences.downscroll = value;
+
+		trace(
+			'DOWNSCROLL SET | before=${before} | set=${value} | Preferences.downscroll=${Preferences.downscroll}'
+		);
+	}
+
+	// Global Offset también modifica la preferencia global.
+	if (id == 'offset')
+	{
+		Preferences.globalOffset = Std.int(value);
+
+		trace(
+			'GLOBAL OFFSET SET | before=${before} | set=${value} | Preferences.globalOffset=${Preferences.globalOffset}'
+		);
+	}
+
+	Save.instance.modOptions.set(saveKey, value);
+
+	trace(
+		'SET VALUE | id=${id} | key=${saveKey} | before=${before} | set=${value} | after=${Save.instance.modOptions.get(saveKey)}'
+	);
+}
+
+function getValue(ID:Int):Dynamic
+{
+    var saveKey:String = modifierData[ID][3];
+
+    var value = Save.instance.modOptions.get(saveKey);
+
+    trace('GET VALUE | ID=' + modifierData[ID][0]
+        + ' | index=' + ID
+        + ' | key=' + saveKey
+        + ' | value=' + value);
+
+    return value;
+}
+
+	function displayValue(ID:Int):String
+	{
+		var value:Dynamic = getValue(ID);
+		var display:String = '';
+
+		switch (modifierData[ID][0])
+		{
+			default:
+			{
+				if (modifierData[ID][4] == 'bool')
+				{
+					display = value
+						? "On"
+						: "Off";
+				}
+				else
+				{
+					display = Std.string(value);
+				}
+			}
+
+			case 'offset':
+				display = '${value} ms';
+
+			case 'death':
+			{
+                if (value == 0)
+						display = "Off";
+                if (value == 1)
+						display = 'FC Only';
+                                if (value == 2)
+						display = 'Sick Only';
+				
+			}
+
+case 'scroll':
+{
+    if (value < 1)
+        display = "Default";
+    else
+        display = Std.string(value);
+}
+
+			case 'speed':
+				display = '${value}x';
+		}
+
+		return display;
+	}
+}

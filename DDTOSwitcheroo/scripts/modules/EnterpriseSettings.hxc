@@ -1,0 +1,77 @@
+import funkin.modding.module.Module;
+import funkin.save.Save;
+import flixel.FlxG;
+import lime.app.Application;
+import funkin.Preferences;
+import funkin.Paths;
+import lime.utils.Assets;
+
+class EnterpriseSettings extends Module
+{
+    static var session:Dynamic = null;
+    public function new() { super('EnterpriseSettings'); }
+
+    public static function hasVSync():Bool
+    {
+        try { return Preferences.vsyncMode != null; }
+        catch (error:Dynamic) { return false; }
+    }
+
+    public static function getVSync():Bool
+    {
+        try { return Preferences.vsyncMode != null && Preferences.vsyncMode != 0; }
+        catch (error:Dynamic) { return false; }
+    }
+
+    public static function setVSync(enabled:Bool):Bool
+    {
+        try
+        {
+            // WindowVSyncMode is an Int abstract: OFF = 0, ON = 1.
+            // Preferences applies the mode and saves it through Save.system.
+            Preferences.vsyncMode = enabled ? 1 : 0;
+            return Preferences.vsyncMode == (enabled ? 1 : 0);
+        }
+        catch (error:Dynamic) { trace('[EnterpriseSettings] VSync: ' + error); return false; }
+    }
+
+    public static function getWallpaper():String
+    {
+        var saved = Save.instance.modOptions.get('switcherooDesktopWallpaper');
+        if (saved != null && Std.isOfType(saved, String) && saved != '')
+        {
+            try
+            {
+                if (Assets.exists(Paths.image(saved))) return saved;
+            }
+            catch (error:Dynamic) { trace('[Wallpaper] ' + error); }
+        }
+        return 'enterprise/desktopbg1';
+    }
+
+    public static function setWallpaper(path:String):Void
+    {
+        Save.instance.modOptions.set('switcherooDesktopWallpaper', path);
+        Save.instance.flush();
+    }
+
+    public static function restore():Void
+    {
+        if (session != null) return;
+        session = {restored: true};
+        var saved = Save.instance.modOptions.get('switcherooDesktopSettings');
+        if (saved == null) return;
+        try
+        {
+            var window = Application.current.window;
+            if (saved.volume != null) FlxG.sound.volume = Math.max(0, Math.min(1, saved.volume));
+            if (saved.muted != null) FlxG.sound.muted = saved.muted;
+            if (saved.resizable != null) window.resizable = saved.resizable;
+            if (saved.fullscreen != null) FlxG.fullscreen = saved.fullscreen;
+            if (!FlxG.fullscreen && saved.width != null && saved.height != null
+                && saved.width >= 640 && saved.height >= 360) window.resize(saved.width, saved.height);
+            // VSync is restored by the engine from Preferences, not our copy.
+        }
+        catch (error:Dynamic) { trace('[EnterpriseSettings] Restore: ' + error); }
+    }
+}

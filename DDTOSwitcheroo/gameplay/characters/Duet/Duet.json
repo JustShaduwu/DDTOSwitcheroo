@@ -1,0 +1,299 @@
+{
+	"danceEvery": 1,
+	"offsets": [
+		-20,
+		0
+	],
+	"renderType": "sparrow",
+	"version": "1.0.0",
+	"scale": 6,
+	"flipX": false,
+	"cameraOffsets": [
+		-10,
+		0
+	],
+	"name": "Duet",
+	"flipY": false,
+	"singTime": 4,
+	"isPixel": true,
+	"startingAnimation": "idle",
+	"assetPath": "gameplay/characters/Duet/DuetSwap",
+	"healthIcon": {
+		"isPixel": false,
+		"offsets": [
+			0,
+			0
+		],
+		"scale": 1,
+		"id": "duetswap",
+		"flipX": false
+	},
+	"animations": [
+		{
+			"offsets": [
+				0,
+				0
+			],
+			"frameIndices": [0, 1, 2, 3, 4, 5],
+			"prefix": "Man Right",
+			"flipX": false,
+			"looped": false,
+			"name": "singRIGHT",
+			"flipY": false,
+			"assetPath": null,
+			"frameRate": 24
+		},
+		{
+			"offsets": [
+				0,
+				0
+			],
+			"frameIndices": [0, 1, 2, 3, 4, 5],
+			"prefix": "Man Left0",
+			"flipX": false,
+			"looped": false,
+			"name": "singLEFT",
+			"flipY": false,
+			"assetPath": null,
+			"frameRate": 24
+		},
+		{
+			"offsets": [
+				0,
+				0
+			],
+			"frameIndices": [0, 1, 2, 3, 4, 5],
+			"prefix": "Man Down",
+			"flipX": false,
+			"looped": false,
+			"name": "singDOWN",
+			"flipY": false,
+			"assetPath": null,
+			"frameRate": 24
+		},
+		{
+			"offsets": [
+				0,
+				0
+			],
+			"frameIndices": [0, 1, 2, 3, 4, 5],
+			"prefix": "Man Up",
+			"flipX": false,
+			"looped": false,
+			"name": "singUP",
+			"flipY": false,
+			"assetPath": null,
+			"frameRate": 24
+		},
+		{
+			"offsets": [
+				0,
+				0
+			],
+			"frameIndices": [0, 1, 2, 3, 4, 5],
+			"prefix": "Man Right",
+			"flipX": false,
+			"looped": false,
+			"name": "singRIGHT-hold",
+			"flipY": false,
+			"assetPath": null,
+			"frameRate": 24
+		},
+		{
+			"offsets": [
+				0,
+				0
+			],
+			"frameIndices": [0, 1, 2, 3, 4, 5],
+			"prefix": "Man Left0",
+			"flipX": false,
+			"looped": false,
+			"name": "singLEFT-hold",
+			"flipY": false,
+			"assetPath": null,
+			"frameRate": 24
+		},
+		{
+			"offsets": [
+				0,
+				0
+			],
+			"frameIndices": [0, 1, 2, 3, 4, 5],
+			"prefix": "Man Down",
+			"flipX": false,
+			"looped": false,
+			"name": "singDOWN-hold",
+			"flipY": false,
+			"assetPath": null,
+			"frameRate": 24
+		},
+		{
+			"offsets": [
+				0,
+				0
+			],
+			"frameIndices": [0, 1, 2, 3, 4, 5],
+			"prefix": "Man Up",
+			"flipX": false,
+			"looped": false,
+			"name": "singUP-hold",
+			"flipY": false,
+			"assetPath": null,
+			"frameRate": 24
+		},
+		{
+			"offsets": [
+				0,
+				0
+			],
+			"frameIndices": [6, 7, 7, 7],
+			"prefix": "Man Right",
+			"flipX": false,
+			"looped": false,
+			"name": "singRIGHT-end",
+			"flipY": false,
+			"assetPath": null,
+			"frameRate": 24
+		},
+		{
+			"offsets": [
+				0,
+				0
+			],
+			"frameIndices": [6, 7, 7, 7],
+			"prefix": "Man Left0",
+			"flipX": false,
+			"looped": false,
+			"name": "singLEFT-end",
+			"flipY": false,
+			"assetPath": null,
+			"frameRate": 24
+		},
+		{
+			"offsets": [
+				0,
+				0
+			],
+			"frameIndices": [6, 7, 7, 7],
+			"prefix": "Man Down",
+			"flipX": false,
+			"looped": false,
+			"name": "singDOWN-end",
+			"flipY": false,
+			"assetPath": null,
+			"frameRate": 24
+		},
+		{
+			"offsets": [
+				0,
+				0
+			],
+			"frameIndices": [6, 7, 7, 7],
+			"prefix": "Man Up",
+			"flipX": false,
+			"looped": false,
+			"name": "singUP-end",
+			"flipY": false,
+			"assetPath": null,
+			"frameRate": 24
+		},
+		{
+			"offsets": [
+				0,
+				0
+			],
+			"frameIndices": [],
+			"prefix": "Idle",
+			"flipX": false,
+			"looped": false,
+			"name": "idle",
+			"flipY": false,
+			"assetPath": null,
+			"frameRate": 18
+		},
+		{
+			"offsets": [
+				0,
+				0
+			],
+			"frameIndices": [],
+			"prefix": "Sei Up",
+			"flipX": false,
+			"looped": true,
+			"name": "singUP-alt",
+			"flipY": false,
+			"assetPath": null,
+			"frameRate": 24
+		},
+		{
+			"offsets": [
+				0,
+				0
+			],
+			"frameIndices": [],
+			"prefix": "Sei Right",
+			"flipX": false,
+			"looped": true,
+			"name": "singRIGHT-alt",
+			"flipY": false,
+			"assetPath": "",
+			"frameRate": 24
+		},
+		{
+			"offsets": [
+				0,
+				0
+			],
+			"frameIndices": [],
+			"prefix": "Sei Left",
+			"flipX": false,
+			"looped": true,
+			"name": "singLEFT-alt",
+			"flipY": false,
+			"assetPath": null,
+			"frameRate": 24
+		},
+		{
+			"offsets": [
+				0,
+				0
+			],
+			"frameIndices": [],
+			"prefix": "Sei Down",
+			"flipX": false,
+			"looped": true,
+			"name": "singDOWN-alt",
+			"flipY": false,
+			"assetPath": null,
+			"frameRate": 24
+		},
+		{
+			"offsets": [
+				0,
+				1
+			],
+			"frameIndices": [],
+			"prefix": "IntroIdle",
+			"flipX": false,
+			"looped": false,
+			"name": "intro-idle",
+			"flipY": false,
+			"assetPath": null,
+			"frameRate": 24
+		},
+		{
+			"offsets": [
+				0,
+				0
+			],
+			"frameIndices": [],
+			"prefix": "Intro",
+			"flipX": false,
+			"looped": false,
+			"name": "intro",
+			"flipY": false,
+			"assetPath": null,
+			"frameRate": 24
+		}
+	]
+}

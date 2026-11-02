@@ -1,0 +1,29 @@
+import funkin.modding.module.Module;
+import funkin.save.Save;
+
+class SwitcherooProgress extends Module
+{
+    function new() { super('SwitcherooProgress'); }
+
+    public static function hasCompletedPrologue():Bool
+    {
+        // hasBeatenLevel puede devolver true sin datos con UNLOCK_EVERYTHING.
+        for (difficulty in ['easy', 'normal', 'hard'])
+        {
+            var result = Save.instance.getLevelScore('prologue-just-manuel', difficulty);
+            if (result != null && result.score > 0) return true;
+        }
+        return false;
+    }
+
+    public static function isAvailable(entry:Dynamic):Bool
+    {
+        return entry != null
+            && (entry.requiresPrologue != true || hasCompletedPrologue());
+    }
+
+    public static function isMenuUnlocked(option:String):Bool
+    {
+        return (option != 'freeplay' && option != 'credits') || hasCompletedPrologue();
+    }
+}

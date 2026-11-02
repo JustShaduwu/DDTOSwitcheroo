@@ -1,0 +1,40 @@
+{
+  "canSkip": true,
+  "initStyle": "normal",
+  "startingMusic": null,
+  "disableBGFade": false,
+
+  "dialogue": [
+    {
+      "name": "and",
+      "expression": "neutral",
+      "string": "Uh... hello?",
+      "key": "test1",
+      "side": "left"
+    },
+
+    {
+      "name": "elsa",
+      "expression": "angry",
+      "string": "What are you doing?",
+      "key": "test2",
+      "side": "right"
+    },
+
+    {
+      "name": "and",
+      "expression": "happy",
+      "string": "Testing the new dialogue system!",
+      "key": "test3",
+      "side": "left"
+    },
+
+    {
+      "name": "elsa",
+      "expression": "gone",
+      "string": "...",
+      "key": "test4",
+      "side": "right"
+    }
+  ]
+}

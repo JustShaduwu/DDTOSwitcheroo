@@ -1,0 +1,39 @@
+{
+ "version": "2.2.4",
+ "songName": "Shinkyoku (Switcheroo Mix)",
+ "artist": "Shaduwu / Blantados",
+ "charter": "Sanstop",
+ "pause": "monika",
+ "offsets": {
+  "altInstrumentals": {
+   "Blantados": 0
+  }
+ },
+ "playData": {
+  "stickerPack": "switcheroo-doki",
+  "difficulties": [
+   "easy", "normal", "hard"
+  ],
+  "characters": {
+   "player": "Duet",
+   "girlfriend": "speakers-pixel",
+   "opponent": "Duet_Original"
+  },
+  "stage": "schoolErect-switcheroo",
+  "noteStyle": "ddtspixel",
+  "ratings": {
+   "hard": 5
+  },
+  "album": "switcheroo",
+  "previewEnd": 0
+ },
+ "generatedBy": "Friday Night Funkin' - v0.8.4",
+ "timeChanges": [
+  {
+   "t": 0,
+   "b": 0,
+   "bpm": 135,
+   "bt": [4, 4, 4, 4]
+  }
+ ]
+}

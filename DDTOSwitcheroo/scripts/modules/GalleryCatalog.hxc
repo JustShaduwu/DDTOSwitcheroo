@@ -1,0 +1,45 @@
+import funkin.modding.module.Module;
+import funkin.Paths;
+import lime.utils.Assets;
+import StringTools;
+
+class GalleryCatalog extends Module
+{
+    public function new() { super('GalleryCatalog'); }
+
+    public static function read():Dynamic
+    {
+        var entries:Array<Dynamic> = [];
+        var sections:Array<Dynamic> = [];
+        var section:Dynamic = null;
+        try
+        {
+            var raw = Assets.getText(Paths.file('data/galleryData.txt'));
+            for (source in raw.split('\n'))
+            {
+                var line = StringTools.trim(StringTools.replace(source, '\uFEFF', ''));
+                if (line.length == 0 || StringTools.startsWith(line, '//')) continue;
+                if (StringTools.startsWith(line, '#'))
+                {
+                    var fields = line.substr(1).split('::');
+                    section = {title: StringTools.trim(fields[0]), key: fields.length > 1 ? StringTools.trim(fields[1]) : '', indices: []};
+                    sections.push(section);
+                    continue;
+                }
+                var fields = line.split('::');
+                if (fields.length < 2 || StringTools.trim(fields[0]) == '') continue;
+                if (section == null)
+                {
+                    section = {title: 'Gallery', key: 'gallery_default', indices: []};
+                    sections.push(section);
+                }
+                section.indices.push(entries.length);
+                entries.push({image: StringTools.trim(fields[0]), path: 'gallery/' + StringTools.trim(fields[0]), description: StringTools.replace(StringTools.trim(fields[1]), '\\n', '\n'), url: fields.length > 2 ? StringTools.trim(fields[2]) : ''});
+            }
+        }
+        catch (error:Dynamic) { trace('[GalleryCatalog] ' + error); }
+        sections.push({title: 'Desktop', key: 'gallery_desktop', indices: [entries.length]});
+        entries.push({image: 'desktopbg1', path: 'enterprise/desktopbg1', description: 'METAVERSE Enterprise Solutions', url: ''});
+        return {entries: entries, sections: sections};
+    }
+}

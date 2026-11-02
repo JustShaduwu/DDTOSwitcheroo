@@ -1,9 +1,0 @@
-<?xml version='1.0' encoding='utf-8'?>
-<TextureAtlas imagePath="Corrupted Chis.png">
-<SubTexture name="Corrupted Chis Idle0000" x="164" y="72" width="80" height="70" frameX="-24" frameY="-35" frameWidth="120" frameHeight="106" />
-<SubTexture name="Corrupted Chis Idle0001" x="0" y="0" width="80" height="72" frameX="-25" frameY="-33" frameWidth="120" frameHeight="106" />
-<SubTexture name="Corrupted Chis Idle0002" x="80" y="0" width="84" height="72" frameX="-23" frameY="-33" frameWidth="120" frameHeight="106" />
-<SubTexture name="Corrupted Chis Idle0003" x="164" y="72" width="80" height="70" frameX="-24" frameY="-35" frameWidth="120" frameHeight="106" />
-<SubTexture name="Corrupted Chis Idke0000" x="0" y="72" width="97" height="72" frameX="-17" frameY="-33" frameWidth="120" frameHeight="106" />
-<SubTexture name="Corrupted Chis Idle0004" x="164" y="0" width="102" height="72" frameX="-15" frameY="-33" frameWidth="120" frameHeight="106" />
-</TextureAtlas>

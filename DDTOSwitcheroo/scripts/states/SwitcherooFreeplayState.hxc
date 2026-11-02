@@ -1,0 +1,1671 @@
+package switcheroo.states;
+
+import SwitcherooProgress;
+
+import LanguageManager;
+
+import haxe.Json;
+import lime.utils.Assets;
+
+import flixel.FlxG;
+import flixel.FlxSprite;
+import flixel.group.FlxTypedGroup;
+import flixel.math.FlxMath;
+import flixel.text.FlxText;
+import flixel.text.FlxTextBorderStyle;
+import flixel.tweens.FlxEase;
+import flixel.tweens.FlxTween;
+import flixel.util.FlxColor;
+import flixel.util.FlxTimer;
+import funkin.modding.module.ModuleHandler;
+
+import funkin.Paths;
+import funkin.audio.FunkinSound;
+import funkin.data.song.SongRegistry;
+import funkin.graphics.FunkinSprite;
+import funkin.play.PlayStatePlaylist;
+import funkin.play.scoring.Scoring;
+import funkin.play.song.Song;
+import funkin.save.Save;
+import funkin.ui.MusicBeatState;
+import funkin.play.components.HealthIcon;
+import funkin.ui.ScriptedMusicBeatState;
+import funkin.ui.ScriptedMusicBeatSubState;
+import funkin.ui.transition.LoadingState;
+import funkin.util.Constants;
+import funkin.ui.transition.stickers.StickerSubState;
+import funkin.ui.transition.stickers.StickerSprite;
+
+using StringTools;
+
+class SwitcherooFreeplayState extends MusicBeatState
+{
+    static final FREEPLAY_DATA_PATH:String =
+        'data/freeplay/freeplayMenu.json';
+
+    static var rememberedPage:Int = 0;
+    static var rememberedSong:Int = 0;
+    public static var pendingStickers:Array<StickerSprite> = null;
+
+        public static var instance:SwitcherooFreeplayState;
+
+    var menuData:Dynamic;
+
+    static var currentPage:Int = 0;
+    var currentSongIndex:Int = 0;
+
+    var currentPageSongs:Array<Dynamic> = [];
+
+
+static var rememberedChartOption:Int = 0;
+
+var currentChartOptionIndex:Int = 0;
+var currentChartOptions:Array<Dynamic> = [];
+
+    var currentSongData:Dynamic;
+    var currentSong:Song;
+
+public var acceptInputs:Bool = false;
+    var selectedSomething:Bool = false;
+    var difficultySelectorActive:Bool = false;
+
+    var background:FlxSprite;
+    var songGroup:FlxTypedGroup<FlxText>;
+
+    var difficultySprite:FlxSprite;
+    var pageText:FlxText;
+
+    var scoreText:FlxText;
+    var completionText:FlxText;
+    var infoText:FlxText;
+    var controlsText:FlxText;
+
+    var iconArray:Array<HealthIcon> = [];
+    var menuCharacter:FunkinSprite;
+
+    var intendedScore:Float = 0;
+    var lerpedScore:Float = 0;
+
+    var intendedCompletion:Float = 0;
+    var lerpedCompletion:Float = 0;
+
+    var songPlayback:FlxSprite;
+	var modifierMenu:FlxSprite;
+
+    override function create():Void
+    {
+        super.create();
+
+        instance = this;
+
+
+if (pendingStickers != null)
+{
+    var oldStickers:Array<StickerSprite> =
+        pendingStickers;
+
+    pendingStickers = null;
+
+    var stickerSubState:StickerSubState =
+        new StickerSubState(
+        {
+            oldStickers: oldStickers
+        });
+
+    persistentUpdate = true;
+    persistentDraw = true;
+
+    openSubState(stickerSubState);
+    stickerSubState.degenStickers();
+}
+
+        persistentUpdate = true;
+        persistentDraw = true;
+
+        playMenuMusic();
+
+        if (!loadFreeplayData())
+        {
+            trace('No fue posible construir DokiFreeplayState.');
+            returnToMainMenu();
+            return;
+        }
+
+        buildMenu();
+
+        currentPage = clampIndex(
+            rememberedPage,
+            menuData.pages.length
+        );
+
+        loadPage(currentPage, false);
+
+
+        new FlxTimer().start(
+            0.35,
+            function(timer:FlxTimer)
+            {
+                acceptInputs = true;
+            }
+        );
+        addButtons();
+    }
+
+    function addButtons()
+    {
+songPlayback = new FlxSprite()
+    .loadGraphic(Paths.image('freeplay/extra/preview'));
+
+songPlayback.setGraphicSize(Std.int(songPlayback.width * 0.6));
+songPlayback.updateHitbox();
+
+songPlayback.x = FlxG.width - songPlayback.width - 10;
+songPlayback.y = 10;
+
+songPlayback.zIndex = 100;
+
+
+
+add(songPlayback);
+
+
+modifierMenu = new FlxSprite()
+    .loadGraphic(Paths.image('freeplay/extra/modifiers'));
+
+modifierMenu.setGraphicSize(Std.int(modifierMenu.width * 0.6));
+modifierMenu.updateHitbox();
+
+modifierMenu.x = FlxG.width - modifierMenu.width - 10;
+modifierMenu.y = songPlayback.y + songPlayback.height + 10;
+modifierMenu.antialiasing = true;
+modifierMenu.zIndex = 101;
+
+add(modifierMenu);
+    }
+
+
+    function playMenuMusic():Void
+    {
+        FunkinSound.playMusic(
+            'gettinSwitched',
+            {
+                overrideExisting: true,
+                restartTrack: false,
+                persist: true
+            }
+        );
+    }
+
+function buildChartOptions(
+    songId:String
+):Array<Dynamic>
+{
+    var result:Array<Dynamic> = [];
+
+   
+    var song:Song =
+        SongRegistry.instance.fetchEntry(
+            songId,
+            {
+                variation:
+                    Constants.DEFAULT_VARIATION
+            }
+        );
+
+    if (song == null)
+        return result;
+
+   
+    var variationIds:Array<String> =
+        song.variations;
+
+    if (
+        variationIds == null ||
+        variationIds.length == 0
+    )
+    {
+        variationIds = [
+            Constants.DEFAULT_VARIATION
+        ];
+    }
+
+    for (variationId in variationIds)
+    {
+       
+        var difficulties:Array<String> =
+            song.listDifficulties(
+                variationId,
+                null,
+                false,
+                false
+            );
+
+        if (
+            difficulties == null ||
+            difficulties.length == 0
+        )
+        {
+            continue;
+        }
+
+        for (difficultyId in difficulties)
+        {
+            addChartOption(
+                result,
+                difficultyId,
+                variationId
+            );
+        }
+    }
+
+    return result;
+}
+
+
+function addChartOption(
+    result:Array<Dynamic>,
+    difficultyId:String,
+    variationId:String
+):Void
+{
+    if (
+        difficultyId == null ||
+        difficultyId == ''
+    )
+    {
+        return;
+    }
+
+    for (existing in result)
+    {
+        if (
+            existing.difficulty ==
+                difficultyId &&
+            existing.variation ==
+                variationId
+        )
+        {
+            return;
+        }
+    }
+
+    result.push(
+    {
+        visualId:
+            difficultyId,
+
+        difficulty:
+            difficultyId,
+
+        variation:
+            variationId,
+
+        instrumental:
+            getInstrumentalForVariation(
+                variationId
+            )
+    });
+}
+
+function getInstrumentalForVariation(
+    variationId:String
+):String
+{
+    switch (variationId)
+    {
+        case 'pico':
+            return 'pico';
+
+        case 'erect' | 'nightmare':
+            return 'erect';
+
+       
+        default:
+            return '';
+    }
+}
+
+
+    function loadFreeplayData():Bool
+    {
+        if (!Assets.exists(FREEPLAY_DATA_PATH))
+        {
+            trace(
+                'No se encontró el Freeplay JSON: ' +
+                FREEPLAY_DATA_PATH
+            );
+
+            return false;
+        }
+
+        try
+        {
+            menuData = Json.parse(
+                Assets.getText(FREEPLAY_DATA_PATH)
+            );
+        }
+        catch (error:Dynamic)
+        {
+            trace(
+                'Error leyendo ' +
+                FREEPLAY_DATA_PATH +
+                ': ' +
+                error
+            );
+
+            return false;
+        }
+
+        if (
+            menuData == null ||
+            menuData.pages == null ||
+            menuData.pages.length == 0
+        )
+        {
+            trace(
+                'El Freeplay JSON no contiene páginas.'
+            );
+
+            return false;
+        }
+
+        return true;
+    }
+
+    function buildMenu():Void
+    {
+        background = new FlxSprite();
+        background.antialiasing = true;
+        add(background);
+
+        songGroup = new FlxTypedGroup();
+        add(songGroup);
+
+        scoreText = new FlxText(
+            442,
+            56,
+            760,
+            '',
+            29
+        );
+
+        scoreText.setFormat(
+            Paths.font('Halogen.otf'),
+            29,
+            FlxColor.BLACK,
+            'left',
+            FlxTextBorderStyle.OUTLINE,
+            FlxColor.WHITE
+        );
+
+        scoreText.borderSize = 1;
+        scoreText.antialiasing = true;
+        add(scoreText);
+
+        completionText = new FlxText(
+            880,
+            56,
+            340,
+            '',
+            24
+        );
+
+        completionText.setFormat(
+            Paths.font('Halogen.otf'),
+            24,
+            FlxColor.BLACK,
+            'right',
+            FlxTextBorderStyle.OUTLINE,
+            FlxColor.WHITE
+        );
+
+        completionText.borderSize = 1;
+        completionText.antialiasing = true;
+        add(completionText);
+
+        pageText = new FlxText(
+            35,
+            25,
+            360,
+            '',
+            24
+        );
+
+        pageText.setFormat(
+            Paths.font('Halogen.otf'),
+            24,
+            FlxColor.BLACK,
+            'left',
+            FlxTextBorderStyle.OUTLINE,
+            FlxColor.WHITE
+        );
+
+        pageText.borderSize = 1;
+        pageText.antialiasing = true;
+        pageText.alpha = 0;
+        add(pageText);
+
+        difficultySprite = new FlxSprite(
+            453,
+            580
+        );
+
+        difficultySprite.frames =
+            LanguageManager.translatedSparrow(
+                'dokistory/difficulties'
+            );
+
+        difficultySprite.antialiasing = true;
+        difficultySprite.visible = false;
+        add(difficultySprite);
+
+
+        infoText = new FlxText(
+            900,
+            165,
+            340,
+            '',
+            24
+        );
+
+        infoText.setFormat(
+            Paths.font('Halogen.otf'),
+            24,
+            FlxColor.BLACK,
+            'center',
+            FlxTextBorderStyle.OUTLINE,
+            FlxColor.WHITE
+        );
+
+        infoText.alpha = 0;
+
+        infoText.borderSize = 1;
+        infoText.antialiasing = true;
+        add(infoText);
+
+        controlsText = new FlxText(
+            420,
+            FlxG.height - 38,
+            820,
+           LanguageManager.getTranslation("freeplay_controls", "UP/DOWN: SONG   LEFT/RIGHT: PAGE  ACCEPT: SELECT"),
+            16
+        );
+
+        controlsText.setFormat(
+            Paths.font('vcr.ttf'),
+            16,
+            FlxColor.WHITE,
+            'center',
+            FlxTextBorderStyle.OUTLINE,
+            FlxColor.BLACK
+        );
+
+        controlsText.alpha = 0;
+
+        controlsText.borderSize = 1;
+        add(controlsText);
+
+        menuCharacter = FunkinSprite.createSparrow(
+            80,
+            490,
+            'freeplay/moni'
+        );
+
+        menuCharacter.animation.addByPrefix(
+            'idle',
+            'FreeplayChibiIdle',
+            24,
+            false
+        );
+
+        menuCharacter.animation.addByPrefix(
+            'confirm',
+            'FreeplayChibiCheer',
+            24,
+            false
+        );
+
+        menuCharacter.animation.play('idle');
+        menuCharacter.antialiasing = true;
+        menuCharacter.visible = false;
+        add(menuCharacter);
+    }
+
+function rebuildIconArray():Void
+{
+    for (icon in iconArray)
+    {
+        if (icon != null)
+        {
+            remove(icon);
+            icon.destroy();
+        }
+    }
+
+    iconArray = [];
+
+    for (index in 0...currentPageSongs.length)
+    {
+        var songData:Dynamic =
+            currentPageSongs[index];
+
+        var characterId:String = null;
+
+        if (
+            songData.icon != null &&
+            songData.icon != ''
+        )
+        {
+            characterId =
+                Std.string(songData.icon);
+        }
+        else
+        {
+            var song:Song =
+                SongRegistry.instance.fetchEntry(
+                    songData.songId,
+                    {
+                        variation:
+                            Constants.DEFAULT_VARIATION
+                    }
+                );
+
+            if (song != null)
+            {
+                try
+                {
+                    var metadata =
+                        song.getRawMetadata();
+
+                    if (
+                        metadata != null &&
+                        metadata.length > 0 &&
+                        metadata[0] != null &&
+                        metadata[0].playData != null &&
+                        metadata[0].playData.characters != null
+                    )
+                    {
+                        characterId =
+                            metadata[0]
+                                .playData
+                                .characters
+                                .opponent;
+                    }
+                }
+                catch (error:Dynamic)
+                {
+                    trace(
+                        'No se pudo obtener el icono de ' +
+                        songData.songId +
+                        ': ' +
+                        error
+                    );
+                }
+            }
+        }
+
+        if (
+            characterId == null ||
+            characterId == ''
+        )
+        {
+            characterId = Constants.DEFAULT_HEALTH_ICON;
+        }
+
+        var healthIcon:HealthIcon =
+            new HealthIcon(null);
+
+        healthIcon.autoUpdate = false;
+        healthIcon.configure(
+        {
+            id: characterId,
+            isPixel: false,
+            shouldBop: false,
+            scale: 1.0,
+            offsets: [0, 0],
+            flipX: false
+        });
+
+        healthIcon.x = 1000;
+        healthIcon.y = 500;
+
+        healthIcon.scale.set(1.7, 1.7);
+        healthIcon.updateHitbox();
+
+        healthIcon.angle = 30;
+        healthIcon.bopEvery = 0;
+        healthIcon.alpha =
+            index == currentSongIndex ? 1 : 0;
+
+        iconArray.push(healthIcon);
+        add(healthIcon);
+    }
+}
+
+override function update(elapsed:Float):Void
+{
+    super.update(elapsed);
+
+    updateScoreAnimations(elapsed);
+
+    if (FlxG.keys.justPressed.M)
+{
+acceptInputs = false;
+persistentUpdate = false;
+
+openSubState(new switcheroo.substates.DokiModifierSubState(this));
+}
+
+    if (!acceptInputs || selectedSomething)
+        return;
+
+    if (difficultySelectorActive)
+    {
+        updateDifficultySelectorControls();
+    }
+    else
+    {
+        updateSongMenuControls();
+    }
+}
+
+function updateSongMenuControls():Void
+{
+    if (controls.UI_UP_P)
+    {
+        changeSong(-1);
+    }
+
+    if (controls.UI_DOWN_P)
+    {
+        changeSong(1);
+    }
+
+   
+    if (controls.UI_LEFT_P)
+    {
+        changePage(-1);
+    }
+
+    if (controls.UI_RIGHT_P)
+    {
+        changePage(1);
+    }
+
+   
+    if (controls.ACCEPT_P)
+    {
+        openDifficultySelector();
+    }
+
+    if (controls.BACK_P)
+    {
+        returnToMainMenu();
+    }
+}
+
+// Prefer Hard in the base variation, then any available Hard chart.
+// Songs without Hard retain the previous remembered-index fallback.
+function getDefaultChartOptionIndex():Int
+{
+    var hardIndex:Int = -1;
+    for (index in 0...currentChartOptions.length)
+    {
+        var chartOption:Dynamic = currentChartOptions[index];
+        if (chartOption.difficulty != 'hard')
+            continue;
+
+        if (chartOption.variation == Constants.DEFAULT_VARIATION)
+            return index;
+
+        if (hardIndex < 0)
+            hardIndex = index;
+    }
+
+    if (hardIndex >= 0)
+        return hardIndex;
+
+    return clampIndex(rememberedChartOption, currentChartOptions.length);
+}
+
+function openDifficultySelector():Void
+{
+    if (
+        currentSong == null ||
+        currentChartOptions == null ||
+        currentChartOptions.length == 0
+    )
+    {
+        FunkinSound.playOnce(
+            Paths.sound('cancelMenu')
+        );
+
+        return;
+    }
+
+    difficultySelectorActive = true;
+
+    currentChartOptionIndex = getDefaultChartOptionIndex();
+
+    rememberedChartOption =
+        currentChartOptionIndex;
+
+    loadCurrentChartOption();
+    updateDifficultyVisual();
+    updateIconArray();
+
+    controlsText.text =
+        LanguageManager.getTranslation("difficulty_controls", "LEFT/RIGHT: DIFFICULTY   ACCEPT: PLAY   BACK: CANCEL");
+
+    FunkinSound.playOnce(
+        Paths.sound('confirmMenu')
+    );
+}
+
+function updateIconArray():Void
+{
+    for (index in 0...iconArray.length)
+    {
+        var healthIcon:HealthIcon =
+            iconArray[index];
+
+        if (healthIcon == null)
+            continue;
+
+        healthIcon.alpha =
+            index == currentSongIndex ? 1 : 0;
+    }
+}
+
+function updateDifficultySelectorControls():Void
+{
+    if (controls.UI_LEFT_P)
+    {
+        changeDifficulty(-1);
+    }
+
+    if (controls.UI_RIGHT_P)
+    {
+        changeDifficulty(1);
+    }
+
+   
+    if (controls.ACCEPT_P)
+    {
+        confirmDifficulty();
+        return;
+    }
+
+   
+    if (controls.BACK_P)
+    {
+        closeDifficultySelector();
+    }
+}
+
+function closeDifficultySelector():Void
+{
+    if (!difficultySelectorActive)
+        return;
+
+    difficultySelectorActive = false;
+    difficultySprite.visible = false;
+
+    FunkinSound.playOnce(
+        Paths.sound('cancelMenu')
+    );
+}
+
+function confirmDifficulty():Void
+{
+    if (!difficultySelectorActive)
+        return;
+
+    difficultySelectorActive = false;
+
+    selectCurrentSong();
+}
+
+    function updateScoreAnimations(elapsed:Float):Void
+    {
+        lerpedScore = FlxMath.lerp(
+            lerpedScore,
+            intendedScore,
+            10 * elapsed
+        );
+
+        if (Math.abs(lerpedScore - intendedScore) < 1)
+            lerpedScore = intendedScore;
+
+        lerpedCompletion = FlxMath.lerp(
+            lerpedCompletion,
+            intendedCompletion,
+            10 * elapsed
+        );
+
+        if (
+            Math.abs(
+                lerpedCompletion -
+                intendedCompletion
+            ) < 0.001
+        )
+        {
+            lerpedCompletion =
+                intendedCompletion;
+        }
+
+        scoreText.text =
+            LanguageManager.getTranslation("personal_best", "Personal Best:") + ' ' +
+            Std.int(lerpedScore);
+
+        completionText.text =
+            LanguageManager.getTranslation("cleared", "CLEARED:") + ' ' +
+            Std.int(
+                FlxMath.bound(
+                    lerpedCompletion * 100,
+                    0,
+                    100
+                )
+            ) +
+            '%';
+    }
+
+    function loadPage(
+        pageIndex:Int,
+        playSound:Bool = true
+    ):Void
+    {
+        currentPage = FlxMath.wrap(
+            pageIndex,
+            0,
+            menuData.pages.length - 1
+        );
+
+        rememberedPage = currentPage;
+
+        var pageData:Dynamic =
+            menuData.pages[currentPage];
+
+        if (
+            pageData.background != null &&
+            pageData.background != ''
+        )
+        {
+            background.loadGraphic(
+                LanguageManager.getImagePath(
+                    pageData.background
+                )
+            );
+        }
+
+        background.antialiasing = true;
+
+        pageText.text =
+            pageData.title != null
+                ? pageData.title
+                : LanguageManager.getTranslation("page", "PAGE") + ' ' +
+                  (currentPage + 1);
+
+  currentPageSongs = [];
+
+if (pageData.songs != null)
+{
+    for (entry in pageData.songs)
+    {
+        if (
+            isSongEntryVisible(entry) &&
+            isSongEntryValid(entry)
+        )
+        {
+            currentPageSongs.push(
+                entry
+            );
+        }
+    }
+}
+
+if (currentPageSongs.length == 0)
+{
+    currentSongData = null;
+    currentSong = null;
+
+    infoText.text =
+        LanguageManager.getTranslation("no_songs", "NO SONGS AVAILABLE");
+
+    difficultySprite.visible = false;
+
+    for (oldIcon in iconArray)
+    {
+        if (oldIcon != null)
+        {
+            remove(oldIcon);
+            oldIcon.destroy();
+        }
+    }
+
+    iconArray = [];
+
+    return;
+}
+
+currentSongIndex = clampIndex(
+    rememberedSong,
+    currentPageSongs.length
+);
+
+rebuildSongList();
+rebuildIconArray();
+
+if (playSound)
+{
+    FunkinSound.playOnce(
+        Paths.sound('flip_page')
+    );
+}
+
+changeSong(0, false);
+    }
+
+    function isSongEntryVisible(
+        entry:Dynamic
+    ):Bool
+    {
+        if (entry == null)
+            return false;
+
+        if (
+            entry.visible != null &&
+            entry.visible == false
+        )
+        {
+            return false;
+        }
+
+        return true;
+    }
+
+function isSongEntryValid(
+    entry:Dynamic
+):Bool
+{
+    if (
+        entry == null ||
+        entry.songId == null ||
+        entry.songId == ''
+    )
+    {
+        return false;
+    }
+
+    var song:Song =
+        SongRegistry.instance.fetchEntry(
+            entry.songId,
+            {
+                variation:
+                    Constants.DEFAULT_VARIATION
+            }
+        );
+
+    return song != null;
+}
+
+    function rebuildSongList():Void
+    {
+        while (songGroup.members.length > 0)
+        {
+            var oldText:FlxText =
+                songGroup.members[0];
+
+            songGroup.remove(
+                oldText,
+                true
+            );
+
+            oldText.destroy();
+        }
+
+        for (
+            index in
+            0...currentPageSongs.length
+        )
+        {
+            var songData:Dynamic =
+                currentPageSongs[index];
+
+            var displayName:String =
+                getConfiguredDisplayName(
+                    songData
+                );
+
+            var songText:FlxText =
+                new FlxText(
+                    442,
+                    116 + index * 47.5,
+                    500,
+                    displayName,
+                    29
+                );
+
+            songText.setFormat(
+                Paths.font('Halogen.otf'),
+                29,
+                FlxColor.BLACK,
+                'left'
+            );
+
+            songText.setBorderStyle(
+                FlxTextBorderStyle.OUTLINE,
+                0xFFFF7FEE,
+                1
+            );
+
+            songText.antialiasing = true;
+            songText.ID = index;
+
+            songGroup.add(songText);
+        }
+    }
+
+function changePage(change:Int):Void
+{
+    difficultySelectorActive = false;
+    difficultySprite.visible = false;
+
+    if (
+        menuData == null ||
+        menuData.pages == null ||
+        menuData.pages.length <= 1
+    )
+    {
+        return;
+    }
+
+    rememberedSong = 0;
+    rememberedChartOption = 0;
+
+    loadPage(
+        currentPage + change,
+        true
+    );
+}
+
+function changeSong(
+    change:Int,
+    playSound:Bool = true
+):Void
+{
+    difficultySelectorActive = false;
+    difficultySprite.visible = false;
+
+    if (currentPageSongs.length == 0)
+        return;
+
+    currentSongIndex =
+        FlxMath.wrap(
+            currentSongIndex + change,
+            0,
+            currentPageSongs.length - 1
+        );
+
+    rememberedSong =
+        currentSongIndex;
+
+    currentSongData =
+        currentPageSongs[
+            currentSongIndex
+        ];
+
+    currentChartOptions =
+        buildChartOptions(
+            currentSongData.songId
+        );
+
+    if (currentChartOptions.length == 0)
+    {
+        currentSong = null;
+        difficultySprite.visible = false;
+
+        infoText.text =
+            LanguageManager.getTranslation("no_charts", "NO VALID CHARTS");
+
+        return;
+    }
+
+    currentChartOptionIndex = getDefaultChartOptionIndex();
+
+    if (playSound)
+    {
+        FunkinSound.playOnce(
+            Paths.sound('scrollMenu')
+        );
+    }
+
+    loadCurrentChartOption();
+    updateSongListVisuals();
+        updateIconArray();
+}
+
+function loadCurrentChartOption():Void
+{
+    if (
+        currentSongData == null ||
+        currentChartOptions.length == 0
+    )
+    {
+        return;
+    }
+
+var option:Dynamic =
+    currentChartOptions[
+        currentChartOptionIndex
+    ];
+
+    currentSong =
+        SongRegistry.instance.fetchEntry(
+            currentSongData.songId,
+            {
+                variation:
+                    option.variation
+            }
+        );
+
+    if (currentSong == null)
+    {
+        difficultySprite.visible = false;
+        return;
+    }
+
+    registerDifficultyAnimations();
+    updateSongInformation();
+    updateDisplayedScore();
+
+    if (difficultySelectorActive)
+    {
+        updateDifficultyVisual();
+    }
+    else
+    {
+        difficultySprite.visible = false;
+    }
+}
+
+
+function registerDifficultyAnimations():Void
+{
+    if (difficultySprite == null)
+        return;
+
+    for (option in currentChartOptions)
+    {
+        var visualId:String =
+            option.visualId;
+
+        if (
+            difficultySprite.animation
+                .getByName(visualId) != null
+        )
+        {
+            continue;
+        }
+
+        difficultySprite.animation
+            .addByPrefix(
+                visualId,
+                'diff_' + visualId,
+                24,
+                true
+            );
+    }
+}
+
+function changeDifficulty(
+    change:Int,
+    playSound:Bool = true
+):Void
+{
+    if (!difficultySelectorActive)
+        return;
+
+    if (currentChartOptions.length <= 1)
+        return;
+
+    currentChartOptionIndex =
+        FlxMath.wrap(
+            currentChartOptionIndex + change,
+            0,
+            currentChartOptions.length - 1
+        );
+
+    rememberedChartOption =
+        currentChartOptionIndex;
+
+    if (playSound)
+    {
+        FunkinSound.playOnce(
+            Paths.sound('scrollMenu')
+        );
+    }
+
+    loadCurrentChartOption();
+}
+
+function updateDifficultyVisual():Void
+{
+    if (
+        difficultySprite == null ||
+        currentChartOptions.length == 0
+    )
+    {
+        difficultySprite.visible = false;
+        return;
+    }
+
+    var option:Dynamic =
+        currentChartOptions[
+            currentChartOptionIndex
+        ];
+
+    var visualId:String =
+        option.visualId;
+
+    var animation =
+        difficultySprite.animation
+            .getByName(
+                visualId
+            );
+
+    if (animation == null)
+    {
+        difficultySprite.visible = false;
+
+        trace(
+            'Freeplay: falta diff_' +
+            visualId +
+            ' en dokistory/difficulties.'
+        );
+
+        return;
+    }
+
+    difficultySprite.visible = true;
+
+    var centerX:Float =
+        difficultySprite.x +
+        difficultySprite.width / 2;
+
+    var centerY:Float =
+        difficultySprite.y +
+        difficultySprite.height / 2;
+
+    difficultySprite.animation.play(
+        visualId,
+        true
+    );
+
+    difficultySprite.updateHitbox();
+
+    difficultySprite.x =
+        centerX -
+        difficultySprite.width / 2;
+
+    difficultySprite.y =
+        centerY -
+        difficultySprite.height / 2;
+}
+
+
+function updateSongInformation():Void
+{
+    if (
+        currentSong == null ||
+        currentChartOptions.length == 0
+    )
+    {
+        infoText.text = LanguageManager.getTranslation("unknown", "UNKNOWN");
+        return;
+    }
+
+    var displayName:String =
+        getCurrentDisplayName();
+
+    var option:Dynamic =
+        currentChartOptions[
+            currentChartOptionIndex
+        ];
+
+    infoText.text =
+        displayName.toUpperCase() +
+        '\n\nID: ' +
+        currentSongData.songId +
+        '\nDIFFICULTY: ' +
+        option.difficulty +
+        '\nVARIATION: ' +
+        option.variation;
+}
+function getConfiguredDisplayName(
+    songData:Dynamic
+):String
+{
+    if (songData == null)
+        return 'Unknown';
+
+   
+    if (
+        songData.displayName != null &&
+        songData.displayName != ''
+    )
+    {
+        return songData.displayName;
+    }
+
+    if (
+        songData.songId == null ||
+        songData.songId == ''
+    )
+    {
+        return 'Unknown';
+    }
+
+   
+    var baseSong:Song =
+        SongRegistry.instance.fetchEntry(
+            songData.songId,
+            {
+                variation:
+                    Constants.DEFAULT_VARIATION
+            }
+        );
+
+    if (
+        baseSong != null &&
+        baseSong.songName != null &&
+        baseSong.songName != ''
+    )
+    {
+        return baseSong.songName;
+    }
+
+   
+    return songData.songId;
+}
+
+
+
+function getNoteStyle():String
+{
+    if (currentSong == null)
+    {
+        return '';
+    }
+
+    try
+    {
+        var metadata =
+            currentSong.getRawMetadata();
+
+        if (
+            metadata == null ||
+            metadata.length == 0 ||
+            metadata[0] == null ||
+            metadata[0].playData == null
+        )
+        {
+            return '';
+        }
+
+        var noteStyle =
+            metadata[0]
+                .playData
+                .noteStyle;
+
+        if (
+            noteStyle == null ||
+            noteStyle == ''
+        )
+        {
+            return '';
+        }
+
+        return Std.string(
+            noteStyle
+        );
+    }
+    catch (error:Dynamic)
+    {
+        trace(
+            '[SkyFreeplay] Could not get noteStyle: ' +
+            error
+        );
+    }
+
+    return '';
+}
+
+    function getCurrentDisplayName():String
+    {
+        if (currentSongData == null)
+            return 'Unknown';
+
+        if (
+            currentSongData.displayName != null &&
+            currentSongData.displayName != ''
+        )
+        {
+            return currentSongData.displayName;
+        }
+
+        if (currentSong != null)
+            return currentSong.songName;
+
+        return currentSongData.songId;
+    }
+
+    function updateSongListVisuals():Void
+    {
+        for (item in songGroup.members)
+        {
+            if (item == null)
+                continue;
+
+            if (item.ID == currentSongIndex)
+            {
+                item.borderColor =
+                    0xFF95E5FF;
+
+                item.alpha = 1;
+            }
+            else
+            {
+                item.borderColor =
+                    0x0095E5FF;
+
+                item.alpha = 0.75;
+            }
+        }
+    }
+
+function updateDisplayedScore():Void
+{
+    if (
+        currentSongData == null ||
+        currentChartOptions.length == 0
+    )
+    {
+        intendedScore = 0;
+        intendedCompletion = 0;
+        return;
+    }
+
+    var option:Dynamic =
+        currentChartOptions[
+            currentChartOptionIndex
+        ];
+
+    var scoreData =
+        Save.instance.getSongScore(
+            currentSongData.songId,
+            option.difficulty,
+            option.variation
+        );
+
+    intendedScore =
+        scoreData?.score ?? 0;
+
+    intendedCompletion =
+        Math.max(
+            0,
+            Scoring.tallyCompletion(
+                scoreData?.tallies
+            )
+        ) ?? 0;
+}
+
+var confirmSound = 'confirmMenu';
+
+    function selectCurrentSong():Void
+    {
+        if (!SwitcherooProgress.hasCompletedPrologue())
+        {
+            FunkinSound.playOnce(Paths.sound('cancelMenu'));
+            return;
+        }
+if (
+    selectedSomething ||
+    currentSong == null ||
+    currentChartOptions.length == 0
+)
+{
+    return;
+}
+
+        selectedSomething = true;
+        acceptInputs = false;
+
+var option:Dynamic =
+    currentChartOptions[
+        currentChartOptionIndex
+    ];
+
+
+        PlayStatePlaylist.isStoryMode = false;
+                        ModuleHandler
+                    .getModule('SwitcherooMenuHandler')
+                    .scriptCall(
+                        'setStory', [PlayStatePlaylist.isStoryMode]
+                    );
+        PlayStatePlaylist.campaignId = '';
+
+var confirmSound:String =
+    'confirmMenu';
+
+var noteStyle:String =
+    getNoteStyle();
+
+trace(
+    '[SkyFreeplay] noteStyle = ' +
+    noteStyle
+);
+
+if (
+    noteStyle.startsWith(
+        'bean'
+    )
+)
+{
+    confirmSound =
+        'goBean';
+}
+
+FunkinSound.playOnce(
+    Paths.sound(
+        confirmSound
+    )
+);
+
+        menuCharacter.animation.play(
+            'confirm',
+            true
+        );
+
+        for (item in songGroup.members)
+        {
+            if (item == null)
+                continue;
+
+            if (item.ID != currentSongIndex)
+            {
+                FlxTween.tween(
+                    item,
+                    {
+                        alpha: 0
+                    },
+                    0.65,
+                    {
+                        ease:
+                            FlxEase.quadOut
+                    }
+                );
+            }
+        }
+
+        new FlxTimer().start(
+            0.8,
+            function(timer:FlxTimer)
+            {
+LoadingState.loadPlayState(
+{
+    targetSong:
+        currentSong,
+
+    targetDifficulty:
+        option.difficulty,
+
+    targetVariation:
+        option.variation,
+
+    targetInstrumental:
+        option.instrumental,
+
+    practiceMode:
+        false,
+
+    minimalMode:
+        false
+},
+true
+);
+            }
+        );
+    }
+
+    function returnToMainMenu():Void
+    {
+        if (!acceptInputs)
+            return;
+
+        acceptInputs = false;
+
+        FunkinSound.playOnce(
+            Paths.sound('cancelMenu')
+        );
+
+			FlxG.switchState(ScriptedMusicBeatState.init('switcheroo.states.SwitcherooMainMenuState'));
+    }
+
+    function clampIndex(
+        index:Int,
+        length:Int
+    ):Int
+    {
+        if (length <= 0)
+            return 0;
+
+        if (index < 0)
+            return 0;
+
+        if (index >= length)
+            return length - 1;
+
+        return index;
+    }
+}

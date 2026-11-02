@@ -1,0 +1,166 @@
+package switcheroo.modules;
+
+import flixel.FlxG;
+import flixel.addons.transition.FlxTransitionableState;
+
+import funkin.modding.module.Module;
+import funkin.FunkinMemory;
+import funkin.InitState;
+
+import funkin.play.PlayState;
+import funkin.play.GameOverSubState;
+
+import funkin.ui.ScriptedMusicBeatState;
+import funkin.ui.transition.stickers.StickerSubState;
+import funkin.ui.transition.stickers.StickerSprite;
+
+import funkin.util.ReflectUtil;
+import funkin.modding.events.StateChangeScriptEvent;
+import funkin.play.PlayStatePlaylist;
+import switcheroo.states.SwitcherooFreeplayState;
+import switcheroo.states.SwitcherooStoryModeState;
+
+
+@:access(funkin.ui.transition.stickers.StickerSubState)
+class SwitcherooMenuHandler extends Module
+{
+    var titleState:Bool = false;
+    var redirectedSticker:StickerSubState = null;
+
+    public static var SwitcherooStoryMode:Bool = false;
+
+
+
+    function new()
+    {
+        super('SwitcherooMenuHandler');
+    }
+
+    public function onCreate(event)
+    {
+        super.onCreate(event);
+
+        FunkinMemory.permanentCacheTexture(Paths.image("Credits_LeftSide"));
+        FunkinMemory.permanentCacheTexture(Paths.image("scrollingBG"));
+        FunkinMemory.permanentCacheTexture(Paths.image("Start_Screen_AssetsPlus"));
+        FunkinMemory.permanentCacheTexture(Paths.image("SwitcherooLogo"));
+
+        if (!titleState)
+        {
+            InitState.customTitleState =
+                ScriptedMusicBeatState.init('switcheroo.states.EnterpriseDesktopState');
+
+            titleState = true;
+        }
+    }
+
+public function onSubStateOpenBegin(event)
+{
+    super.onSubStateOpenBegin(event);
+    handleStickerOpen(event.targetState);
+}
+
+public function onSubStateOpenEnd(event)
+{
+    super.onSubStateOpenEnd(event);
+    handleStickerOpen(event.targetState);
+}
+
+function handleStickerOpen(target:Dynamic):Void
+{
+    if (!Std.isOfType(target, StickerSubState)) return;
+
+    // These menus open a second sticker substate only to remove old stickers.
+    if (Std.isOfType(FlxG.state, SwitcherooFreeplayState)
+        || Std.isOfType(FlxG.state, SwitcherooStoryModeState)) return;
+
+    redirectStickerState(cast target);
+}
+
+function setStory(value:Bool)
+{
+    SwitcherooStoryMode = value;
+    redirectedSticker = null;
+    trace('Switcheroo return destination: ' + (value ? 'story' : 'freeplay'));
+}
+
+function redirectStickerState(stickerState:StickerSubState):Void
+{
+    // Deduplicate callbacks for this instance, never block another transition.
+    if (redirectedSticker == stickerState) return;
+    redirectedSticker = stickerState;
+    var returnToStory:Bool = SwitcherooStoryMode;
+
+    stickerState.targetState = (sticker) ->
+    {
+        var oldStickers = sticker.grpStickers.members.copy();
+        if (returnToStory)
+        {
+            SwitcherooStoryModeState.pendingStickers = oldStickers;
+            return ScriptedMusicBeatState.init(
+                'switcheroo.states.SwitcherooStoryModeState'
+            );
+        }
+
+        SwitcherooFreeplayState.pendingStickers = oldStickers;
+        return ScriptedMusicBeatState.init(
+            'switcheroo.states.SwitcherooFreeplayState'
+        );
+    };
+}
+
+public function onStateChangeEnd(
+    event:StateChangeScriptEvent
+)
+{
+    super.onStateChangeEnd(event);
+
+    var className:String =
+        ReflectUtil.getClassNameOf(event.targetState);
+
+    trace('STATE CHANGED TO: ' + className);
+
+    redirectedSticker = null;
+}
+
+    public function onPause(event)
+    {
+        event.cancel();
+
+        openCustomPause();
+    }
+
+    public function openCustomPause(
+        mode:String = 'default'
+    ):Void
+    {
+        if (
+            PlayState.instance == null ||
+            PlayState.instance.subState != null
+        )
+        {
+            return;
+        }
+
+        PlayState.instance.persistentUpdate =
+            false;
+
+        PlayState.instance.persistentDraw =
+            true;
+
+        final pauseSubState =
+            new skyredux.substates.SwitcherooPauseMenu(
+                mode
+            );
+
+        pauseSubState.camera =
+            PlayState.instance.camPause;
+
+        PlayState.instance.shouldSubstatePause =
+            true;
+
+        PlayState.instance.openSubState(
+            pauseSubState
+        );
+    }
+}

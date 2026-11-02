@@ -1,0 +1,458 @@
+{
+	"peeps": [
+                 {
+			"realName": "Aquaknight11",
+			"iconName": "aquaknight11",
+			"description": "Director\nThe DDTS Team Lead",
+			"twitter": "https://x.com/AquaKnight11",
+			"whichrole": 0
+		},
+                 {
+			"realName": "Shaduwu",
+			"iconName": "Shaduwu",
+			"description": "Co-Director\nThe DDTS Team Lead",
+			"twitter": "https://x.com/JustShaduwu",
+			"whichrole": 0
+		},
+		{
+			"realName": "SirDusterBuster",
+			"iconName": "Duster",
+			"description": "Director\nTeam TBD Lead",
+			"twitter": "https://twitter.com/SirDusterBuster",
+			"whichrole": 0
+		},
+		{
+			"realName": "Jorge - SunSpirit",
+			"iconName": "Jorge",
+			"description": "Co-Director\nTeam TBD Lead",
+			"twitter": "https://twitter.com/Jorge_SunSpirit",
+			"whichrole": 0
+		},
+		{
+			"realName": "HighPoweredKeyz",
+			"iconName": "HPK",
+			"description": "Team TBD Lead",
+			"twitter": "https://twitter.com/HighPoweredArt",
+			"whichrole": 0
+		},
+		{
+			"realName": "Aluri Eternal",
+			"iconName": "aluri",
+			"description": "Pixel Artist",
+			"twitter": "https://www.youtube.com/@Aluri_Eternal",
+			"whichrole": 1
+		},
+		{
+			"realName": "Soren",
+			"iconName": "soren",
+			"description": "Pixel Artist",
+			"twitter": "https://x.com/CancriE6",
+			"whichrole": 1
+		},
+		{
+			"realName": "Aquaknight11",
+			"iconName": "aquaknight11",
+			"description": "Artist",
+			"twitter": "https://x.com/AquaKnight11",
+			"whichrole": 1
+		},
+		{
+			"realName": "Shaduwu",
+			"iconName": "Shaduwu",
+			"description": "Artist",
+			"twitter": "https://x.com/JustShaduwu",
+			"whichrole": 1
+		},
+		{
+			"realName": "l2czar",
+			"iconName": "L2",
+			"description": "Guest Artist",
+			"twitter": "https://gamebanana.com/members/2668495",
+			"whichrole": 2
+		},		
+		{
+			"realName": "Bluis",
+			"iconName": "bluis",
+			"description": "Guest Artist",
+			"twitter": "https://x.com/Thebluishart",
+			"whichrole": 2
+		},
+		{
+			"realName": "SirDusterBuster",
+			"iconName": "Duster",
+			"description": "Guest Icon Artist",
+			"twitter": "https://twitter.com/SirDusterBuster",
+			"whichrole": 0
+		},
+		{
+			"realName": "Shaduwu",
+			"iconName": "Shaduwu",
+			"description": "DDTS Programmer",
+			"twitter": "https://twitter.com/JustShaduwu",
+			"whichrole": 3
+		},
+		{
+			"realName": "Dexter Chou",
+			"iconName": "dexter",
+			"description": "DDTS Programmer",
+			"twitter": "",
+			"whichrole": 3
+		},
+		{
+			"realName": "Jorge - SunSpirit",
+			"iconName": "Jorge",
+			"description": "Team TBD Programmer",
+			"twitter": "https://twitter.com/Jorge_SunSpirit",
+			"whichrole": 3
+		},
+		{
+			"realName": "M&M",
+			"iconName": "MAndM",
+			"description": "Team TBD Programmer",
+			"twitter": "https://linktr.ee/ActualMandM",
+			"whichrole": 3
+		},
+		{
+			"realName": "Codexes",
+			"iconName": "Codexes",
+			"description": "Team TBD Programmer",
+			"twitter": "https://twitter.com/Codexes1",
+			"whichrole": 3
+		},
+		{
+			"realName": "Ash",
+			"iconName": "ash",
+			"description": "Charter",
+			"twitter": "",
+			"whichrole": 4
+		},
+		{
+			"realName": "Aquaknight11",
+			"iconName": "aquaknight11",
+			"description": "Charter",
+			"twitter": "https://x.com/AquaKnight11",
+			"whichrole": 4
+        },
+		{
+			"realName": "Sanstop",
+			"iconName": "sanstop",
+			"description": "Charter",
+			"twitter": "https://x.com/Sanstopi",
+			"whichrole": 4
+		},
+		{
+			"realName": "Lemmeo",
+			"iconName": "default",
+			"description": "Ex Charter",
+			"twitter": "",
+			"whichrole": 4
+		},
+		{
+			"realName": "Vastor6624",
+			"iconName": "vastor",
+			"description": "Charter",
+			"twitter": "",
+			"whichrole": 4
+		},
+		{
+			"realName": "Xandvier",
+			"iconName": "xandvier",
+			"description": "Charter",
+			"twitter": "https://x.com/XandvierYT",
+			"whichrole": 4
+		},
+		{
+			"realName": "KamdenL2022",
+			"iconName": "kamden",
+			"description": "Charter",
+			"twitter": "https://www.youtube.com/channel/UCGfRvR6AhNVzuiDHYCbATvQ",
+			"whichrole": 4
+		},
+		{
+			"realName": "Shaduwu",
+			"iconName": "Shaduwu",
+			"description": "Lead Musician",
+			"twitter": "https://twitter.com/JustShaduwu",
+			"whichrole": 5
+		},
+		{
+			"realName": "Aquaknight11",
+			"iconName": "aquaknight11",
+			"description": "Musician",
+			"twitter": "https://x.com/AquaKnight11",
+			"whichrole": 5
+		},
+		{
+			"realName": "SimonTheRabbit09",
+			"iconName": "Simon",
+			"description": "Musician",
+			"twitter": "https://www.youtube.com/@simontherabbit875",
+			"whichrole": 5
+		},
+		{
+			"realName": "Gettin' Switched",
+			"iconName": "ManuelPixel",
+			"description": "Composed by SimonTheRabbit",
+			"twitter": "",
+			"whichrole": 6,
+			"funnyName": "Gettin' Switched\n(Main Theme)"
+		},
+		{
+			"realName": "College Dispute",
+			"iconName": "ManuelPixel",
+			"description": "Composed by SimonTheRabbit\nft.Aquaknight11",
+			"twitter": "",
+			"whichrole": 6,
+			"funnyName": "College\nDispute"
+		},
+		{
+			"realName": "Stories Of Violets",
+			"iconName": "Duet",
+			"description": "Composed by Shaduwu",
+			"twitter": "",
+			"whichrole": 6
+		},
+		{
+			"realName": "Stories Of Violets (Erect)",
+			"iconName": "Duet",
+			"description": "Remix by SimonTheRabbit\nOriginal song by Shaduwu",
+			"twitter": "",
+			"whichrole": 6
+		},
+		{
+			"realName": "Death by Death",
+			"iconName": "ManuelAngryPixel",
+			"description": "Composed by SimonTheRabbit",
+			"twitter": "",
+			"whichrole": 6
+		},
+		{
+			"realName": "Piece by Piece (Switcheroo Mix)",
+			"iconName": "Duet",
+			"description": "Composed by Shaduwu & AquaKnight11",
+			"twitter": "",
+			"whichrole": 6,
+			"funnyName": "Piece by Piece\n(Switcheroo Mix)"
+		},
+		{
+			"realName": "Piece by Piece (With Lyrics)",
+			"iconName": "Duet",
+			"description": "Interpreted by KitVA and Shaduwu\nLyrics by Majin Sonic Official, Aquaknight11 & Shaduwu\nComposed by Shaduwu & AquaKnight11",
+			"twitter": "",
+			"whichrole": 6,
+			"funnyName": "Piece by Piece\n(Switcheroo Mix)\n(With Lyrics)"
+		},
+		{
+			"realName": "Our Reality",
+			"iconName": "Duet",
+			"description": "Remix by Shaduwu\nOriginal song by UnStorm",
+			"twitter": "",
+			"whichrole": 6
+		},
+		{
+			"realName": "Test (Manu Mix)",
+			"iconName": "ManuPixel",
+			"description": "Remix by Shaduwu\nOriginal song by Agami_San",
+			"twitter": "",
+			"whichrole": 6,
+			"funnyName": "Test\n(Manu Mix)"
+		},
+		{
+			"realName": "Shinkyoku (Switcheroo Mix)",
+			"iconName": "SenpaiMonika",
+			"description": "Remix by Shaduwu\nOriginal song by Blantados",
+			"twitter": "",
+			"whichrole": 6,
+			"funnyName": "Shinkyoku\n(Switcheroo Mix)"
+		},
+		{
+			"realName": "Poems n' Pollen",
+			"iconName": "Duet",
+			"description": "Remix by Shaduwu\nOriginal song by Saruky",
+			"twitter": "",
+			"whichrole": 6
+		},
+		{
+			"realName": "Dual Death",
+			"iconName": "DualDeath",
+			"description": "Remix by Shaduwu\nOriginal song by Stardust Tunes",
+			"twitter": "",
+			"whichrole": 6
+		},
+		{
+			"realName": "Pause Music",
+			"iconName": "MonikaPixel",
+			"description": "Composed by Tony Astro",
+			"twitter": "",
+			"whichrole": 6
+		},
+		{
+			"realName": "Rice By Rice",
+			"iconName": "ManuPixel",
+			"description": "Composed by Aquaknight11",
+			"twitter": "",
+			"whichrole": 6,
+			"funnyName": "Rice By Riece\n(Bean Pause Theme)"
+		},
+		{
+			"realName": "Teseo Switcheroo",
+			"iconName": "manuel",
+			"description": "Composed by Shaduwu",
+			"twitter": "",
+			"whichrole": 6,
+			"funnyName": "Teseo Switcheroo\n(Bonus Track)"
+		},
+		{
+			"realName": "Master Of The Game",
+			"iconName": "manuel",
+			"description": "Composed by Shaduwu & AquaKnight11",
+			"twitter": "",
+			"whichrole": 6,
+			"funnyName": "Master Of The Game\n(Cutscene Music)"
+		},
+		{
+			"realName": "Nightmare",
+			"iconName": "ManuelAngryPixel",
+			"description": "Composed by AquaKnight11",
+			"twitter": "",
+			"whichrole": 6,
+			"funnyName": "Nightmare\n(Cutscene Music)"
+		},
+		{
+			"realName": "Majin Sonic Official",
+			"iconName": "Majin",
+			"description": "Song Writing / Dialogue",
+			"twitter": "https://www.wattpad.com/user/Majin_Sonic_0ficial",
+			"whichrole": 7
+		},
+		{
+			"realName": "Aquaknight11",
+			"iconName": "aquaknight11",
+			"description": "Brazilian Portuguese Translation / Song Writing",
+			"twitter": "https://x.com/AquaKnight11",
+			"whichrole": 7
+		},
+		{
+			"realName": "Shaduwu",
+			"iconName": "Shaduwu",
+			"description": "Song Writing / Spanish Translation",
+			"twitter": "https://twitter.com/Sulayre",
+			"whichrole": 7
+		},
+		{
+			"realName": "Shaduwu",
+			"iconName": "Shaduwu",
+			"description": "Manuel Speaking/Singing Voice",
+			"twitter": "https://twitter.com/JustShaduwu",
+			"whichrole": 8
+		},
+		{
+			"realName": "KitVA",
+			"iconName": "Kit",
+			"description": "Seira Speaking/Singing (Lyrics) Voice",
+			"twitter": "https://www.youtube.com/@kitcaato",
+			"whichrole": 8
+		},
+		{
+			"realName": "FNF Korea",
+			"iconName": "default",
+			"description": "Seira Singing (Chromatic) Voice",
+			"twitter": "",
+			"whichrole": 8
+		},
+		{
+			"realName": "Seira",
+			"iconName": "Seira",
+			"description": "You're my prince?",
+			"twitter": "https://gamebanana.com/mods/221031",
+			"whichrole": 9,
+			"funnyName": "Seira"
+		},
+		{
+			"realName": "Kaity",
+			"iconName": "kaity",
+			"description": "Beep",
+			"twitter": "https://gamebanana.com/mods/311845",
+			"whichrole": 9
+		},
+		{
+			"realName": "Chris",
+			"iconName": "chris",
+			"description": "Heya babe",
+			"twitter": "https://gamebanana.com/mods/311846",
+			"whichrole": 9,
+			"funnyName": "Chris"
+		},
+		{
+			"realName": "Hex",
+			"iconName": "hex",
+			"description": "BZZZZZZZZZZZT-",
+			"twitter": "https://gamebanana.com/mods/44225",
+			"whichrole": 9
+		},
+		{
+			"realName": "Sans",
+			"iconName": "sans",
+			"description": "sup.",
+			"twitter": "https://gamejolt.com/games/indiecross/643540",
+			"whichrole": 9
+		},
+		{
+			"realName": "Giffany",
+			"iconName": "giffany",
+			"description": "YOU'RE MINE SOOS",
+			"twitter": "https://gamebanana.com/mods/435542",
+			"whichrole": 9
+		},
+		{
+			"realName": "And Shadow",
+			"iconName": "and-og",
+			"description": "Go play the mod",
+			"twitter": "https://gamebanana.com/mods/445859",
+			"whichrole": 9
+		},
+		{
+			"realName": "Dan Salvato",
+			"iconName": "DanSalvato",
+			"description": "Creator of\nDoki Doki Literature Club!",
+			"twitter": "https://twitter.com/dansalvato",
+			"whichrole": 10
+		},
+		{
+			"realName": "The Funkin' Crew",
+			"iconName": "BF",
+			"description": "ninjamuffin99, PhantomArcade,\nKawaiSprite, Evilsk8r",
+			"twitter": "",
+			"whichrole": 10
+		},
+		{
+			"realName": "Rozebud",
+			"iconName": "Rozebud",
+			"description": "FPS+ Charting State",
+			"twitter": "https://twitter.com/helpme_thebigt",
+			"whichrole": 10
+		},
+		{
+			"realName": "Shadow Mario",
+			"iconName": "ShadowMario",
+			"description": "Psych Engine Code",
+			"twitter": "https://twitter.com/Shadow_Mario_",
+			"whichrole": 10
+		},
+		{
+			"realName": "Playtesters",
+			"iconName": "kaity",
+			"description": "RPG Visual, Hunterman9924YT",
+			"twitter": "",
+			"whichrole": 10
+		},
+		{
+			"realName": "Special Thanks!",
+			"iconName": "BF",
+			"description": "RPG Visual, Cute Soda99,\nWarped The Wolf, Makyuni, Kitcaato,\nSoft Boyfriend, Gabriel Games,\nGrim Chan 67, NooBZiiTo1, FNF Korea, Y_F_Mus,\nMerick The Bold, Jet, Jennah\nQuiet One, starlight_gaming\nThe Devs Friends and Family,\nand you! <3",
+			"twitter": "",
+			"whichrole": 10
+		}
+	],
+	"listoroles": ["Mod Directors / Leads", "Artists", "Guest Artists", "Programmers", "Charters", "Musicians", "Music", "Writing / Translation", "Voices", "Cameos", "Additional Credits"]
+}

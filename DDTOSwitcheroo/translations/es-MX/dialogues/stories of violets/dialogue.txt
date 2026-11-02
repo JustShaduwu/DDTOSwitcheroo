@@ -1,0 +1,79 @@
+# Español (México)
+
+sovIntro1::¿Y sera que de pura casualidad, ese es MI micrófono? ¿¡Y para colmo, mi favorito!?
+sovIntro2::¿¡Cómo lo conseguiste!?
+sovIntro3::¡Espera...!
+sovIntro4::¿Vamos a tener un problema?
+sovIntro5::¡No! ¡No quiero problemas! ¡Es lo último que necesito en este momento.!!!
+sovIntro6::Y tú, cariño...
+sovIntro7::¿qué haces aquí?
+sovIntro8::¡Skeed bop!
+sovIntro9::¡Ah! ¿¡A quién quiero engañar!?
+sovIntro10::RE-GRE-SA-ME. EL. MI-CRÓ-FO-NO.
+sovIntro11::¡AHORA!
+sovIntro12::¡E-está bien! Pero espera un..
+sovIntro13::*Seira sujeta con fuerza el micrófono que Manuel sostiene en su mano y tira de él furiosamente.*
+sovIntro14::¡Oye! ¡¡¡Cálmate!!!
+sovIntro15::¡¡DAMELO!!
+sovIntro16::¡No tienes que gritar...!
+sovIntro17::¡CIERRA LA PUTA BOCA Y DEVUÉLVEMELO!
+sovIntro18::¡Wow! *Lo esquiva*
+sovIntro19::Si quieres recuperar tu micrófono, ¡tendras que pedirlo amablemente...!
+sovIntro20::¡QUE ME LO DES!
+
+sovIntroCensored1::¿Y sera que de pura casualidad, ese es MI micrófono? ¿¡Y para colmo, mi favorito!?
+sovIntroCensored2::¿¡Cómo lo conseguiste!?
+sovIntroCensored3::¡Espera...!
+sovIntroCensored4::¿Vamos a tener un problema?
+sovIntroCensored5::¡No! ¡No quiero problemas! ¡Es lo último que necesito en este momento.!!!
+sovIntroCensored6::Y tú, cariño...
+sovIntroCensored7::¿qué haces aquí?
+sovIntroCensored8::¡Skeed bop!
+sovIntroCensored9::¡Ah! ¿¡A quién quiero engañar!?
+sovIntroCensored10::RE-GRE-SA-ME. EL. MI-CRÓ-FO-NO.
+sovIntroCensored11::¡AHORA!
+sovIntroCensored12::¡E-está bien! Pero espera un..
+sovIntroCensored13::*Seira sujeta con fuerza el micrófono que Manuel sostiene en su mano y tira de él furiosamente.*
+sovIntroCensored14::¡Oye! ¡¡¡Cálmate!!!
+sovIntroCensored15::¡¡DAMELO!!
+sovIntroCensored16::¡No tienes que gritar...!
+sovIntroCensored17::¡CIERRA LA BOCA Y DEVUÉLVEMELO!
+sovIntroCensored18::¡Wow! *Lo esquiva*
+sovIntroCensored19::Si quieres recuperar tu micrófono, ¡tendras que pedirlo amablemente...!
+sovIntroCensored20::¡QUE ME LO DES!
+
+sovEnd1::¿Qué...? ¿¡Qué demonios fue eso!?
+sovEnd2::¡No es asunto tuyo, ladrón inútil! ¡Ahora devuélvemelo!
+sovEnd3::*Seira toma el micrófono y golpea a Manuel con su bolso.*
+sovEnd4::...
+sovEnd5::Ay.
+sovEnd6::¿¡«Ay»!?
+sovEnd7::¿Quieres llorar?
+sovEnd8::...
+sovEnd9::Debí imaginar que un ladronzuelo como tú sería un cobarde, ¿verdad, chicos?
+sovEnd10::Fans de Seira: ¡Sí! *Risas*
+sovEnd11::*Las risas se intensifican.*
+sovEnd12::...
+sovEnd13::...ja.
+sovEnd14::...Ja, ja, ja...
+sovEnd15::*Manuel levanta la mano.*
+sovEnd16::¿Eh?
+sovEnd17::Bee...
+
+sovEndCensored1::¿Qué...? ¿¡Qué fue eso!?
+sovEndCensored2::¡No es asunto tuyo, ladrón feo! ¡Ahora devuélvemelo!
+sovEndCensored3::*Seira toma el micrófono y golpea a Manuel con su bolso.*
+sovEndCensored4::...
+sovEndCensored5::Ay.
+sovEndCensored6::¿¡«Ay»!?
+sovEndCensored7::¿Quieres llorar?
+sovEndCensored8::...
+sovEndCensored9::Debí imaginar que un ladronzuelo como tú sería un cobarde, ¿verdad, chicos?
+sovEndCensored10::Fans de Seira: ¡Sí! *Risas*
+sovEndCensored11::*Las risas se intensifican.*
+sovEndCensored12::...
+sovEndCensored13::...ja.
+sovEndCensored14::...Ja, ja, ja...
+sovEndCensored15::*Manuel levanta la mano.*
+sovEndCensored16::¿Eh?
+sovEndCensored17::Bee...

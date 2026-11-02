@@ -1,0 +1,12 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TextureAtlas imagePath="difficulties.png">
+	<!-- Created with Adobe Animate version 24.0.14.24 -->
+	<!-- http://www.adobe.com/products/animate.html -->
+	<SubTexture name="diff_bean0000" x="0" y="0" width="434" height="97"/>
+	<SubTexture name="diff_easy0000" x="434" y="0" width="434" height="97"/>
+	<SubTexture name="diff_erect0000" x="0" y="97" width="434" height="97"/>
+	<SubTexture name="diff_hard0000" x="434" y="97" width="434" height="97"/>
+	<SubTexture name="diff_lyrics0000" x="0" y="194" width="434" height="97"/>
+	<SubTexture name="diff_nightmare0000" x="0" y="291" width="434" height="75"/>
+	<SubTexture name="diff_normal0000" x="434" y="194" width="434" height="97"/>
+</TextureAtlas>

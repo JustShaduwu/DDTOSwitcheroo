@@ -1,0 +1,1165 @@
+import funkin.play.PlayState;
+import funkin.play.stage.Stage;
+import funkin.play.character.CharacterType;
+
+import funkin.graphics.FunkinSprite;
+import funkin.graphics.shaders.WiggleEffectRuntime;
+import funkin.graphics.shaders.WiggleEffectType;
+
+import funkin.modding.module.ModuleHandler;
+
+import flixel.FlxSprite;
+import flixel.addons.display.FlxRuntimeShader;
+import flixel.tweens.FlxTween;
+import flixel.tweens.FlxEase;
+import openfl.filters.ShaderFilter;
+
+
+typedef SchoolRimData =
+{
+    var shader:FlxRuntimeShader;
+    var target:FunkinSprite;
+
+    var isCharacter:Bool;
+    var brightness:Float;
+    var hue:Float;
+    var contrast:Float;
+    var saturation:Float;
+
+    var color:Int;
+}
+
+
+class SchoolErectSwitcherooStage extends Stage
+{
+    var evilColorsActive:Bool = false;
+
+    var dropShaduwuModule;
+
+    var stageRims:Array<SchoolRimData> = [];
+
+    var evilSchoolSprite:FunkinSprite;
+
+    var evilBack:FunkinSprite;
+    var evilSpike:FunkinSprite;
+    var evilBg:FunkinSprite;
+    var evilGround:FunkinSprite;
+
+    var freaksSprite:FunkinSprite;
+    var freaksHiddenByStage:Bool = false;
+    var freaksNormalVisible:Bool = true;
+
+    var finaleSpace:FunkinSprite;
+    var finaleBG:FunkinSprite;
+    var finaleFG:FunkinSprite;
+
+
+    var wiggleSchool:WiggleEffectRuntime;
+
+    var redStatic:FlxSprite;
+    var stagstatic:FlxSprite;
+
+    var funnyShaderw:FlxRuntimeShader = null;
+    var funnyShaderFilter:ShaderFilter = null;
+    var funnyShaderTime:Float = 0;
+    var funnyShaderActive:Bool = false;
+
+
+    function new()
+    {
+        super('schoolErect-switcheroo');
+    }
+
+    override function buildStage():Void
+    {
+        super.buildStage();
+
+        dropShaduwuModule =
+            ModuleHandler.getModule(
+                'DropShaduwuShader'
+            );
+
+        if (dropShaduwuModule == null)
+        {
+            trace(
+                '[SchoolErectSwitcherooStage] ' +
+                'DropShaduwuShader Module no encontrado.'
+            );
+        }
+
+        finaleSpace =
+            cast getNamedProp(
+                'finaleSpace'
+            );
+
+        finaleBG =
+            cast getNamedProp(
+                'finaleBG'
+            );
+
+        finaleFG =
+            cast getNamedProp(
+                'finaleFG'
+            );
+
+        setFinaleAlpha(0);
+
+
+        wiggleSchool =
+            new WiggleEffectRuntime(
+                2,
+                4,
+                0.017,
+                WiggleEffectType.DREAMY
+            );
+
+        evilBg =
+            cast getNamedProp(
+                'bgevilsolid'
+            );
+
+        evilSchoolSprite =
+            cast getNamedProp(
+                'evilschool'
+            );
+
+        evilBack =
+            cast getNamedProp(
+                'backspikes'
+            );
+
+        evilSpike =
+            cast getNamedProp(
+                'backspike'
+            );
+
+        evilGround =
+            cast getNamedProp(
+                'evilstreet'
+            );
+
+        if (evilSchoolSprite != null)
+        {
+            evilSchoolSprite.alpha = 0;
+            evilSchoolSprite.visible = false;
+
+            evilSchoolSprite.shader =
+                wiggleSchool;
+        }
+
+
+        if (evilBack != null)
+        {
+            evilBack.alpha = 0;
+            evilBack.visible = false;
+
+            evilBack.shader =
+                wiggleSchool;
+        }
+
+        if (evilBg != null)
+        {
+            evilBg.alpha = 0;
+            evilBg.visible = false;
+        }
+
+        if (evilSpike != null)
+        {
+            evilSpike.alpha = 0;
+            evilSpike.visible = false;
+
+            evilSpike.shader =
+                wiggleSchool;
+        }
+
+        if (evilGround != null)
+        {
+            evilGround.alpha = 0;
+            evilGround.visible = false;
+
+            evilGround.shader =
+                wiggleSchool;
+        }
+
+        freaksSprite =
+            cast getNamedProp(
+                'freaks'
+            );
+
+        if (freaksSprite != null)
+        {
+            freaksHiddenByStage = false;
+            freaksNormalVisible = freaksSprite.visible;
+            applyFreaksShader(
+                freaksSprite
+            );
+
+            freaksSprite.idleSuffix =
+                '-scared';
+        }
+
+        if (PlayState.instance != null)
+        {
+            redStatic =
+                new FlxSprite();
+
+            redStatic.frames =
+                Paths.getSparrowAtlas(
+                    'HomeStatic'
+                );
+
+            redStatic.cameras =
+                [
+                    PlayState.instance.camHUD
+                ];
+
+            redStatic.animation.addByPrefix(
+                'idle',
+                'HomeStatic',
+                24,
+                true
+            );
+
+            redStatic.animation.play(
+                'idle'
+            );
+
+            redStatic.setGraphicSize(
+                FlxG.width,
+                FlxG.height
+            );
+
+            redStatic.screenCenter();
+
+            redStatic.alpha = 0;
+
+            PlayState.instance.add(
+                redStatic
+            );
+
+
+            stagstatic =
+                new FlxSprite(
+                    0,
+                    0
+                );
+
+            stagstatic.frames =
+                Paths.getSparrowAtlas(
+                    'stagnant_glitch'
+                );
+
+            stagstatic.animation.addByPrefix(
+                'ohno',
+                'sadface 2',
+                24,
+                true
+            );
+
+            stagstatic.cameras =
+                [
+                    PlayState.instance.camHUD
+                ];
+
+            stagstatic.scrollFactor.set();
+
+            stagstatic.setGraphicSize(
+                FlxG.width,
+                FlxG.height
+            );
+
+            stagstatic.updateHitbox();
+            stagstatic.screenCenter();
+
+            stagstatic.alpha =
+                0.0001;
+
+            PlayState.instance.add(
+                stagstatic
+            );
+        }
+    }
+
+
+    function setEvilObjectsAlpha(
+        value:Float
+    ):Void
+    {
+        if (evilSchoolSprite != null)
+        {
+            evilSchoolSprite.alpha =
+                value;
+
+            evilSchoolSprite.visible =
+                value > 0;
+        }
+
+        if (evilBack != null)
+        {
+            evilBack.alpha =
+                value;
+
+            evilBack.visible =
+                value > 0;
+        }
+
+        if (evilSpike != null)
+        {
+            evilSpike.alpha =
+                value;
+
+            evilSpike.visible =
+                value > 0;
+        }
+
+        if (evilBg != null)
+        {
+            evilBg.alpha =
+                value;
+
+            evilBg.visible =
+                value > 0;
+        }
+
+        if (evilGround != null)
+        {
+            evilGround.alpha =
+                value;
+
+            evilGround.visible =
+                value > 0;
+        }
+    }
+
+
+    function registerRim(
+        rim:FlxRuntimeShader,
+        target:FunkinSprite,
+        isCharacter:Bool,
+        brightness:Float,
+        hue:Float,
+        contrast:Float,
+        saturation:Float,
+        color:Int
+    ):Void
+    {
+        if (
+            rim == null ||
+            target == null
+        )
+        {
+            return;
+        }
+
+        stageRims.push(
+        {
+            shader: rim,
+            target: target,
+            isCharacter: isCharacter,
+
+            brightness: brightness,
+            hue: hue,
+            contrast: contrast,
+            saturation: saturation,
+
+            color: color
+        });
+        if (evilColorsActive) applyEvilColors(rim);
+    }
+
+    function applyEvilColors(
+        rim:FlxRuntimeShader
+    ):Void
+    {
+        if (
+            rim == null ||
+            dropShaduwuModule == null
+        )
+        {
+            return;
+        }
+
+        dropShaduwuModule.scriptCall(
+            'setAdjustColor',
+            [
+                rim,
+
+                // brightness
+                -70,
+
+                // hue
+                -25,
+
+                // contrast
+                -15,
+
+                // saturation
+                0
+            ]
+        );
+
+        dropShaduwuModule.scriptCall(
+            'setColor',
+            [
+                rim,
+                0xFF771122
+            ]
+        );
+    }
+
+    function restoreNormalColors(
+        rimData:SchoolRimData
+    ):Void
+    {
+        if (
+            rimData == null ||
+            rimData.shader == null ||
+            dropShaduwuModule == null
+        )
+        {
+            return;
+        }
+
+        dropShaduwuModule.scriptCall(
+            'setAdjustColor',
+            [
+                rimData.shader,
+
+                rimData.brightness,
+                rimData.hue,
+                rimData.contrast,
+                rimData.saturation
+            ]
+        );
+
+        dropShaduwuModule.scriptCall(
+            'setColor',
+            [
+                rimData.shader,
+                rimData.color
+            ]
+        );
+    }
+
+
+    function setFreaksVisible(value:Bool):Void
+    {
+        if (freaksSprite == null) return;
+        if (!value)
+        {
+            if (!freaksHiddenByStage) freaksNormalVisible = freaksSprite.visible;
+            freaksHiddenByStage = true;
+            freaksSprite.visible = false;
+        }
+        else if (freaksHiddenByStage)
+        {
+            freaksSprite.visible = freaksNormalVisible;
+            freaksHiddenByStage = false;
+        }
+    }
+
+    function evilSchool():Void
+    {
+        evilColorsActive = true;
+        setFreaksVisible(false);
+        PlayState.instance.currentStage.getBoyfriend().resetPosition();
+        PlayState.instance.currentStage.getDad().resetPosition();
+
+        disableJustManuelShader();
+
+        setFinaleAlpha(0);
+        restoreRegisteredShaders();
+        setEvilObjectsAlpha(1);
+
+        for (rimData in stageRims)
+        {
+            if (
+                rimData == null ||
+                rimData.shader == null
+            )
+            {
+                continue;
+            }
+
+            applyEvilColors(
+                rimData.shader
+            );
+        }
+    }
+
+    function normalSchool():Void
+    {
+        evilColorsActive = false;
+        setFreaksVisible(true);
+        PlayState.instance.currentStage.getBoyfriend().resetPosition();
+        PlayState.instance.currentStage.getDad().resetPosition();
+
+        disableJustManuelShader();
+
+        setFinaleAlpha(0);
+
+        restoreRegisteredShaders();
+
+        setEvilObjectsAlpha(0);
+
+        for (rimData in stageRims)
+        {
+            restoreNormalColors(
+                rimData
+            );
+        }
+    }
+
+
+    function JustManuel():Void
+    {
+        evilColorsActive = false;
+        setFreaksVisible(false);
+        PlayState.instance.currentStage.getDad().resetPosition();
+
+        PlayState.instance.currentStage.getBoyfriend().y = 90;
+        PlayState.instance.currentStage.getBoyfriend().x = 990;
+
+        PlayState.instance.currentStage.getDad().x = 340;
+        PlayState.instance.currentStage.getDad().y = 150;
+
+        setEvilObjectsAlpha(0);
+
+        for (rimData in stageRims)
+        {
+            if (
+                rimData == null ||
+                rimData.target == null ||
+                !rimData.isCharacter
+            )
+            {
+                continue;
+            }
+
+            if (
+                rimData.target.shader ==
+                rimData.shader
+            )
+            {
+                rimData.target.shader =
+                    null;
+            }
+        }
+
+        setFinaleAlpha(1);
+
+        enableJustManuelShader();
+    }
+
+
+    function enableJustManuelShader():Void
+    {
+        if (
+            PlayState.instance == null ||
+            PlayState.instance.camGame == null
+        )
+        {
+            return;
+        }
+
+        if (funnyShaderw == null)
+        {
+            funnyShaderw =
+                new FlxRuntimeShader(
+                    Assets.getText(
+                        Paths.frag(
+                            'crt'
+                        )
+                    )
+                );
+
+            funnyShaderFilter =
+                new ShaderFilter(
+                    funnyShaderw
+                );
+
+            funnyShaderTime =
+                0;
+        }
+
+        PlayState.instance.camGame.filters =
+        [
+            funnyShaderFilter
+        ];
+
+        funnyShaderActive =
+            true;
+    }
+
+
+    function disableJustManuelShader():Void
+    {
+        if (
+            PlayState.instance != null &&
+            PlayState.instance.camGame != null
+        )
+        {
+            PlayState.instance.camGame.filters =
+                [];
+        }
+
+        funnyShaderActive =
+            false;
+    }
+
+
+    function glitchEffect(
+        mode:String = 'default'
+    ):Void
+    {
+        switch (mode.toLowerCase())
+        {
+            case 'stagnant':
+
+                if (stagstatic == null)
+                    return;
+
+                FlxTween.cancelTweensOf(
+                    stagstatic
+                );
+
+                stagstatic.animation.play(
+                    'ohno',
+                    true
+                );
+
+                stagstatic.alpha = 1;
+
+                FlxTween.tween(
+                    stagstatic,
+                    {
+                        alpha: 0.0001
+                    },
+                    0.2,
+                    {
+                        ease:
+                            FlxEase.linear,
+
+                        startDelay:
+                            0.4
+                    }
+                );
+
+
+            default:
+
+                if (redStatic == null)
+                    return;
+
+                FlxTween.cancelTweensOf(
+                    redStatic
+                );
+
+                redStatic.alpha = 1;
+
+                FlxTween.tween(
+                    redStatic,
+                    {
+                        alpha: 0
+                    },
+                    0.2,
+                    {
+                        ease:
+                            FlxEase.linear
+                    }
+                );
+        }
+    }
+
+    function applyFreaksShader(
+        freaks:FunkinSprite
+    ):Void
+    {
+        if (
+            freaks == null ||
+            dropShaduwuModule == null
+        )
+        {
+            return;
+        }
+
+        var rim:FlxRuntimeShader =
+            cast dropShaduwuModule.scriptCall(
+                'attach',
+                [
+                    freaks,
+
+                    -66,
+                    -10,
+                    24,
+                    -23,
+
+                    0xFF52351D,
+
+                    90,
+                    5,
+                    0.3,
+                    1,
+                    2
+                ]
+            );
+
+        registerRim(
+            rim,
+            freaks,
+            false,
+
+            -66,
+            -10,
+            24,
+            -23,
+
+            0xFF52351D
+        );
+
+        freaks.animation.onFrameChange.add(function()
+        {
+            if (
+                freaks != null &&
+                freaks.frame != null &&
+                rim != null &&
+                dropShaduwuModule != null
+            )
+            {
+                dropShaduwuModule.scriptCall(
+                    'updateFrameInfo',
+                    [
+                        rim,
+                        freaks
+                    ]
+                );
+            }
+        });
+    }
+
+    override function addCharacter(
+        character:BaseCharacter,
+        charType:CharacterType
+    ):Void
+    {
+        super.addCharacter(
+            character,
+            charType
+        );
+
+        if (
+            character == null ||
+            dropShaduwuModule == null
+        )
+        {
+            return;
+        }
+
+
+        switch (charType)
+        {
+            case CharacterType.BF:
+
+                var rim:FlxRuntimeShader =
+                    cast dropShaduwuModule.scriptCall(
+                        'attach',
+                        [
+                            character,
+
+                            -66,
+                            -10,
+                            24,
+                            -23,
+
+                            0xFF52351D,
+
+                            90,
+                            5,
+                            0.1,
+                            1,
+                            2
+                        ]
+                    );
+
+                registerRim(
+                    rim,
+                    cast character,
+                    true,
+
+                    -66,
+                    -10,
+                    24,
+                    -23,
+
+                    0xFF52351D
+                );
+
+                character.animation.onFrameChange.add(function()
+                {
+                    var boyfriend = getBoyfriend();
+
+                    if (
+                        boyfriend != null &&
+                        boyfriend.frame != null &&
+                        rim != null &&
+                        dropShaduwuModule != null
+                    )
+                    {
+                        dropShaduwuModule.scriptCall(
+                            'updateFrameInfo',
+                            [
+                                rim,
+                                boyfriend
+                            ]
+                        );
+                    }
+                });
+
+            case CharacterType.GF:
+
+                var rim:FlxRuntimeShader =
+                    cast dropShaduwuModule.scriptCall(
+                        'attach',
+                        [
+                            character,
+
+                            -42,
+                            -10,
+                            5,
+                            -25,
+
+                            0xFF52351D,
+
+                            90,
+                            3,
+                            0.3,
+                            1,
+                            2
+                        ]
+                    );
+
+                registerRim(
+                    rim,
+                    cast character,
+                    true,
+
+                    -42,
+                    -10,
+                    5,
+                    -25,
+
+                    0xFF52351D
+                );
+
+                character.animation.onFrameChange.add(function()
+                {
+                    var girlfriend = getGirlfriend();
+
+                    if (
+                        girlfriend != null &&
+                        girlfriend.frame != null &&
+                        rim != null &&
+                        dropShaduwuModule != null
+                    )
+                    {
+                        dropShaduwuModule.scriptCall(
+                            'updateFrameInfo',
+                            [
+                                rim,
+                                girlfriend
+                            ]
+                        );
+                    }
+                });
+
+            case CharacterType.DAD:
+
+                var rim:FlxRuntimeShader =
+                    cast dropShaduwuModule.scriptCall(
+                        'attach',
+                        [
+                            character,
+
+                            -66,
+                            -10,
+                            24,
+                            -23,
+
+                            0xFF52351D,
+
+                            90,
+                            5,
+                            0.1,
+                            1,
+                            2
+                        ]
+                    );
+
+                registerRim(
+                    rim,
+                    cast character,
+                    true,
+
+                    -66,
+                    -10,
+                    24,
+                    -23,
+
+                    0xFF52351D
+                );
+
+                character.animation.onFrameChange.add(function()
+                {
+                    var dad = getDad();
+
+                    if (
+                        dad != null &&
+                        dad.frame != null &&
+                        rim != null &&
+                        dropShaduwuModule != null
+                    )
+                    {
+                        dropShaduwuModule.scriptCall(
+                            'updateFrameInfo',
+                            [
+                                rim,
+                                dad
+                            ]
+                        );
+                    }
+                });
+
+
+            default:
+        }
+    }
+
+    function setFinaleAlpha(
+        value:Float
+    ):Void
+    {
+        if (finaleSpace != null)
+        {
+            finaleSpace.alpha =
+                value;
+
+            finaleSpace.visible =
+                value > 0;
+        }
+
+        if (finaleBG != null)
+        {
+            finaleBG.alpha =
+                value;
+
+            finaleBG.visible =
+                value > 0;
+        }
+
+        if (finaleFG != null)
+        {
+            finaleFG.alpha =
+                value;
+
+            finaleFG.visible =
+                value > 0;
+        }
+    }
+
+    function restoreRegisteredShaders():Void
+    {
+        for (rimData in stageRims)
+        {
+            if (
+                rimData == null ||
+                rimData.shader == null ||
+                rimData.target == null ||
+                !rimData.target.exists
+            )
+            {
+                continue;
+            }
+
+            rimData.target.shader =
+                rimData.shader;
+        }
+    }
+
+    override function onUpdate(
+        event:UpdateScriptEvent
+    ):Void
+    {
+        super.onUpdate(event);
+
+        #if debug
+        if (FlxG.keys.justPressed.O)
+        {
+            evilSchool();
+        }
+
+        if (FlxG.keys.justPressed.M)
+        {
+            JustManuel();
+        }
+
+        if (FlxG.keys.justPressed.F1)
+        {
+            PlayState.instance.endSong();
+        }
+
+        if (FlxG.keys.justPressed.I)
+        {
+            normalSchool();
+        }
+       #end
+
+        if (wiggleSchool != null)
+        {
+            wiggleSchool.update(
+                event.elapsed
+            );
+        }
+
+
+        if (
+            funnyShaderActive &&
+            funnyShaderw != null
+        )
+        {
+            funnyShaderTime +=
+                event.elapsed;
+
+            funnyShaderw.setFloat(
+                'iTime',
+                funnyShaderTime
+            );
+        }
+    }
+
+
+    function onSongEnd(
+        event:ScriptEvent
+    ):Void
+    {
+        super.onSongEnd(event);
+        var missing = ModuleHandler.getModule('MissingMode');
+        if (missing != null && missing.scriptCall('interceptSongEnd', [event]) == true) return;
+
+
+        if (event.eventcanceled)
+        {
+            return;
+        }
+
+        FlxG.camera.targetOffset.y +=
+            170;
+    }
+
+    override function kill():Void
+    {
+
+        disableJustManuelShader();
+
+        for (rimData in stageRims)
+        {
+            if (
+                rimData == null ||
+                rimData.target == null
+            )
+            {
+                continue;
+            }
+
+            if (
+                rimData.target.shader ==
+                rimData.shader
+            )
+            {
+                rimData.target.shader =
+                    null;
+            }
+        }
+
+        stageRims.resize(0);
+
+        if (evilSchoolSprite != null)
+        {
+            evilSchoolSprite.shader =
+                null;
+        }
+
+        if (evilBack != null)
+        {
+            evilBack.shader =
+                null;
+        }
+
+        if (evilSpike != null)
+        {
+            evilSpike.shader =
+                null;
+        }
+
+        if (evilGround != null)
+        {
+            evilGround.shader =
+                null;
+        }
+
+
+        if (redStatic != null)
+        {
+            FlxTween.cancelTweensOf(
+                redStatic
+            );
+
+            if (PlayState.instance != null)
+            {
+                PlayState.instance.remove(
+                    redStatic,
+                    true
+                );
+            }
+
+            redStatic = null;
+        }
+
+
+        if (stagstatic != null)
+        {
+            FlxTween.cancelTweensOf(
+                stagstatic
+            );
+
+            if (PlayState.instance != null)
+            {
+                PlayState.instance.remove(
+                    stagstatic,
+                    true
+                );
+            }
+
+            stagstatic = null;
+        }
+
+
+        wiggleSchool = null;
+
+        evilSchoolSprite = null;
+        evilBack = null;
+        evilSpike = null;
+        evilBg = null;
+        evilGround = null;
+
+        freaksSprite = null;
+
+        finaleSpace = null;
+        finaleBG = null;
+        finaleFG = null;
+
+        dropShaduwuModule = null;
+
+
+        super.kill();
+    }
+}

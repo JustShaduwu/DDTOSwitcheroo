@@ -1,6 +1,0 @@
-en-US
-es-US
-ru-RU
-nl-NL
-pt-BR
-jp-JP

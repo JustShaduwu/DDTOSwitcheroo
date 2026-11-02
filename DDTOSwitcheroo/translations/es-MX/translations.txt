@@ -1,0 +1,152 @@
+# Textos de interfaz de Switcheroo (UTF-8)
+# key::traducción — las claves ausentes usan el texto original.
+
+story::Modo Historia
+freeplay::Juego Libre
+gallery::Galería
+credits::Créditos
+options::Opciones
+exit::Salir
+resume::Continuar
+restart_song::Reiniciar canción
+difficulty::Dificultad
+practice_mode::Modo práctica
+exit_to_menu::Salir Al Menú
+restart_dialogue::Reiniciar Diálogo
+skip_dialogue::Saltar Diálogo
+back::Volver
+easy::Fácil
+normal::Normal
+hard::Difícil
+erect::Erect
+nightmare::Pesadilla
+artist::Artista:
+charted_by::Chart por
+deleted::Eliminado:
+practice_mode_label::MODO PRÁCTICA
+freeplay_controls::ARRIBA/ABAJO: CANCIÓN   IZQ./DER.: PÁGINA   ACEPTAR: ELEGIR
+difficulty_controls::IZQ./DER.: DIFICULTAD   ACEPTAR: JUGAR   VOLVER: CANCELAR
+no_songs::NO HAY CANCIONES DISPONIBLES
+no_charts::NO HAY CHARTS VÁLIDOS
+unknown::DESCONOCIDO
+personal_best::Mejor puntuación:
+cleared::COMPLETADO:
+page::PÁGINA
+gallery_empty::No se encontraron imágenes en la galería.
+credits_empty::NO HAY CRÉDITOS DISPONIBLES
+language::Idioma
+language_controls::Arriba/Abajo: elegir | Aceptar: guardar | Atrás: cancelar
+options.preferences::Preferencias
+options.controls::Controles
+options.save_data::Datos Guardados
+options.exit::Salir
+options.language::Idioma
+options.input_offsets::Calibración
+options.mods::Mods
+level_not_found::NO SE ENCONTRÓ EL NIVEL:
+hud.score::Puntos
+hud.breaks::Fallos
+hud.rating::Calificación
+mirror_mode::Modo Espejo
+global_offset::Compensación Global
+ghost_tapping::Toque Fantasma
+sudden_death::Muerte Súbita
+random_notes::Notas Aleatorias
+scroll_speed::Velocidad de Scroll
+downscroll::Downscroll
+song_speed::Velocidad de la Canción
+self_awareness::Autoconciencia
+unfair_mode::MODO INJUSTO
+cool_gameplay::Jugabilidad Genial
+desktop_side_stories::Historias Paralelas
+desktop_files::Archivos
+desktop_mails::Correo
+desktop_pictures::Imágenes
+desktop_settings::Opciones
+desktop_music::Música
+desktop_quit::Salir
+jukebox_all::Todas las canciones
+jukebox_playlist::Lista de reproducción
+mail_inbox::Bandeja de entrada
+mail_from::De:
+mail_to::Para:
+mail_date::Fecha:
+mail_subject::Asunto:
+files_back::Atrás
+files_name::Nombre
+files_date::Fecha
+files_type::Tipo
+files_size::Tamaño
+files_type_folder::Carpeta de archivos
+files_type_text::Documento de texto
+files_type_image::Imagen
+files_type_audio::Audio
+files_type_generic::Archivo
+files_empty::Esta carpeta está vacía.
+files_no_preview::No hay vista previa para este archivo.
+files_missing::Este archivo no tiene contenido accesible.
+gallery_set_wallpaper::Elegir fondo de pantalla
+gallery_default::Galería
+gallery_designs::Diseños
+concept_art::Artes Conceptuales
+gallery_illustrations::Ilustraciones
+gallery_game_art::Arte del juego
+gallery_banners::Banners
+popup_yes::Sí
+popup_no::No
+gallery_open_link::Abrir vínculo
+gallery_confirm_link::¿Abrir vínculo?
+gallery_confirm_wallpaper::¿Elegir como fondo de pantalla?
+gallery_desktop::Escritorio
+desktop_confirm_exit::¿Seguro que quieres salir?
+popup_ok::OK
+files_open_error::No se pudo abrir el siguiente archivo: {name}.\nEl tipo de archivo es desconocido.
+files_delete::Eliminar
+files_open::Abrir
+files_delete_denied::No se pudo eliminar el siguiente archivo: {name}.\nNo tienes los permisos de acceso necesarios para realizar esta acción.
+files_confirm_delete::¿Seguro que quieres eliminar este archivo?\n\n{name}
+popup_error::Error
+settings_ui_colors::Colores de interfaz
+desktop_theme_classic::Rosa clásico
+desktop_theme_blue::Azul
+
+progress_locked_title::Bloqueado
+progress_prologue_required::Completa el prólogo en Modo Historia para desbloquear este contenido.
+
+popup_switcheroo_notes::No falles las notas azules.
+
+popup_prologue_complete::Las canciones del prólogo se encuentran disponibles en el menú de Juego Libre.
+popup_prologue_lyrics::¡Se ha desbloqueado una versión especial de <Q>Piece By Piece<Q>!<N>¡Encuéntrala en el menú de Juego Libre!
+popup_prologue_test::¡Se ha desbloqueado <Q>Test (Manu Mix)<Q>!<N>Accede a la canción desde el menú de Juego Libre
+popup_prologue_extra1::¡Se ha desbloqueado <Q>Poems n' Pollen<Q>!<N>Accede a la canción desde el menú de Juego Libre
+popup_prologue_extra2::¡Se ha desbloqueado <Q>Shinkyoku<Q>!<N>Accede a la canción desde el menú de Juego Libre
+popup_prologue_extra3::¡Se ha desbloqueado <Q>Dual Death<Q>!<N>Accede a la canción desde el menú de Juego Libre
+popup_prologue_credits::¡Los créditos ya están disponibles<N>en el menú principal!
+popup_prologue_gallery::¡Se han desbloqueado nuevas ilustraciones en el Escritorio!
+settings_game_options::Opciones del juego
+settings_display::Pantalla
+settings_fullscreen::Pantalla completa
+settings_windowed::Ventana
+settings_on::Activado
+settings_off::Desactivado
+settings_vsync_unavailable::VSync: no disponible
+settings_resizable::Redimensionar: 
+settings_yes::Sí
+settings_no::No
+settings_language::Idioma
+settings_apply::Aplicar
+settings_immediate_notice::Los ajustes se aplican inmediatamente. Aplicar guarda únicamente el idioma.
+settings_master_volume::Volumen general: 
+settings_language_saved::Idioma guardado. Se reflejará al abrir los menús traducidos.
+settings_vsync_failed::Esta build no pudo aplicar VSync.
+settings_applied::Ajuste aplicado y guardado.
+files_entry_characters::personajes
+files_entry_game::juego
+files_entry_artwork::ilustraciones
+files_entry_album::Carátula Switcheroo.png
+files_entry_internal::interno
+files_entry_welcome::bienvenida.txt
+files_entry_reset::restablecer.sh
+progress_full_campaign_required::Completa TODA la campaña del Modo Historia para desbloquear este contenido.
+jukebox_select_song::Selecciona una canción
+jukebox_empty_list::No hay canciones en esta lista.

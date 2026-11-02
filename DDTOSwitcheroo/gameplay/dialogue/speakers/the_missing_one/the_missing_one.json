@@ -1,0 +1,17 @@
+{
+  "version": "1.0.0",
+  "name": "???",
+  "assetPath": "gameplay/dialogue/speakers/the_missing_one/UnknownPerson",
+  "flipX": false,
+  "isPixel": true,
+  "scale": 1,
+  "box": "noone",
+  "textSound": "dialogue/strange",
+  "offsets": [0, 60],
+  "animations": [
+    {
+      "name": "talk",
+      "prefix": "sorry"
+    }
+  ]
+}

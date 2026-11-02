@@ -1,0 +1,29 @@
+{ 
+	"dialogue": 
+	[
+		{
+			"isCommand": false,
+			"name": "no_one",
+			"expression": "gone",
+			"string": "...",
+			"key": "cdIntroMissing1",
+			"side": "left"
+		},
+		{
+			"isCommand": false,
+			"name": "no_one",
+			"expression": "gone",
+			"string": "But Nobody Came..",
+			"key": "cdIntroMissing2",
+			"side": "left"
+		},
+		{
+			"isCommand": false,
+			"name": "bf",
+			"expression": "what",
+			"string": "Beep?",
+			"key": "cdIntroMissing3",
+			"side": "right"
+		}
+	]
+}

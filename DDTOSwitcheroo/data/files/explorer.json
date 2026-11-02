@@ -1,0 +1,79 @@
+{
+    "name": "",
+    "displayName": "/",
+    "children": [
+        {
+            "name": "hating simulator",
+            "displayName": "hating simulator",
+            "type": "folder",
+            "date": "18/10/2026 01:00",
+            "children": []
+        },
+        {
+            "name": "characters",
+            "displayName": "characters",
+            "type": "folder",
+            "date": "18/10/2026 01:00",
+            "children": [
+                {
+                    "name": "manuel.chr",
+                    "deleteable": true,
+                    "displayName": "manuel.chr",
+                    "type": "chr",
+                    "date": "18/10/2026"
+                }
+            ],
+            "displayKey": "files_entry_characters"
+        },
+        {
+            "name": "game",
+            "displayName": "game",
+            "type": "folder",
+            "date": "18/10/2026 01:00",
+            "children": [
+                {
+                    "name": "artwork",
+                    "displayName": "artwork",
+                    "type": "folder",
+                    "children": [
+                        {
+                            "name": "album.png",
+                            "displayName": "Switcheroo Cover.png",
+                            "type": "image",
+                            "date": "18/10/2026",
+                            "source": "images/jukebox/switcheroo_classic.png",
+                            "displayKey": "files_entry_album"
+                        }
+                    ],
+                    "displayKey": "files_entry_artwork"
+                }
+            ],
+            "displayKey": "files_entry_game"
+        },
+        {
+            "name": "internal",
+            "displayName": "internal",
+            "type": "folder",
+            "date": "18/10/2026 01:00",
+            "children": [],
+            "displayKey": "files_entry_internal"
+        },
+        {
+            "name": "welcome.txt",
+            "displayName": "welcome.txt",
+            "type": "text",
+            "date": "18/10/2026 01:00",
+            "size": "128 B",
+            "source": "data/files/content/welcome.txt",
+            "displayKey": "files_entry_welcome"
+        },
+        {
+            "name": "reset.sh",
+            "displayName": "reset.sh",
+            "type": "sh",
+            "date": "18/10/2026 01:00",
+            "size": "1792 B",
+            "displayKey": "files_entry_reset"
+        }
+    ]
+}

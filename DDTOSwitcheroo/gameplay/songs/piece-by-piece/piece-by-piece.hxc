@@ -1,0 +1,25 @@
+import funkin.play.PlayState;
+import flixel.addons.display.FlxBackdrop; 
+import funkin.play.song.Song;
+import funkin.play.Countdown;
+import flixel.util.FlxTimer;
+import flixel.tweens.FlxEase;
+import flixel.tweens.FlxTween;
+
+class PieceByPieceSong extends Song
+{
+	var dokiBackdrop:FlxBackdrop;
+
+	function new()
+	{
+		super('piece-by-piece');
+	}
+
+	public function onCountdownStart(event):Void {
+		super.onCountdownStart(event);
+		new FlxTimer().start(0.9, function(tmr) // Starts the song without countdown
+			{
+				Countdown.skipCountdown();
+			});
+	}
+}

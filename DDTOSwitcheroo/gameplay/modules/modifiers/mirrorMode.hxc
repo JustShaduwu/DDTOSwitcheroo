@@ -1,0 +1,488 @@
+import funkin.modding.module.Module;
+import funkin.modding.module.ModuleHandler;
+import funkin.play.PlayState;
+import funkin.play.PlayStatePlaylist;
+import funkin.play.PauseSubState;
+import funkin.play.character.CharacterType;
+import funkin.play.notes.Strumline;
+import funkin.play.components.HealthIcon;
+import funkin.modding.events.NoteScriptEvent;
+import funkin.util.Constants;
+import funkin.ui.FullScreenScaleMode;
+import flixel.ui.FlxBar;
+import flixel.ui.FlxBarFillDirection;
+import flixel.math.FlxMath;
+import flixel.math.FlxPoint;
+import flixel.tweens.FlxTween;
+import flixel.FlxG;
+import funkin.Conductor;
+import funkin.save.Save;
+
+class MirrorMode extends Module
+{
+    var inPause:Bool = false;
+    var hideChangeDifficulty:Bool = true;
+
+    public function new()
+    {
+        super('MirrorMode', 0);
+    }
+
+function missingControlsVocals():Bool
+{
+    var missing = ModuleHandler.getModule('MissingMode');
+    return missing != null && missing.scriptCall('syncMissingVocals', []) == true;
+}
+
+function isMirrorEnabled():Bool
+{
+    return !PlayStatePlaylist.isStoryMode && Save.instance.modOptions.get('mirrorMode') == true;
+}
+
+  function set_active(value:Bool):Bool
+  {
+    return false;
+  }
+
+    public function onStateChangeEnd(event)
+    {
+        super.onStateChangeEnd(event);
+
+            if (!isMirrorEnabled())
+        return;
+
+        if (event.targetState is PlayState)
+        {
+            final state:PlayState = event.targetState;
+
+            state.currentStage.getPlayer().characterType = CharacterType.DAD;
+            state.currentStage.getOpponent().characterType = CharacterType.BF;
+
+            flipHealthBar();
+            opposeStrumlines();
+        }
+    }
+
+    public function onSongLoaded(event)
+    {
+        super.onSongLoaded(event);
+    if (!isMirrorEnabled())
+        return;
+        if (PlayState.instance == null)
+            return;
+
+        opposeChart(PlayState.instance.currentChart);
+    }
+
+    public function onSongRetry(event)
+    {
+        super.onSongRetry(event);
+
+    if (!isMirrorEnabled())
+        return;
+
+        final state = PlayState.instance;
+
+        if (state == null)
+            return;
+
+        opposeChart(state.currentChart);
+
+        if (state.currentStage.getPlayer().characterType == CharacterType.BF)
+        {
+            state.currentStage.getPlayer().characterType = CharacterType.DAD;
+        }
+
+        if (state.currentStage.getOpponent().characterType == CharacterType.DAD)
+        {
+            state.currentStage.getOpponent().characterType = CharacterType.BF;
+        }
+    }
+
+    public function onSubStateOpenEnd(event)
+    {
+
+            if (!isMirrorEnabled())
+        return;
+        if (event.targetState is PauseSubState)
+        {
+            inPause = true;
+        }
+    }
+
+    public function onSubStateCloseEnd(event)
+    {
+
+            if (!isMirrorEnabled())
+        return;
+        if (event.targetState is PauseSubState)
+        {
+            inPause = false;
+        }
+    }
+
+    public function onCountdownStart(event)
+    {
+
+            if (!isMirrorEnabled())
+        return;
+        if (PlayState.instance != null)
+        {
+            if (missingControlsVocals()) return;
+        PlayState.instance.vocals.opponentVolume = 1;
+        }
+    }
+
+    public function onNoteHit(event)
+    {
+            if (!isMirrorEnabled())
+        return;
+        if (PlayState.instance == null)
+            return;
+
+        if (missingControlsVocals()) return;
+        PlayState.instance.vocals.opponentVolume = 1;
+    }
+
+    public function onNoteMiss(event)
+    {
+            if (!isMirrorEnabled())
+        return;
+        if (PlayState.instance == null)
+            return;
+
+        if (missingControlsVocals()) return;
+        PlayState.instance.vocals.opponentVolume = 0;
+    }
+
+    public function onNoteHoldDrop(event)
+    {
+            if (!isMirrorEnabled())
+        return;
+        if (PlayState.instance == null)
+            return;
+
+        if (missingControlsVocals()) return;
+        PlayState.instance.vocals.opponentVolume = 0;
+    }
+
+    public function onNoteGhostMiss(event)
+    {
+            if (!isMirrorEnabled())
+        return;
+        if (PlayState.instance == null)
+            return;
+
+     //   event.playAnim = false;
+        if (missingControlsVocals()) return;
+        PlayState.instance.vocals.opponentVolume = 0;
+    }
+
+    public function onStepHit(event)
+    {
+            if (!isMirrorEnabled())
+        return;
+        final state = PlayState.instance;
+
+        if (state == null)
+            return;
+
+        for (targetIcon in [state.iconP1, state.iconP2])
+        {
+                    if (targetIcon == null) return;
+            if (targetIcon.bopEvery != 0 &&
+                event.step % targetIcon.bopEvery == 0)
+            {
+                targetIcon.bopTween?.cancel();
+
+                var baseWidth = HealthIcon.HEALTH_ICON_SIZE * targetIcon.size.x;
+                var peakWidth = baseWidth * (1 + HealthIcon.BOP_SCALE);
+                targetIcon.setGraphicSize(Std.int(peakWidth), 0);
+                targetIcon.updateHitbox();
+
+                targetIcon.bopTween = FlxTween.num(
+                    peakWidth,
+                    baseWidth,
+
+                    Math.min(
+                        Conductor.instance.stepLengthMs * 0.002,
+                        .175
+                    ),
+
+                    {
+                        onComplete: _ ->
+                        {
+                            targetIcon.bopTween = null;
+                        }
+                    },
+
+                    value ->
+                    {
+                        targetIcon.setGraphicSize(
+                            Std.int(value),
+                            0
+                        );
+
+                        targetIcon.updateHitbox();
+                        targetIcon.updatePosition();
+                    }
+                );
+
+                targetIcon.updateHitbox();
+                targetIcon.updatePosition();
+
+                targetIcon.angle +=
+                    targetIcon.bopAngle *
+                    (targetIcon.playerId == 0 ? 1 : -1);
+            }
+        }
+    }
+
+    public function updateIconPosition(iconId:Int):Void
+    {
+            if (!isMirrorEnabled())
+        return;
+        final state = PlayState.instance;
+
+        if (state == null)
+            return;
+
+        switch (iconId)
+        {
+            case 0:
+                state.iconP1.updateHealthIcon(
+                    2 - state.healthBar.value
+                );
+
+                state.iconP1.x =
+                    state.healthBar.x +
+                    (
+                        state.healthBar.width *
+                        (
+                            FlxMath.remapToRange(
+                                2 - state.healthBar.value,
+                                0,
+                                2,
+                                100,
+                                0
+                            ) * 0.01
+                        ) -
+                        HealthIcon.POSITION_OFFSET
+                    );
+
+                state.iconP1.y =
+                    state.healthBar.y -
+                    (state.iconP1.height / 2);
+
+            case 1:
+                state.iconP2.updateHealthIcon(
+                    state.healthBar.value
+                );
+
+                state.iconP2.x =
+                    state.healthBar.x +
+                    (
+                        state.healthBar.width *
+                        (
+                            FlxMath.remapToRange(
+                                2 - state.healthBar.value,
+                                0,
+                                2,
+                                100,
+                                0
+                            ) * 0.01
+                        )
+                    ) -
+                    (
+                        state.iconP2.width -
+                        HealthIcon.POSITION_OFFSET
+                    );
+
+                state.iconP2.y =
+                    state.healthBar.y -
+                    (state.iconP2.height / 2);
+        }
+    }
+
+    public function onUpdate(event)
+    {
+            if (!isMirrorEnabled())
+        return;
+        final state = PlayState.instance;
+
+        if (state == null)
+            return;
+
+        state.vocals.playerVolume = 1;
+
+        if (state.iconP1 != null)
+            updateIconPosition(0);
+
+        if (state.iconP2 != null)
+            updateIconPosition(1);
+    }
+
+    public function onSongEvent(event)
+    {
+            if (!isMirrorEnabled())
+        return;
+        final state = PlayState.instance;
+
+        if (state == null)
+            return;
+
+        switch (event.eventData.eventKind)
+        {
+            case 'ScrollSpeed':
+                switch (event.eventData.value.strumline)
+                {
+                    case 'player':
+                        event.eventData.value.strumline = 'opponent';
+
+                    case 'opponent':
+                        event.eventData.value.strumline = 'player';
+                }
+        }
+    }
+
+    function opposeChart(chart)
+    {
+        if (chart == null)
+            return;
+
+        for (note in chart.notes)
+        {
+            note.data = giveOppositeData(note.data);
+        }
+    }
+
+    function giveOppositeData(inputData:Int):Int
+    {
+        switch (inputData)
+        {
+            case 4:
+                return 0;
+
+            case 5:
+                return 1;
+
+            case 6:
+                return 2;
+
+            case 7:
+                return 3;
+
+            case 0:
+                return 4;
+
+            case 1:
+                return 5;
+
+            case 2:
+                return 6;
+
+            case 3:
+                return 7;
+        }
+
+        return inputData;
+    }
+
+   function opposeStrumlines()
+{
+    final state = PlayState.instance;
+
+    if (state == null)
+        return;
+
+   var allowMiddleScroll:Bool =
+        Save.instance.modOptions.get('middleScroll') == true;
+
+#if FEATURE_TOUCH_CONTROLS
+if (Preferences.controlsScheme == "Arrows" && !ControlsHandler.usingExternalInputDevice) allowMiddleScroll = false;
+#end
+
+    if (allowMiddleScroll)
+    {
+
+        for (arrow in state.opponentStrumline.members)
+        {
+            if (arrow != null)
+                arrow.visible = false;
+        }
+
+        state.playerStrumline.x =
+            FlxG.width / 2 -
+            state.playerStrumline.width / 2;
+
+        state.playerStrumline.scrollSpeed =
+            state.opponentStrumline.scrollSpeed;
+
+        state.comboPopUps.offsets = [200, 0];
+
+        return;
+    }
+
+    final playerPos:FlxPoint =
+        FlxPoint.get(
+            state.playerStrumline.x,
+            state.playerStrumline.y
+        );
+
+    final playerSpeed:Float =
+        state.playerStrumline.scrollSpeed;
+
+    final cutoutSize =
+        FullScreenScaleMode.gameCutoutSize.x / 2.5;
+
+    state.playerStrumline.x =
+        (
+            (FlxG.width / 2) -
+            state.playerStrumline.width -
+            Constants.STRUMLINE_X_OFFSET
+        ) -
+        (cutoutSize / 2.0);
+
+    state.playerStrumline.y =
+        state.opponentStrumline.y;
+
+    state.opponentStrumline.x =
+        (
+            FlxG.width -
+            state.opponentStrumline.width
+        ) -
+        Constants.STRUMLINE_X_OFFSET -
+        cutoutSize;
+
+    state.opponentStrumline.y =
+        playerPos.y;
+
+    state.playerStrumline.scrollSpeed =
+        state.opponentStrumline.scrollSpeed;
+
+    state.opponentStrumline.scrollSpeed =
+        playerSpeed;
+
+    state.comboPopUps.offsets = [200, 0];
+}
+
+    function flipHealthBar()
+    {
+        final state = PlayState.instance;
+
+        if (state == null)
+            return;
+
+        state.scoreText.x =
+            state.healthBarBG.x + 90;
+
+        state.healthBar.fillDirection =
+            FlxBarFillDirection.LEFT_TO_RIGHT;
+
+        state.iconP1.autoUpdate = false;
+        state.iconP2.autoUpdate = false;
+
+        state.iconP1.isLegacyStyle = false;
+        state.iconP2.isLegacyStyle = false;
+    }
+}

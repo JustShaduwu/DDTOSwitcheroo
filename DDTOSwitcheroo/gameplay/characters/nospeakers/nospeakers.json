@@ -1,0 +1,48 @@
+{
+	"version": "1.0.0",
+	"renderType": "sparrow",
+	"offsets": [
+		0,
+		100000000
+	],
+	"danceEvery": 1,
+	"scale": 0.1,
+	"name": "No Speakers",
+	"cameraOffsets": [
+		0,
+		0
+	],
+	"flipX": false,
+	"startingAnimation": "idle",
+	"isPixel": true,
+	"singTime": 1,
+	"flipY": false,
+	"healthIcon": {
+		"isPixel": false,
+		"offsets": [
+			0,
+			0
+		],
+		"scale": 0.1,
+		"id": "face",
+		"flipX": false
+	},
+	"assetPath": "gameplay/characters/nospeakers/NOSPEAKERS",
+	"generatedBy": "Nova Character Editor v3.0.1",
+	"animations": [
+		{
+			"offsets": [
+				0,
+				0
+			],
+			"frameIndices": [],
+			"prefix": "idle",
+			"name": "idle",
+			"looped": false,
+			"flipX": false,
+			"flipY": false,
+			"frameRate": 0,
+			"assetPath": null
+		}
+	]
+}

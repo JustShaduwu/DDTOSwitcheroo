@@ -1,0 +1,63 @@
+{
+  "danceEvery": 1,
+  "offsets": [
+    40,
+    0
+  ],
+  "renderType": "sparrow",
+  "version": "1.0.0",
+  "scale": 1,
+  "flipX": false,
+  "cameraOffsets": [
+    0,
+    0
+  ],
+  "name": "Switcheroo Game Over",
+  "flipY": false,
+  "singTime": 2,
+  "isPixel": true,
+  "startingAnimation": "firstDeath",
+  "assetPath": "gameOver/DokiGameOver",
+  "healthIcon": {
+    "isPixel": false,
+    "offsets": [
+      0,
+      0
+    ],
+    "scale": 1,
+    "id": "Kaitypixel",
+    "flipX": false
+  },
+  "animations": [
+    {
+      "name": "firstDeath",
+      "prefix": "DokiGameOverIntro",
+      "offsets": [
+        -48,
+        151
+      ],
+      "frameRate": 24,
+      "looped": false
+    },
+    {
+      "name": "deathLoop",
+      "prefix": "DokiGameOverLoop",
+      "looped": true,
+      "offsets": [
+        -72,
+        137
+      ],
+      "frameRate": 24
+    },
+    {
+      "name": "deathConfirm",
+      "prefix": "DokiGameOverConfirm",
+      "offsets": [
+        -52,
+        153
+      ],
+      "frameRate": 24,
+      "looped": false
+    }
+  ]
+}

@@ -1,0 +1,307 @@
+[
+    {
+        "id": "gettin-switched",
+        "requiresPrologue": false,
+        "title": "Gettin' Switched",
+        "artist": "SimonTheRabbit09",
+        "cover": "jukebox/switcheroo_encore",
+        "audio": [
+            {
+                "path": "music/gettinSwitched/gettinSwitched.ogg",
+                "volume": 1
+            }
+        ]
+    },
+    {
+        "id": "college-dispute",
+        "requiresPrologue": true,
+        "title": "College Dispute",
+        "artist": "SimonTheRabbit09 & Aquaknight11",
+        "cover": "jukebox/switcheroo_encore",
+        "audio": [
+            {
+                "path": "gameplay/songs/college-dispute/Inst.ogg",
+                "volume": 1
+            },
+            {
+                "path": "gameplay/songs/college-dispute/Voices-manuel-pixel.ogg",
+                "volume": 1
+            },
+            {
+                "path": "gameplay/songs/college-dispute/Voices-pixelkaity-new.ogg",
+                "volume": 1
+            }
+        ]
+    },
+    {
+        "id": "stories-of-violets",
+        "requiresPrologue": true,
+        "title": "Stories Of Violets",
+        "artist": "Shaduwu",
+        "cover": "jukebox/switcheroo_classic",
+        "audio": [
+            {
+                "path": "gameplay/songs/stories-of-violets/Inst.ogg",
+                "volume": 1
+            },
+            {
+                "path": "gameplay/songs/stories-of-violets/Voices-Duet.ogg",
+                "volume": 1
+            },
+            {
+                "path": "gameplay/songs/stories-of-violets/Voices-pixelkaity-new.ogg",
+                "volume": 1
+            }
+        ]
+    },
+    {
+        "id": "stories-of-violets-erect",
+        "requiresPrologue": true,
+        "title": "Stories Of Violets (Erect)",
+        "artist": "SimonTheRabbit09",
+        "cover": "jukebox/switcheroo_encore",
+        "audio": [
+            {
+                "path": "gameplay/songs/stories-of-violets/Inst-erect.ogg",
+                "volume": 1
+            },
+            {
+                "path": "gameplay/songs/stories-of-violets/Voices-Duet-erect.ogg",
+                "volume": 1
+            },
+            {
+                "path": "gameplay/songs/stories-of-violets/Voices-pixelkaity-new-erect.ogg",
+                "volume": 1
+            }
+        ]
+    },
+    {
+        "id": "nightmare",
+        "requiresPrologue": true,
+        "title": "Nightmare",
+        "artist": "Aquaknight11",
+        "cover": "jukebox/switcheroo_classic",
+        "audio": [
+            {
+                "path": "music/Nightmare/Nightmare.ogg",
+                "volume": 1
+            }
+        ]
+    },
+    {
+        "id": "death-by-death",
+        "requiresPrologue": true,
+        "title": "Death by Death",
+        "artist": "SimonTheRabbit09",
+        "cover": "jukebox/switcheroo_encore",
+        "audio": [
+            {
+                "path": "gameplay/songs/death-by-death/Inst.ogg",
+                "volume": 1
+            },
+            {
+                "path": "gameplay/songs/death-by-death/Voices-manuel-pixel.ogg",
+                "volume": 1
+            },
+            {
+                "path": "gameplay/songs/death-by-death/Voices-kaity-pixel.ogg",
+                "volume": 1
+            }
+        ]
+    },
+    {
+        "id": "master-of-the-game",
+        "requiresPrologue": true,
+        "title": "Master Of The Game",
+        "artist": "Aquaknight11 & Shaduwu",
+        "cover": "jukebox/switcheroo_classic",
+        "audio": [
+            {
+                "path": "music/cutsceneEnd/cutsceneEnd.ogg",
+                "volume": 1
+            }
+        ]
+    },
+    {
+        "id": "piece-by-piece",
+        "requiresPrologue": true,
+        "title": "Piece By Piece (Switcheroo Mix)",
+        "artist": "Aquaknight11 & Shaduwu",
+        "cover": "jukebox/switcheroo_classic",
+        "audio": [
+            {
+                "path": "gameplay/songs/piece-by-piece/Inst.ogg",
+                "volume": 1
+            },
+            {
+                "path": "gameplay/songs/piece-by-piece/Voices-seira.ogg",
+                "volume": 1
+            },
+            {
+                "path": "gameplay/songs/piece-by-piece/Voices-manuel.ogg",
+                "volume": 1
+            }
+        ]
+    },
+    {
+        "id": "piece-by-piece-lyrics",
+        "requiresPrologue": true,
+        "title": "Piece By Piece (Switcheroo Mix) With Lyrics",
+        "artist": "Aquaknight11, Shaduwu, KitVa, MajinSonicOfficial",
+        "cover": "jukebox/switcheroo_encore",
+        "audio": [
+            {
+                "path": "gameplay/songs/piece-by-piece/Inst.ogg",
+                "volume": 1
+            },
+            {
+                "path": "gameplay/songs/piece-by-piece/Voices-seira-lyrics.ogg",
+                "volume": 1
+            },
+            {
+                "path": "gameplay/songs/piece-by-piece/Voices-manuel-lyrics.ogg",
+                "volume": 1
+            }
+        ]
+    },
+    {
+        "id": "test-manu-mix",
+        "requiresPrologue": true,
+        "title": "Test (Manu Mix)",
+        "artist": "Shaduwu / AgamiSan_",
+        "cover": "jukebox/switcheroo_classic",
+        "audio": [
+            {
+                "path": "gameplay/songs/test-manu-mix/Inst.ogg",
+                "volume": 1
+            },
+            {
+                "path": "gameplay/songs/test-manu-mix/Voices-pixel-kity.ogg",
+                "volume": 1
+            },
+            {
+                "path": "gameplay/songs/test-manu-mix/Voices-manu-pixel.ogg",
+                "volume": 1
+            }
+        ]
+    },
+    {
+        "id": "beanPause",
+        "requiresPrologue": true,
+        "title": "Rice By Rice (Bean Pause Music)",
+        "artist": "Aquaknight11",
+        "cover": "jukebox/switcheroo_encore",
+        "audio": [
+            {
+                "path": "music/beanPause/beanPause.ogg",
+                "volume": 1
+            }
+        ]
+    },
+    {
+        "id": "dont-stop-the-switchin-pixel",
+        "requiresPrologue": false,
+        "title": "Don't Stop the Switchin (Pixel Version)",
+        "artist": "Aquaknight11 & Shaduwu",
+        "cover": "jukebox/switcheroo_encore",
+        "audio": [
+            {
+                "path": "gameplay/playable-characters/kaity/game-over/game-over-switcheroo/game-over-switcheroo.ogg",
+                "volume": 1
+            }
+        ]
+    },
+    {
+        "id": "poems-n-pollen",
+        "requiresPrologue": true,
+        "title": "Poems n Pollen",
+        "artist": "Shaduwu / Saruky",
+        "cover": "jukebox/switcheroo_classic",
+        "audio": [
+            {
+                "path": "gameplay/songs/poems-n-pollen/Inst.ogg",
+                "volume": 1
+            },
+            {
+                "path": "gameplay/songs/poems-n-pollen/Voices-Duet.ogg",
+                "volume": 1
+            },
+            {
+                "path": "gameplay/songs/poems-n-pollen/Voices-pixelkaity-new.ogg",
+                "volume": 1
+            }
+        ]
+    },
+    {
+        "id": "shinkyoku-switcheroo-mix",
+        "requiresPrologue": true,
+        "title": "Shinkyoku (Switcheroo Mix)",
+        "artist": "Shaduwu / Blantados",
+        "cover": "jukebox/switcheroo_classic",
+        "audio": [
+            {
+                "path": "gameplay/songs/shinkyoku-switcheroo-mix/Inst.ogg",
+                "volume": 1
+            },
+            {
+                "path": "gameplay/songs/shinkyoku-switcheroo-mix/Voices.ogg",
+                "volume": 1
+            }
+        ]
+    },
+    {
+        "id": "dual-death",
+        "requiresPrologue": true,
+        "title": "Dual Death",
+        "artist": "Shaduwu / StardustTunes",
+        "cover": "jukebox/switcheroo_classic",
+        "audio": [
+            {
+                "path": "gameplay/songs/dual-death/Inst.ogg",
+                "volume": 1
+            },
+            {
+                "path": "gameplay/songs/dual-death/Voices-manuel-pixel.ogg",
+                "volume": 1
+            },
+            {
+                "path": "gameplay/songs/dual-death/Voices-kaity-angry.ogg",
+                "volume": 1
+            }
+        ]
+    },
+    {
+        "id": "our-reality",
+        "requiresPrologue": true,
+        "title": "Our Reality",
+        "artist": "Shaduwu / UnStorm",
+        "cover": "jukebox/switcheroo_classic",
+        "audio": [
+            {
+                "path": "gameplay/songs/our-reality/Inst.ogg",
+                "volume": 1
+            },
+            {
+                "path": "gameplay/songs/our-reality/Voices-manuel-pixel.ogg",
+                "volume": 1
+            },
+            {
+                "path": "gameplay/songs/our-reality/Voices-seira.ogg",
+                "volume": 1
+            }
+        ]
+    },
+    {
+        "id": "teseo-switcheroo",
+        "requiresPrologue": false,
+        "title": "Teseo Switcheroo (Bonus Track)",
+        "artist": "Shaduwu",
+        "cover": "jukebox/switcheroo_encore",
+        "audio": [
+            {
+                "path": "music/teseoSwitcheroo/teseoSwitcheroo.ogg",
+                "volume": 1
+            }
+        ]
+    }
+]

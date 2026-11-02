@@ -1,0 +1,1577 @@
+package switcheroo.substates;
+
+import DesktopTheme;
+import flixel.FlxG;
+import flixel.addons.transition.FlxTransitionableState;
+import flixel.FlxSprite;
+import flixel.text.FlxText;
+import flixel.text.FlxTextBorderStyle;
+import flixel.tweens.FlxTween;
+import flixel.tweens.FlxEase;
+import funkin.Paths;
+import funkin.PlayerSettings;
+import funkin.ui.MusicBeatSubState;
+import funkin.ui.ScriptedMusicBeatState;
+import lime.utils.Assets;
+import haxe.Json;
+import flixel.math.FlxRect;
+import StringTools;
+import JukeboxPlayer;
+import funkin.audio.FunkinSound;
+import funkin.save.Save;
+import lime.app.Application;
+import EnterpriseSettings;
+import LanguageManager;
+import GalleryCatalog;
+import SwitcherooProgress;
+import switcheroo.substates.EnterprisePopup;
+import GalleryThumbnailCache;
+import switcheroo.substates.SwitcherooGallerySubState;
+
+
+
+class EnterpriseWindow extends MusicBeatSubState
+{
+    var heading:String;
+    var headingLabel:FlxText;
+    var languageChanged:Void->Void;
+    var message:String;
+    var closeButton:FlxSprite;
+    var closeGlyph:FlxText;
+    var bodyTop:Float = 185;
+    var inputReady:Bool = false;
+    var windowScale:Float;
+    var originX:Float;
+    var originY:Float;
+    var backdrop:FlxSprite;
+    var windowBackground:FlxSprite;
+    var windowParts:Array<FlxSprite> = [];
+    var closing:Bool = false;
+    var transitionTime:Float = 0.2;
+    var mode:String;
+    var contentParts:Array<FlxSprite> = [];
+    var mails:Array<Dynamic> = [];
+    var mailRows:Array<FlxSprite> = [];
+    var mailRowTexts:Array<Array<FlxText>> = [];
+    var mailSelection:FlxSprite;
+    var inboxButton:FlxText;
+    var pageLabel:FlxText;
+    var mailPage:Int = 0;
+    var activeMail:Int = -1;
+    var bodyParts:Array<FlxSprite> = [];
+    var bodyOffsets:Array<Float> = [];
+    var bodyHeight:Float = 0;
+    var bodyScroll:Float = 0;
+    var openingTime:Float = 0;
+    var textOffsetY:Float = -3;
+    var textWeight:Float = 0;
+    var musicScroll:Float = 0;
+    var musicParts:Array<Dynamic> = [];
+    var playerRevision:Int = -1;
+    var player:Dynamic;
+    var musicButtons:Array<Dynamic> = [];
+    var musicRows:Array<Dynamic> = [];
+    var progress:FlxSprite;
+    var seekBar:FlxSprite;
+    var timeLabel:FlxText;
+    var durationLabel:FlxText;
+    var statusLabel:FlxText;
+    var playbackLabel:FlxText;
+    var scrollTrack:FlxSprite;
+    var scrollThumb:FlxSprite;
+    var scrollDragging:Bool = false;
+    var scrollGrab:Float = 0;
+    var scrollMaximum:Float = 0;
+    var scrollValue:Float = 0;
+    var scrollTarget:String = '';
+    var fileRoot:Dynamic;
+    var folderStack:Array<Dynamic> = [];
+    var fileRows:Array<Dynamic> = [];
+    var filePage:Int = 0;
+    var selectedFile:Dynamic = null;
+    var hiddenFiles:Array<String> = [];
+    var fileActions:Array<Dynamic> = [];
+    var filePreview:Bool = false;
+    var textFilePreview:Bool = false;
+    var fileBack:FlxText;
+    var fileBreadcrumbs:Array<Dynamic> = [];
+    var settingsButtons:Array<Dynamic> = [];
+    var volumeArea:FlxSprite;
+    var volumeFill:FlxSprite;
+    var volumeKnob:FlxSprite;
+    var volumeText:FlxText;
+    var draggingVolume:Bool = false;
+    var settingsMessage:FlxText;
+    var pendingFullscreen:Bool;
+    var pendingResizable:Bool;
+    var pendingVsync:Bool = false;
+    var vsyncAvailable:Bool = false;
+    var vsyncChanged:Bool = false;
+    var resolutionIndex:Int = 0;
+    var resolutions:Array<Dynamic> = [];
+    var pendingLocale:String;
+    var pictureTiles:Array<Dynamic> = [];
+
+    public function new(title:String, body:String, contentMode:String = '', onLanguageChanged:Void->Void = null)
+    {
+        super();
+        heading = title;
+        message = body;
+        mode = contentMode;
+        languageChanged = onLanguageChanged;
+    }
+
+    override function create():Void
+    {
+        super.create();
+        DesktopTheme.attach(this);
+        FlxG.sound.play(Paths.sound('openOS'));
+        persistentUpdate = false;
+        windowScale = Math.min(FlxG.height / 720, FlxG.width / 1280) * 0.95;
+        originX = (FlxG.width - 1280 * windowScale) / 2;
+        originY = (FlxG.height - 40 * FlxG.height / 720 - 720 * windowScale) / 2;
+
+        backdrop = new FlxSprite().makeGraphic(FlxG.width, FlxG.height, 0x55000000);
+        backdrop.alpha = 0;
+        add(backdrop);
+        artwork('background');
+        artwork('overlay');
+
+        
+        closeButton = new FlxSprite(originX + 1036 * windowScale, originY);
+        DesktopTheme.solid(closeButton, Std.int(59 * windowScale), Std.int(40 * windowScale), DesktopTheme.getColor('selected_text'));
+        add(closeButton);
+        windowParts.push(closeButton);
+        var cross = label('×', 1036, 3, 59, 25);
+        closeGlyph = cross;
+        cross.alignment = 'center';
+        headingLabel = label(heading, 204, 7, 810, 21);
+        headingLabel.font = Paths.font('HKGrotesk-Bold.otf');
+        if (mode == 'mail')
+        {
+            loadMails();
+            showInbox();
+        }
+        else if (mode == 'music') { loadJukebox(); showJukebox(); }
+        else if (mode == 'settings') { loadSettings(); showSettings(); }
+        else if (mode == 'files') { loadFiles(); showFiles(); }
+        else if (mode == 'pictures') showPictures();
+        else label(message, 208, 88, 860, 23);
+        syncScrollbar();
+        FlxTween.tween(backdrop, {alpha: 1}, transitionTime);
+        for (part in windowParts)
+        {
+            var targetY = part.y;
+            var targetAlpha = part.alpha;
+            part.alpha = 0;
+            part.y += 12 * windowScale;
+            FlxTween.tween(part, {alpha: targetAlpha, y: targetY}, transitionTime, {ease: FlxEase.quadOut});
+        }
+    }
+
+    function artwork(asset:String):Void
+    {
+        var sprite = DesktopTheme.load(this, new FlxSprite(originX, originY), 'enterprise/' + asset);
+        fitWindowArtwork(sprite, 'enterprise/' + asset);
+        sprite.antialiasing = true;
+        add(sprite);
+        windowParts.push(sprite);
+        if (asset == 'background') windowBackground = sprite;
+    }
+
+    function setWindowBackground(asset:String):Void
+    {
+        DesktopTheme.load(this, windowBackground, asset);
+        fitWindowArtwork(windowBackground, asset);
+    }
+
+    function fitWindowArtwork(sprite:FlxSprite, asset:String):Void
+    {
+        
+        
+        var legacyCanvas = sprite.frameWidth >= 1200;
+        var backgroundOnly = asset != 'enterprise/overlay';
+        var x = legacyCanvas ? 0 : 184;
+        var y = legacyCanvas ? (asset == 'mail/bg' ? 12 : 0) : (backgroundOnly ? 40 : 0);
+        var width = legacyCanvas ? 1280 : 912;
+        var height = legacyCanvas ? 720 : (backgroundOnly ? 652 : 720);
+        sprite.setGraphicSize(Std.int(width * windowScale), Std.int(height * windowScale));
+        sprite.updateHitbox();
+        sprite.setPosition(originX + x * windowScale, originY + y * windowScale);
+    }
+
+    function label(value:String, x:Float, y:Float, width:Float, size:Int):FlxText
+    {
+        var result = new FlxText(originX + x * windowScale, originY + (y + textOffsetY) * windowScale, width * windowScale, value);
+        result.setFormat(Paths.font(mode == 'files' || mode == 'mail' ? 'GoNotoCurrent.ttf' : 'HKGrotesk-Bold.otf'), Std.int((size - 2) * windowScale), DesktopTheme.getColor('desktop_color1'), 'left');
+        result.antialiasing = true;
+        add(result);
+        windowParts.push(result);
+        return result;
+    }
+
+    override function update(elapsed:Float):Void
+    {
+        super.update(elapsed);
+        if (closing || subState != null) return;
+        openingTime += elapsed;
+        var hovered = FlxG.mouse.overlaps(closeButton);
+        closeButton.color = hovered ? DesktopTheme.getColor('close_hover') : DesktopTheme.getColor('selected_text');
+        var controls = PlayerSettings.player1.controls;
+        if (!inputReady)
+        {
+            inputReady = openingTime >= transitionTime && !FlxG.mouse.pressed && !controls.ACCEPT_P && !controls.BACK_P;
+            return;
+        }
+        if (FlxG.mouse.justPressed)
+        {
+            
+            var mousePoint = FlxG.mouse.getWorldPosition(camera);
+            var outsideWindow = mousePoint.x < originX + 184 * windowScale
+                || mousePoint.x >= originX + 1096 * windowScale
+                || mousePoint.y < originY || mousePoint.y >= originY + 720 * windowScale;
+            mousePoint.put();
+            if (outsideWindow)
+            {
+                close();
+                return;
+            }
+        }
+        if (hovered && FlxG.mouse.justPressed)
+        {
+            if (mode == 'mail' && activeMail >= 0) showInbox();
+            else if (mode == 'files' && textFilePreview) filesBack();
+            else close();
+            return;
+        }
+        if (controls.BACK_P)
+        {
+            if (mode == 'mail' && activeMail >= 0) showInbox();
+            else if (mode == 'files' && (filePreview || folderStack.length > 1)) filesBack();
+            else close();
+            return;
+        }
+        syncScrollbar();
+        if (updateScrollbar())
+        {
+            if (mode == 'pictures') loadVisiblePictures();
+            return;
+        }
+        if (mode == 'mail') updateMail();
+        if (mode == 'music') updateJukebox(elapsed);
+        if (mode == 'settings') updateSettings();
+        if (mode == 'files') updateFiles();
+        if (mode == 'pictures') updatePictures();
+        syncScrollbar();
+    }
+
+    function syncScrollbar():Void
+    {
+        var previousTarget = scrollTarget;
+        scrollTarget = '';
+        var top:Float = 0;
+        var height:Float = 0;
+        var fraction:Float = 1;
+        scrollMaximum = 0;
+        scrollValue = 0;
+        if (mode == 'pictures' || (mode == 'mail' && activeMail >= 0) || (mode == 'files' && filePreview))
+        {
+            scrollTarget = 'body';
+            top = bodyTop + textOffsetY;
+            height = Math.max(40, (textFilePreview || mode == 'pictures' ? 700 : 640) - bodyTop);
+            scrollMaximum = Math.max(0, bodyHeight - height * windowScale);
+            scrollValue = bodyScroll;
+            if (bodyHeight > 0) fraction = height * windowScale / bodyHeight;
+        }
+        else if (mode == 'mail')
+        {
+            scrollTarget = 'mail'; top = 112; height = 513;
+            scrollMaximum = Math.max(0, Math.ceil(mails.length / 9) - 1);
+            scrollValue = mailPage;
+            if (mails.length > 0) fraction = 9.0 / mails.length;
+        }
+        else if (mode == 'files' && folderStack.length > 0)
+        {
+            var entries:Array<Dynamic> = visibleFiles();
+            var count = entries == null ? 0 : entries.length;
+            scrollTarget = 'files'; top = 135; height = 486;
+            scrollMaximum = Math.max(0, Math.ceil(count / 9) - 1);
+            scrollValue = filePage;
+            if (count > 0) fraction = 9.0 / count;
+        }
+        else if (mode == 'music' && player != null)
+        {
+            var count = songList().length;
+            scrollTarget = 'music'; top = 42; height = 608;
+            scrollMaximum = Math.max(0, (count * 48 - height) * windowScale);
+            scrollValue = musicScroll;
+            if (count > 0) fraction = height / (count * 48);
+        }
+        if (previousTarget != scrollTarget) scrollDragging = false;
+        if (scrollTrack == null)
+        {
+            scrollTrack = DesktopTheme.solid(new FlxSprite(), 1, 1, DesktopTheme.getColor('scroll_background'));
+            scrollThumb = DesktopTheme.solid(new FlxSprite(), 1, 1, DesktopTheme.getColor('desktop_color1'));
+            add(scrollTrack); add(scrollThumb);
+            windowParts.push(scrollTrack); windowParts.push(scrollThumb);
+        }
+        var visible = scrollMaximum > 0;
+        scrollTrack.visible = visible;
+        scrollThumb.visible = visible;
+        if (!visible) { scrollDragging = false; return; }
+        
+        if (members[members.length - 1] != scrollThumb)
+        {
+            remove(scrollTrack, true); remove(scrollThumb, true);
+            add(scrollTrack); add(scrollThumb);
+        }
+        var trackHeight = height * windowScale;
+        var thumbHeight = Math.min(trackHeight, Math.max(28 * windowScale, trackHeight * fraction));
+        scrollTrack.setGraphicSize(Std.int(Math.max(1, 9 * windowScale)), Std.int(trackHeight));
+        scrollTrack.updateHitbox();
+        scrollTrack.setPosition(originX + 1085 * windowScale, originY + top * windowScale);
+        scrollThumb.setGraphicSize(Std.int(Math.max(1, 9 * windowScale)), Std.int(thumbHeight));
+        scrollThumb.updateHitbox();
+        scrollThumb.setPosition(scrollTrack.x, scrollTrack.y + (scrollTrack.height - scrollThumb.height) * scrollValue / scrollMaximum);
+    }
+
+    function updateScrollbar():Bool
+    {
+        if (scrollTrack == null || !scrollTrack.visible) return false;
+        if (FlxG.mouse.justPressed && FlxG.mouse.overlaps(scrollTrack))
+        {
+            var point = FlxG.mouse.getWorldPosition();
+            scrollGrab = FlxG.mouse.overlaps(scrollThumb) ? point.y - scrollThumb.y : scrollThumb.height / 2;
+            point.put();
+            scrollDragging = true;
+        }
+        if (!scrollDragging) return false;
+        if (!FlxG.mouse.pressed) { scrollDragging = false; return true; }
+        var point = FlxG.mouse.getWorldPosition();
+        var travel = Math.max(1, scrollTrack.height - scrollThumb.height);
+        var ratio = Math.max(0, Math.min(1, (point.y - scrollTrack.y - scrollGrab) / travel));
+        point.put();
+        if (scrollTarget == 'body') scrollBody(ratio * scrollMaximum - bodyScroll);
+        else if (scrollTarget == 'music') scrollMusic(ratio * scrollMaximum - musicScroll);
+        else
+        {
+            var page = Std.int(Math.round(ratio * scrollMaximum));
+            if (scrollTarget == 'mail' && page != mailPage) { mailPage = page; showInbox(); }
+            else if (scrollTarget == 'files' && page != filePage) { filePage = page; showFiles(); }
+        }
+        syncScrollbar();
+        return true;
+    }
+
+    
+    function picturePart(part:FlxSprite):Void
+    {
+        bodyParts.push(part);
+        bodyOffsets.push(part.y - (originY + (bodyTop + textOffsetY) * windowScale));
+    }
+
+    function showPictures():Void
+    {
+        clearContent();
+        pictureTiles = [];
+        if (!SwitcherooProgress.hasCompletedPrologue())
+        {
+            contentLabel(LanguageManager.getTranslation('progress_prologue_required', 'Complete the prologue in Story Mode to unlock this content.'), 224, 100, 832, 20);
+            return;
+        }
+        bodyTop = 72;
+        bodyScroll = 0;
+        var catalog = GalleryCatalog.read();
+        var y:Float = bodyTop;
+        for (section in catalog.sections)
+        {
+            if (section.indices.length == 0) continue;
+            picturePart(contentRect(224, y, 832, 1, DesktopTheme.getColor('separator')));
+            var title = section.key == '' ? section.title : LanguageManager.getTranslation(section.key, section.title);
+            picturePart(contentLabel(title, 226, y + 12, 826, 18));
+            y += 40;
+            var column:Int = 0;
+            for (index in section.indices)
+            {
+                var x = 224 + column * 214;
+                var frame = contentRect(x, y, 190, 107, 0xFF000000);
+                picturePart(frame);
+                
+                var image = new FlxSprite(frame.x, frame.y);
+                image.antialiasing = true;
+                add(image); windowParts.push(image); contentParts.push(image);
+                picturePart(image);
+                var imagePart = bodyParts.length - 1;
+                var hover = contentRect(x, y, 190, 107, 0x33FFFFFF);
+                picturePart(hover);
+                hover.alpha = 0;
+                pictureTiles.push({frame: frame, hover: hover, index: index, image: image, imagePart: imagePart, path: catalog.entries[index].path, loaded: false});
+                column++;
+                if (column == 4) { column = 0; y += 135; }
+            }
+            if (column != 0) y += 135;
+            y += 24;
+        }
+        bodyHeight = Math.max(0, y - bodyTop) * windowScale;
+        scrollBody(0);
+    }
+
+    function loadVisiblePictures():Void
+    {
+        var remaining:Int = 2;
+        var changed:Bool = false;
+        for (tile in pictureTiles)
+        {
+            if (tile.loaded || !tile.frame.visible) continue;
+            var cached = GalleryThumbnailCache.find(tile.path);
+            if (cached == null && remaining <= 0) continue;
+            tile.loaded = true;
+            if (cached == null) remaining--;
+            try
+            {
+                var image = tile.image;
+                var frame = tile.frame;
+                image.loadGraphic(cached != null ? cached : GalleryThumbnailCache.get(tile.path));
+                var factor = Math.min(frame.width / image.frameWidth, frame.height / image.frameHeight);
+                image.scale.set(factor, factor);
+                image.updateHitbox();
+                image.x = frame.x + (frame.width - image.width) / 2;
+                bodyOffsets[tile.imagePart] += (frame.height - image.height) / 2;
+                changed = true;
+            }
+            catch (error:Dynamic) { trace('[Pictures] ' + error); }
+        }
+        if (changed) scrollBody(0);
+    }
+
+    function updatePictures():Void
+    {
+        var point = FlxG.mouse.getWorldPosition();
+        var inside = point.x >= originX + 224 * windowScale && point.x < originX + 1080 * windowScale
+            && point.y >= originY + (bodyTop + textOffsetY) * windowScale
+            && point.y < originY + (700 + textOffsetY) * windowScale;
+        point.put();
+        if (inside && FlxG.mouse.wheel != 0) scrollBody(-FlxG.mouse.wheel * 48 * windowScale);
+        loadVisiblePictures();
+        for (tile in pictureTiles)
+        {
+            var hovered = inside && tile.frame.visible && FlxG.mouse.overlaps(tile.frame);
+            tile.hover.alpha = hovered ? 1 : 0;
+            if (hovered && FlxG.mouse.justPressed)
+            {
+                
+                inputReady = false;
+                openSubState(new SwitcherooGallerySubState(tile.index, false, languageChanged));
+                return;
+            }
+        }
+    }
+
+    function loadFiles():Void
+    {
+        hiddenFiles = [];
+        var savedHidden = Save.instance.modOptions.get('switcherooHiddenFiles');
+        if (savedHidden != null && Std.isOfType(savedHidden, Array))
+            for (path in savedHidden)
+                if (Std.isOfType(path, String) && hiddenFiles.indexOf(path) < 0) hiddenFiles.push(path);
+        fileRoot = {name: '', displayName: '/', children: []};
+        try
+        {
+            var root = Json.parse(Assets.getText(Paths.file('data/files/explorer.json')));
+            if (root != null && root.children != null) fileRoot = root;
+        }
+        catch (error:Dynamic) { trace('[Files] ' + error); }
+        folderStack = [fileRoot];
+    }
+
+    
+    function fileIdentity(entry:Dynamic):String
+    {
+        var parts:Array<String> = [];
+        for (i in 1...folderStack.length) parts.push(fileName(folderStack[i]));
+        parts.push(Std.string(entry.name));
+        return Json.stringify(parts);
+    }
+
+    function visibleFiles():Array<Dynamic>
+    {
+        var result:Array<Dynamic> = [];
+        if (folderStack.length == 0) return result;
+        var children = folderStack[folderStack.length - 1].children;
+        if (children == null) return result;
+        for (entry in children)
+            if (hiddenFiles.indexOf(fileIdentity(entry)) < 0) result.push(entry);
+        return result;
+    }
+
+    function fileName(entry:Dynamic):String
+    {
+        var name = entry.displayName == null ? Std.string(entry.name) : Std.string(entry.displayName);
+        return entry.displayKey == null ? name : LanguageManager.getTranslation(Std.string(entry.displayKey), name);
+    }
+
+    function fileKind(entry:Dynamic):String
+    {
+        if (entry.children != null || entry.type == 'folder') return 'folder';
+        if (entry.type != null) return Std.string(entry.type);
+        var name = Std.string(entry.name).toLowerCase();
+        if (StringTools.endsWith(name, '.txt') || StringTools.endsWith(name, '.json')) return 'text';
+        if (StringTools.endsWith(name, '.png')) return 'image';
+        if (StringTools.endsWith(name, '.ogg') || StringTools.endsWith(name, '.mp3')) return 'audio';
+        return 'generic';
+    }
+
+    function fileCell(value:String, x:Float, y:Float, width:Float):FlxText
+    {
+        var text = contentLabel(value, x, y, width, 18);
+        text.wordWrap = false;
+        text.clipRect = new FlxRect(0, 0, text.width, 27 * windowScale);
+        return text;
+    }
+
+    function fileToolbar():Void
+    {
+        fileBreadcrumbs = [];
+        contentRect(184, 40, 912, 58, DesktopTheme.getColor('files_background'));
+        fileBack = contentLabel('←', 198, 57, 42, 24);
+        fileBack.alignment = 'center';
+        fileBack.alpha = filePreview || folderStack.length > 1 ? 1 : 0.4;
+        var x:Float = 254;
+        
+        var first = Std.int(Math.max(0, folderStack.length - 5));
+        if (first > 0)
+        {
+            var rootButton = contentRect(x, 51, 40, 34, DesktopTheme.getColor('selected_text'));
+            rootButton.color = DesktopTheme.getColor('files_background');
+            contentLabel('…', x, 57, 40, 20).alignment = 'center';
+            fileBreadcrumbs.push({area: rootButton, index: 0, current: false});
+            x += 48;
+        }
+        for (i in first...folderStack.length)
+        {
+            var name = i == 0 ? LanguageManager.getTranslation('desktop_files', 'Files') : fileName(folderStack[i]);
+            var width:Float = Math.max(88, Math.min(150, 48 + name.length * 9));
+            var current = i == folderStack.length - 1;
+            var area = contentRect(x, 51, width, 34, DesktopTheme.getColor('selected_text'));
+            area.color = current ? DesktopTheme.getColor('breadcrumb_current') : DesktopTheme.getColor('files_background');
+            var icon = DesktopTheme.load(this, new FlxSprite(), 'files/folder');
+            var factor = 24 * windowScale / Math.max(icon.width, icon.height);
+            icon.scale.set(factor, factor); icon.updateHitbox();
+            icon.setPosition(originX + (x + 7) * windowScale, originY + 56 * windowScale);
+            icon.alpha = current ? 1 : 0.65;
+            add(icon); windowParts.push(icon); contentParts.push(icon);
+            fileCell(name, x + 39, 59, width - 44);
+            fileBreadcrumbs.push({area: area, index: i, current: current});
+            x += width + 10;
+        }
+    }
+
+    function showFiles():Void
+    {
+        selectedFile = null;
+        clearContent();
+        fileRows = [];
+        filePreview = false;
+        textFilePreview = false;
+        headingLabel.text = heading;
+        headingLabel.font = Paths.font('HKGrotesk-Bold.otf');
+        closeGlyph.text = '×';
+        contentRect(184, 40, 912, 650, DesktopTheme.getColor('files_background'));
+        fileToolbar();
+        contentRect(184, 98, 912, 1, DesktopTheme.getColor('desktop_color1'));
+        fileCell(LanguageManager.getTranslation('files_name', 'Name'), 195, 105, 350);
+        fileCell(LanguageManager.getTranslation('files_date', 'Date'), 550, 105, 220);
+        fileCell(LanguageManager.getTranslation('files_type', 'Type'), 780, 105, 190);
+        fileCell(LanguageManager.getTranslation('files_size', 'Size'), 985, 105, 100);
+        var entries:Array<Dynamic> = visibleFiles();
+        if (entries == null) entries = [];
+        var last = Std.int(Math.max(0, Math.ceil(entries.length / 9) - 1));
+        filePage = Std.int(Math.min(filePage, last));
+        for (i in 0...9)
+        {
+            var index = filePage * 9 + i;
+            if (index >= entries.length) break;
+            var entry = entries[index];
+            var kind = fileKind(entry);
+            var y = 135 + i * 54;
+            var area = contentRect(184, y, 912, 53, DesktopTheme.getColor('files_background'));
+            var hover = DesktopTheme.load(this, new FlxSprite(area.x, area.y), 'enterprise/selection');
+            hover.setGraphicSize(Std.int(area.width), Std.int(area.height)); hover.updateHitbox();
+            hover.flipX = true; hover.alpha = 0.35; hover.visible = false;
+            add(hover); windowParts.push(hover); contentParts.push(hover);
+            var asset = ['folder', 'text', 'image', 'audio'].indexOf(kind) >= 0 ? kind : 'generic';
+            var icon = DesktopTheme.load(this, new FlxSprite(), 'files/' + asset);
+            var scale = 24 * windowScale / Math.max(icon.width, icon.height);
+            icon.scale.set(scale, scale); icon.updateHitbox();
+            icon.setPosition(originX + 205 * windowScale, originY + (y + 13) * windowScale);
+            add(icon); windowParts.push(icon); contentParts.push(icon);
+            var typeName = kind == 'folder' ? 'Folder' : (kind == 'text' ? 'Text document' : (kind == 'image' ? 'Image' : (kind == 'audio' ? 'Audio' : 'File')));
+            var cells = [
+                fileCell(fileName(entry), 250, y + 16, 290),
+                fileCell(entry.date == null ? '—' : Std.string(entry.date), 550, y + 16, 220),
+                fileCell(LanguageManager.getTranslation('files_type_' + kind, typeName), 780, y + 16, 190),
+                fileCell(kind == 'folder' || entry.size == null ? '—' : Std.string(entry.size), 985, y + 16, 100)
+            ];
+            cells[3].alignment = 'right';
+            fileRows.push({entry: entry, area: area, hover: hover, cells: cells});
+        }
+        if (last > 0) contentLabel((filePage + 1) + ' / ' + (last + 1) + ' · Scroll', 210, 640, 800, 16);
+        fileActions = [];
+        for (i in 0...2)
+        {
+            var x = i == 0 ? 900 : 1000;
+            var background = contentRect(x, 690, 90, 30, 0x44FFFFFF);
+            var caption = contentLabel(LanguageManager.getTranslation(i == 0 ? 'files_delete' : 'files_open', i == 0 ? 'Delete' : 'Open'), x, 696, 90, 18);
+            caption.alignment = 'center';
+            caption.color = DesktopTheme.getColor('selected_text');
+            background.visible = false;
+            caption.visible = false;
+            fileActions.push({area: background, label: caption, action: i == 0 ? 'delete' : 'open'});
+        }
+    }
+
+    function filesBack():Void
+    {
+        if (filePreview) { showFiles(); return; }
+        if (folderStack.length > 1) { folderStack.pop(); filePage = 0; showFiles(); }
+    }
+
+    function openFile(entry:Dynamic):Void
+    {
+        var kind = fileKind(entry);
+        if (kind == 'folder') { folderStack.push(entry); filePage = 0; showFiles(); return; }
+        if (entry.name != null && StringTools.endsWith(Std.string(entry.name).toLowerCase(), '.sh'))
+        {
+            showResetVM();
+            return;
+        }
+        var source = entry.source == null ? '' : Std.string(entry.source);
+        var fileText:String = '';
+        try
+        {
+            if (source == '' || source.indexOf('..') >= 0 || source.indexOf(':') >= 0 || StringTools.startsWith(source, '/'))
+                throw 'No valid source';
+            if (!Assets.exists(Paths.file(source))) throw 'Missing source';
+            if (kind == 'text')
+            {
+                fileText = Assets.getText(Paths.file(source));
+                if (fileText == null || StringTools.trim(fileText) == '') throw 'Empty content';
+            }
+            else if (kind != 'image' || !StringTools.startsWith(source, 'images/') || !StringTools.endsWith(source.toLowerCase(), '.png'))
+                throw 'Unsupported file type';
+        }
+        catch (error:Dynamic) { showFileError(entry); return; }
+
+        clearContent(); fileRows = []; filePreview = true; bodyScroll = 0;
+        textFilePreview = kind == 'text';
+        if (textFilePreview)
+        {
+            fileBreadcrumbs = [];
+            fileBack = null;
+            headingLabel.text = fileName(entry);
+            headingLabel.font = Paths.font('GoNotoCurrent.ttf');
+            closeGlyph.text = '←';
+            contentRect(184, 40, 912, 680, 0xFFF7F7F7);
+            bodyTop = 76;
+        }
+        else
+        {
+            fileToolbar();
+            contentLabel(fileName(entry), 204, 105, 870, 23);
+            bodyTop = 155;
+        }
+        try
+        {
+            if (kind == 'text') addBodyText(fileText);
+            else buildMailBody('--"' + source.substr(7, source.length - 11) + '"');
+        }
+        catch (error:Dynamic)
+        {
+            showFiles();
+            showFileError(entry);
+            return;
+        }
+        scrollBody(0);
+    }
+
+    function showResetVM():Void
+    {
+        inputReady = false;
+        var message = LanguageManager.getTranslation('files_reset_vm_message', 'Reset this virtual machine?\n\nTEAM HACKS VIRTUAL MACHINE DDTS\n\nAll modified entities, environments, and data will be reverted to their original state.');
+        openSubState(new EnterprisePopup(LanguageManager.getTranslation('files_reset_vm_title', 'Reset VM'), message,
+            function(confirmed:Bool)
+            {
+                if (!confirmed) return;
+                
+                hiddenFiles = [];
+                Save.instance.modOptions.set('switcherooHiddenFiles', hiddenFiles.copy());
+                Save.instance.flush();
+                JukeboxPlayer.stop();
+                if (FlxG.sound.music != null) FlxG.sound.music.stop();
+                FlxTransitionableState.skipNextTransIn = true;
+                FlxTransitionableState.skipNextTransOut = true;
+                FlxG.switchState(ScriptedMusicBeatState.init('switcheroo.states.MetaTerminal'));
+            }));
+    }
+
+    function showFileError(entry:Dynamic):Void
+    {
+        inputReady = false;
+        var message = LanguageManager.getTranslation('files_open_error', 'Could not open the following file: {name}.\nThe file type is unknown.');
+        message = StringTools.replace(message, '{name}', fileName(entry));
+        var popup = new EnterprisePopup(LanguageManager.getTranslation('popup_error', 'Error'), message);
+        popup.useOkButton();
+        openSubState(popup);
+    }
+
+    function tryDeleteFile(entry:Dynamic):Void
+    {
+        
+        if (entry.deleteable == true)
+        {
+            inputReady = false;
+            var identity = fileIdentity(entry);
+            var name = entry.name == null ? fileName(entry) : Std.string(entry.name);
+            var message = LanguageManager.getTranslation('files_confirm_delete', 'Are you sure you want to delete this file?\n\n{name}');
+            message = StringTools.replace(message, '{name}', name);
+            openSubState(new EnterprisePopup(LanguageManager.getTranslation('files_delete', 'Delete'), message,
+                function(confirmed:Bool)
+                {
+                    if (!confirmed) return;
+                    if (hiddenFiles.indexOf(identity) < 0) hiddenFiles.push(identity);
+                    Save.instance.modOptions.set('switcherooHiddenFiles', hiddenFiles.copy());
+                    Save.instance.flush();
+                    showFiles();
+                    syncScrollbar();
+                }));
+            return;
+        }
+        inputReady = false;
+        var name = entry.name == null ? fileName(entry) : Std.string(entry.name);
+        var message = LanguageManager.getTranslation('files_delete_denied', 'Could not delete the following file: {name}.\nYou do not have the necessary access permissions to perform this action.');
+        message = StringTools.replace(message, '{name}', name);
+        var popup = new EnterprisePopup(LanguageManager.getTranslation('popup_error', 'Error'), message);
+        popup.useOkButton();
+        openSubState(popup);
+    }
+
+    function updateFiles():Void
+    {
+        var backHover = fileBack != null && FlxG.mouse.overlaps(fileBack);
+        if (fileBack != null) fileBack.color = backHover ? DesktopTheme.getColor('desktop_color2') : DesktopTheme.getColor('desktop_color1');
+        if (backHover && FlxG.mouse.justPressed) { filesBack(); return; }
+        for (crumb in fileBreadcrumbs)
+        {
+            var hover = FlxG.mouse.overlaps(crumb.area);
+            crumb.area.color = hover ? DesktopTheme.getColor('selected_text') : (crumb.current ? DesktopTheme.getColor('breadcrumb_current') : DesktopTheme.getColor('files_background'));
+            if (hover && FlxG.mouse.justPressed)
+            {
+                while (folderStack.length > crumb.index + 1) folderStack.pop();
+                filePage = 0;
+                showFiles();
+                return;
+            }
+        }
+        if (filePreview)
+        {
+            if (FlxG.mouse.wheel != 0) scrollBody(-FlxG.mouse.wheel * 40 * windowScale);
+            return;
+        }
+        if (FlxG.mouse.wheel != 0)
+        {
+            var entries:Array<Dynamic> = visibleFiles();
+            var last = entries == null ? 0 : Std.int(Math.max(0, Math.ceil(entries.length / 9) - 1));
+            var next = Std.int(Math.max(0, Math.min(last, filePage + (FlxG.mouse.wheel < 0 ? 1 : -1))));
+            if (next != filePage) { filePage = next; showFiles(); return; }
+        }
+        for (row in fileRows)
+        {
+            var hover = FlxG.mouse.overlaps(row.area);
+            if (hover && FlxG.mouse.justPressed)
+            {
+                if (selectedFile == row.entry) { openFile(row.entry); return; }
+                selectedFile = row.entry;
+            }
+            var selected = selectedFile == row.entry;
+            row.hover.visible = hover || selected;
+            row.hover.alpha = selected ? 1 : 0.35;
+            for (cell in row.cells) cell.color = hover || selected ? DesktopTheme.getColor('selected_text') : DesktopTheme.getColor('desktop_color1');
+        }
+        var showActions = selectedFile != null && fileKind(selectedFile) != 'folder';
+        for (button in fileActions)
+        {
+            var hover = showActions && FlxG.mouse.overlaps(button.area);
+            button.label.visible = showActions;
+            button.area.visible = showActions && hover;
+            if (hover && FlxG.mouse.justPressed)
+            {
+                if (button.action == 'open') openFile(selectedFile);
+                else if (button.action == 'delete') tryDeleteFile(selectedFile);
+                return;
+            }
+        }
+    }
+
+    function loadSettings():Void
+    {
+        var window = Application.current.window;
+        pendingFullscreen = FlxG.fullscreen;
+        pendingResizable = window.resizable;
+        resolutions = [{width: 960, height: 540}, {width: 1280, height: 720}, {width: 1600, height: 900}, {width: 1920, height: 1080}];
+        var saved = Save.instance.modOptions.get('switcherooDesktopSettings');
+        var width = pendingFullscreen && saved != null ? saved.width : window.width;
+        var height = pendingFullscreen && saved != null ? saved.height : window.height;
+        resolutionIndex = -1;
+        for (i in 0...resolutions.length)
+            if (resolutions[i].width == width && resolutions[i].height == height) resolutionIndex = i;
+        if (resolutionIndex < 0)
+        {
+            if (width != null && height != null && width > 0 && height > 0)
+            {
+                resolutions.push({width: width, height: height});
+                resolutionIndex = resolutions.length - 1;
+            }
+            else resolutionIndex = 1;
+        }
+        vsyncAvailable = EnterpriseSettings.hasVSync();
+        pendingVsync = EnterpriseSettings.getVSync();
+        var locale = Save.instance.modOptions.get('switcherooLanguage');
+        pendingLocale = locale == 'es-MX' || locale == 'es-US' ? 'es-MX' : 'en-US';
+    }
+
+    function settingsButton(action:String, caption:String, x:Float, y:Float, width:Float, enabled:Bool = true, dimDisabled:Bool = true):Void
+    {
+        var area = contentRect(x, y, width, 36, DesktopTheme.getColor('selected_text'));
+        var text = contentLabel(caption, x, y + 7, width, 20);
+        text.alignment = 'center';
+        if (!enabled && dimDisabled) { area.alpha = 0.4; text.alpha = 0.4; }
+        settingsButtons.push({action: action, area: area, text: text, enabled: enabled});
+    }
+
+    function showSettings():Void
+    {
+        clearContent();
+        settingsButtons = [];
+        contentRect(230, 82, 820, 1, DesktopTheme.getColor('separator'));
+        contentLabel(LanguageManager.getTranslation('settings_game_options', 'Game Options'), 236, 102, 500, 17);
+        volumeText = contentLabel('', 270, 144, 650, 24);
+        volumeArea = contentRect(270, 182, 360, 26, 0x00FFFFFF);
+        contentRect(270, 194, 360, 2, DesktopTheme.getColor('desktop_color1'));
+        volumeFill = contentRect(270, 194, 360, 2, DesktopTheme.getColor('desktop_color2'));
+        volumeKnob = contentRect(270, 186, 16, 18, DesktopTheme.getColor('desktop_color2'));
+        updateVolumeVisual();
+        contentLabel(LanguageManager.getTranslation('settings_display', 'Display'), 270, 237, 400, 24);
+        settingsButton('fullscreen', pendingFullscreen ? LanguageManager.getTranslation('settings_fullscreen', 'Fullscreen') : LanguageManager.getTranslation('settings_windowed', 'Windowed'), 310, 276, 320);
+        settingsButton('vsync', vsyncAvailable ? ('VSync: ' + (pendingVsync ? LanguageManager.getTranslation('settings_on', 'On') : LanguageManager.getTranslation('settings_off', 'Off'))) : LanguageManager.getTranslation('settings_vsync_unavailable', 'VSync: unavailable'), 310, 322, 320, vsyncAvailable);
+        var resolution = resolutions[resolutionIndex];
+        settingsButton('size-prev', '‹', 270, 368, 40, !pendingFullscreen);
+        settingsButton('size-label', resolution.width + ' × ' + resolution.height, 316, 368, 308, false);
+        settingsButton('size-next', '›', 630, 368, 40, !pendingFullscreen);
+        settingsButton('resizable', LanguageManager.getTranslation('settings_resizable', 'Resizable: ') + (pendingResizable ? LanguageManager.getTranslation('settings_yes', 'Yes') : LanguageManager.getTranslation('settings_no', 'No')), 310, 414, 320);
+        contentLabel(LanguageManager.getTranslation('settings_ui_colors', 'UI Colors'), 270, 460, 400, 21);
+        var theme = DesktopTheme.currentTheme();
+        var themeName = theme.name == null ? theme.id : theme.name;
+        if (theme.translationKey != null) themeName = LanguageManager.getTranslation(theme.translationKey, themeName);
+        var multipleThemes = DesktopTheme.listThemes().length > 1;
+        settingsButton('theme-prev', '‹', 270, 491, 40, multipleThemes);
+        settingsButton('theme-label', themeName, 316, 491, 308, false, false);
+        settingsButton('theme-next', '›', 630, 491, 40, multipleThemes);
+        contentLabel(LanguageManager.getTranslation('settings_language', 'Language'), 270, 538, 400, 24);
+        settingsButton('language', pendingLocale == 'es-MX' ? '‹   Español (México)   ›' : '‹   English   ›', 310, 570, 320);
+        settingsButton('apply', LanguageManager.getTranslation('settings_apply', 'Apply'), 700, 570, 160);
+        settingsMessage = contentLabel(LanguageManager.getTranslation('settings_immediate_notice', 'Settings apply immediately. Apply saves only the language.'), 235, 615, 815, 17);
+    }
+
+    function updateVolumeVisual():Void
+    {
+        var volume = FlxG.sound.muted ? 0.0 : FlxG.sound.volume;
+        volumeText.text = LanguageManager.getTranslation('settings_master_volume', 'Master volume: ') + Std.int(Math.round(volume * 100)) + '%';
+        volumeFill.origin.x = 0;
+        volumeFill.scale.x = Math.max(0.001, volume);
+        volumeKnob.x = volumeArea.x + volume * volumeArea.width - volumeKnob.width / 2;
+    }
+
+    function saveVolume():Void
+    {
+        var saved = Save.instance.modOptions.get('switcherooDesktopSettings');
+        if (saved == null) saved = {};
+        saved.volume = FlxG.sound.volume;
+        saved.muted = FlxG.sound.muted;
+        Save.instance.modOptions.set('switcherooDesktopSettings', saved);
+        Save.instance.flush();
+    }
+
+    function applyLanguage():Void
+    {
+        Save.instance.modOptions.set('switcherooLanguage', pendingLocale);
+        Save.instance.flush();
+        headingLabel.text = LanguageManager.getTranslation('desktop_settings', 'Settings');
+        if (languageChanged != null) languageChanged();
+        showSettings();
+        settingsMessage.text = LanguageManager.getTranslation('settings_language_saved', 'Language saved. Translated menus will use it when opened.');
+    }
+
+    function applyDisplaySetting(action:String):Void
+    {
+        var saved = Save.instance.modOptions.get('switcherooDesktopSettings');
+        if (saved == null) saved = {};
+        try
+        {
+            var window = Application.current.window;
+            if (action == 'resizable') window.resizable = pendingResizable;
+            if (action == 'fullscreen') FlxG.fullscreen = pendingFullscreen;
+            var size = resolutions[resolutionIndex];
+            if (!FlxG.fullscreen && (action == 'size-prev' || action == 'size-next' || action == 'fullscreen'))
+                window.resize(size.width, size.height);
+            saved.fullscreen = FlxG.fullscreen;
+            saved.resizable = window.resizable;
+            saved.width = pendingFullscreen ? size.width : window.width;
+            saved.height = pendingFullscreen ? size.height : window.height;
+            var vsyncFailed = false;
+            if (vsyncAvailable && vsyncChanged)
+            {
+                if (EnterpriseSettings.setVSync(pendingVsync)) { saved.vsync = pendingVsync; vsyncChanged = false; }
+                else { vsyncFailed = true; vsyncAvailable = false; }
+            }
+            saved.volume = FlxG.sound.volume;
+            saved.muted = FlxG.sound.muted;
+            Save.instance.modOptions.set('switcherooDesktopSettings', saved);
+            Save.instance.flush();
+            pendingFullscreen = FlxG.fullscreen;
+            pendingResizable = window.resizable;
+            showSettings();
+            settingsMessage.text = vsyncFailed ? LanguageManager.getTranslation('settings_vsync_failed', 'This build could not apply VSync.') : LanguageManager.getTranslation('settings_applied', 'Setting applied and saved.');
+        }
+        catch (error:Dynamic)
+        {
+            settingsMessage.text = 'No se pudieron aplicar todos los cambios de pantalla.';
+            trace('[EnterpriseSettings] Apply: ' + error);
+        }
+    }
+
+    function updateSettings():Void
+    {
+        if (FlxG.mouse.justPressed && (FlxG.mouse.overlaps(volumeArea) || FlxG.mouse.overlaps(volumeKnob))) draggingVolume = true;
+        if (draggingVolume)
+        {
+            if (FlxG.mouse.pressed)
+            {
+                var point = FlxG.mouse.getWorldPosition();
+                FlxG.sound.volume = Math.max(0, Math.min(1, (point.x - volumeArea.x) / volumeArea.width));
+                FlxG.sound.muted = false;
+                point.put();
+            }
+            else { draggingVolume = false; saveVolume(); }
+        }
+        updateVolumeVisual();
+        for (button in settingsButtons)
+        {
+            if (!button.enabled) continue;
+            var hover = FlxG.mouse.overlaps(button.area);
+            button.area.color = hover ? DesktopTheme.getColor('settings_hover') : DesktopTheme.getColor('selected_text');
+            if (!hover || !FlxG.mouse.justPressed) continue;
+            switch (button.action)
+            {
+                case 'fullscreen': pendingFullscreen = !pendingFullscreen;
+                case 'vsync': pendingVsync = !pendingVsync; vsyncChanged = true;
+                case 'resizable': pendingResizable = !pendingResizable;
+                case 'size-prev': resolutionIndex = (resolutionIndex + resolutions.length - 1) % resolutions.length;
+                case 'size-next': resolutionIndex = (resolutionIndex + 1) % resolutions.length;
+                case 'language': pendingLocale = pendingLocale == 'es-MX' ? 'en-US' : 'es-MX';
+                case 'theme-prev': DesktopTheme.cycleTheme(-1); showSettings(); return;
+                case 'theme-next': DesktopTheme.cycleTheme(1); showSettings(); return;
+                case 'apply': applyLanguage(); return;
+            }
+            if (button.action == 'language') showSettings();
+            else applyDisplaySetting(button.action);
+            return;
+        }
+    }
+
+    function loadJukebox():Void { JukeboxPlayer.initialize(); player = JukeboxPlayer.getState(); }
+
+    function songList():Array<Int> { return JukeboxPlayer.list(player.playlistOnly); }
+    function musicIcon(asset:String, x:Float, y:Float, size:Float):FlxSprite
+    {
+        var icon = DesktopTheme.load(this, new FlxSprite(), 'jukebox/' + asset);
+        var factor = size * windowScale / Math.max(icon.width, icon.height);
+        icon.scale.set(factor, factor);
+        icon.updateHitbox();
+        icon.setPosition(originX + x * windowScale, originY + y * windowScale);
+        DesktopTheme.tint(this, icon, DesktopTheme.getColor('desktop_color2'));
+        icon.antialiasing = true;
+        add(icon); windowParts.push(icon); contentParts.push(icon);
+        return icon;
+    }
+
+    function musicButton(action:String, caption:String, x:Float, y:Float, width:Float, iconAsset:String = '', flip:Bool = false):Void
+    {
+        var area = contentRect(x, y, width, 34, DesktopTheme.getColor('selected_text'));
+        var text = contentLabel(caption, x, y + 7, width, 18);
+        text.alignment = 'center';
+        text.wordWrap = false;
+        while (text.textField.textWidth > text.width - 6 && text.size > Std.int(11 * windowScale))
+            text.size -= 1;
+        var icon:FlxSprite = null;
+        if (iconAsset != '')
+        {
+            icon = musicIcon(iconAsset, x, y, 18);
+            icon.setPosition(area.x + (area.width - icon.width) / 2, area.y + (area.height - icon.height) / 2);
+            icon.flipX = flip;
+        }
+        var button = {action: action, area: area, text: text, icon: icon, texture: '', width: width, height: 34};
+        musicButtons.push(button);
+        refreshMusicButton(button, false);
+        if (action == 'play') playbackLabel = text;
+    }
+
+    function refreshMusicButton(button:Dynamic, hover:Bool):Void
+    {
+        var active = button.action == 'repeat' && player.repeatSong;
+        var texture = hover ? 'button_selected' : (active ? 'button_active' : 'button');
+        if (button.texture != texture)
+        {
+            DesktopTheme.load(this, button.area, 'jukebox/' + texture);
+            button.area.setGraphicSize(Std.int(button.width * windowScale), Std.int(button.height * windowScale));
+            button.area.updateHitbox();
+            button.area.antialiasing = true;
+            button.texture = texture;
+        }
+        var white = active || hover;
+        if (button.icon != null)
+            DesktopTheme.tint(this, button.icon, DesktopTheme.getColor(white ? 'selected_text' : 'desktop_color2'));
+        if (button.text != null)
+        {
+            button.text.color = white ? DesktopTheme.getColor('selected_text') : DesktopTheme.getColor('desktop_color1');
+            button.text.borderColor = button.text.color;
+        }
+    }
+
+    function showJukebox():Void
+    {
+        playerRevision = player.revision;
+        clearContent();
+        musicButtons = []; musicRows = []; musicParts = [];
+        contentRect(490, 40, 1, 615, DesktopTheme.getColor('desktop_color2'));
+        musicButton('all', LanguageManager.getTranslation('jukebox_all', 'All Songs'), 202, 58, 130);
+        musicButton('playlist', LanguageManager.getTranslation('jukebox_playlist', 'Playlist'), 340, 58, 130);
+        var tab = DesktopTheme.load(this, new FlxSprite(), 'jukebox/music - active selected tab');
+        tab.setGraphicSize(Std.int(130 * windowScale), Std.int(3 * windowScale)); tab.updateHitbox();
+        tab.setPosition(originX + (player.playlistOnly ? 340 : 202) * windowScale, originY + 94 * windowScale);
+        add(tab); windowParts.push(tab); contentParts.push(tab);
+        contentRect(202, 118, 270, 1, DesktopTheme.getColor('desktop_color2'));
+        contentRect(208, 142, 260, 260, DesktopTheme.getColor('album_placeholder'));
+        if (player.songIndex >= 0 && player.songs[player.songIndex].cover != null)
+        {
+            try
+            {
+                var cover = new FlxSprite().loadGraphic(Paths.image(Std.string(player.songs[player.songIndex].cover)));
+                var factor = 260 * windowScale / Math.max(cover.width, cover.height);
+                cover.scale.set(factor, factor); cover.updateHitbox();
+                cover.setPosition(originX + 208 * windowScale + (260 * windowScale - cover.width) / 2, originY + 142 * windowScale + (260 * windowScale - cover.height) / 2);
+                add(cover); windowParts.push(cover); contentParts.push(cover);
+            }
+            catch (error:Dynamic) { trace('[Jukebox] Cover: ' + error); }
+        }
+        else contentLabel('♪', 208, 222, 260, 70).alignment = 'center';
+        statusLabel = contentLabel(player.songIndex < 0 ? LanguageManager.getTranslation('jukebox_select_song', 'Select a song') : Std.string(player.songs[player.songIndex].title), 202, 428, 270, 19);
+        statusLabel.alignment = 'center';
+        statusLabel.wordWrap = false;
+        statusLabel.clipRect = new FlxRect(0, 0, statusLabel.width, 24 * windowScale);
+        contentLabel(player.songIndex < 0 || player.songs[player.songIndex].artist == null ? '' : Std.string(player.songs[player.songIndex].artist), 202, 451, 270, 17).alignment = 'center';
+        seekBar = contentRect(222, 485, 230, 10, DesktopTheme.getColor('desktop_color1'));
+        progress = contentRect(222, 485, 230, 10, DesktopTheme.getColor('desktop_color2'));
+        progress.origin.x = 0;
+        progress.scale.x = player.tracks.length > 0 && player.tracks[0].length > 0
+            ? Math.max(0.001, Math.min(1, player.tracks[0].time / player.tracks[0].length)) : 0.001;
+        timeLabel = contentLabel(player.tracks.length > 0 ? formatTime(player.tracks[0].time) : '0:00', 222, 506, 110, 16);
+        timeLabel.alignment = 'left';
+        durationLabel = contentLabel(player.tracks.length > 0 ? formatTime(player.tracks[0].length) : '0:00', 342, 506, 110, 16);
+        durationLabel.alignment = 'right';
+        musicButton('prev', '', 222, 542, 46, 'change song', true);
+        musicButton('next', '', 283, 542, 46, 'change song');
+        musicButton('play', '', 344, 542, 46, player.playing ? 'Stop' : 'Play');
+        musicButton('repeat', '', 405, 542, 48, 'restartsong');
+        var list = songList();
+        for (row in 0...list.length)
+        {
+            var partStart = contentParts.length;
+            var pos = row;
+            var index = list[pos];
+            var area = contentRect(510, 42 + row * 48, 566, 47, 0x00000000);
+            var hoverSelection = DesktopTheme.load(this, new FlxSprite(area.x, area.y), 'enterprise/selection');
+            hoverSelection.setGraphicSize(Std.int(area.width), Std.int(area.height));
+            hoverSelection.updateHitbox();
+            hoverSelection.flipX = true;
+            hoverSelection.alpha = 0.45;
+            hoverSelection.visible = false;
+            add(hoverSelection);
+            windowParts.push(hoverSelection);
+            contentParts.push(hoverSelection);
+            var current = index == player.songIndex && player.playing;
+            var number = contentLabel(Std.string(pos + 1), 522, 55 + row * 48, 36, 19);
+            number.alignment = 'center';
+            number.color = DesktopTheme.getColor('desktop_color1');
+            number.borderColor = number.color;
+            number.visible = !current;
+            var rowIcon = musicIcon(current ? 'song icon' : 'Play', 531, 56 + row * 48, 18);
+            rowIcon.visible = current;
+            var title = contentLabel(Std.string(player.songs[index].title), 574, 55 + row * 48, 450, 19);
+            title.color = index == player.songIndex && player.playing ? DesktopTheme.getColor('desktop_color2') : DesktopTheme.getColor('desktop_color1');
+            title.borderColor = title.color;
+            title.wordWrap = false;
+            title.clipRect = new FlxRect(0, 0, title.width, 26 * windowScale);
+            contentRect(510, 88 + row * 48, 566, 2, DesktopTheme.getColor('separator'));
+            var toggle = contentRect(1040, 51 + row * 48, 28, 28, DesktopTheme.getColor('selected_text'));
+            var toggleIcon = musicIcon(player.playlist.indexOf(Std.string(player.songs[index].id)) >= 0 ? 'remove button icon' : 'add icon', 1045, 56 + row * 48, 18);
+            var toggleStyle = {action: 'toggle', area: toggle, text: null, icon: toggleIcon, texture: '', width: 28, height: 28};
+            refreshMusicButton(toggleStyle, false);
+            musicRows.push({index: index, area: area, toggle: toggle, selection: hoverSelection, button: toggleStyle, number: number, icon: rowIcon, iconAsset: current ? 'song icon' : 'Play', title: title});
+            for (i in partStart...contentParts.length)
+            {
+                var part = contentParts[i];
+                musicParts.push({sprite: part, offset: part.y - (originY + 42 * windowScale)});
+            }
+        }
+        if (list.length == 0) contentLabel(LanguageManager.getTranslation('jukebox_empty_list', 'There are no songs in this list.'), 530, 130, 520, 20);
+        scrollMusic(0);
+    }
+
+    function scrollMusic(delta:Float):Void
+    {
+        var top = originY + 42 * windowScale;
+        var height = 608 * windowScale;
+        musicScroll = Math.max(0, Math.min(Math.max(0, musicRows.length * 48 * windowScale - height), musicScroll + delta));
+        for (entry in musicParts)
+        {
+            var part = entry.sprite;
+            var y = entry.offset - musicScroll;
+            part.y = top + y;
+            var start = Math.max(0, -y);
+            var end = Math.min(part.height, height - y);
+            part.visible = end > start;
+            part.clipRect = new FlxRect(0, Math.min(part.height, start) / part.scale.y, part.width / part.scale.x, Math.max(0, end - start) / part.scale.y);
+        }
+        
+        for (row in musicRows)
+        {
+            var current = row.index == player.songIndex && player.playing;
+            row.selection.visible = false;
+            row.number.visible = row.area.visible && !current;
+            row.icon.visible = row.area.visible && current;
+        }
+    }
+
+    function playSong(index:Int):Void
+    {
+        JukeboxPlayer.play(index, player.playlistOnly);
+        showJukebox();
+        if (player.lastError != '') statusLabel.text = player.lastError;
+    }
+
+    function stepSong(direction:Int):Void
+    {
+        JukeboxPlayer.step(direction, player.playlistOnly);
+        showJukebox();
+    }
+    function formatTime(milliseconds:Float):String
+    {
+        var seconds = Std.int(Math.max(0, milliseconds) / 1000);
+        return Std.int(seconds / 60) + ':' + (seconds % 60 < 10 ? '0' : '') + (seconds % 60);
+    }
+
+    function updateMusicIcon(icon:FlxSprite, asset:String):Void
+    {
+        if (icon == null) return;
+        var centerX = icon.x + icon.width / 2;
+        var centerY = icon.y + icon.height / 2;
+        var clip = icon.clipRect;
+        DesktopTheme.load(this, icon, 'jukebox/' + asset);
+        var factor = 18 * windowScale / Math.max(icon.frameWidth, icon.frameHeight);
+        icon.scale.set(factor, factor);
+        icon.updateHitbox();
+        icon.setPosition(centerX - icon.width / 2, centerY - icon.height / 2);
+        icon.clipRect = clip;
+    }
+
+    function updateJukebox(elapsed:Float):Void
+    {
+        if (playerRevision != player.revision) showJukebox();
+        if (player.tracks.length > 0)
+        {
+            var master = player.tracks[0];
+            timeLabel.text = formatTime(master.time);
+            durationLabel.text = formatTime(master.length);
+            progress.scale.x = master.length > 0 ? Math.max(0.001, Math.min(1, master.time / master.length)) : 0.001;
+            progress.origin.x = 0;
+            if (FlxG.mouse.justPressed && FlxG.mouse.overlaps(seekBar))
+            {
+                var point = FlxG.mouse.getWorldPosition();
+                var time = Math.max(0, Math.min(0.999, (point.x - seekBar.x) / seekBar.width)) * master.length;
+                point.put();
+                for (track in player.tracks)
+                {
+                    if (player.playing && time < track.length) track.play(true, time);
+                    else track.time = Math.min(time, track.length);
+                }
+            }
+        }
+        else { progress.scale.x = 0.001; progress.origin.x = 0; }
+        var pointer = FlxG.mouse.getWorldPosition();
+        var overList = pointer.x >= originX + 510 * windowScale && pointer.x < originX + 1076 * windowScale
+            && pointer.y >= originY + 42 * windowScale && pointer.y < originY + 650 * windowScale;
+        pointer.put();
+        if (overList && FlxG.mouse.wheel != 0) scrollMusic(-FlxG.mouse.wheel * 40 * windowScale);
+        for (button in musicButtons)
+        {
+            var hover = FlxG.mouse.overlaps(button.area);
+            refreshMusicButton(button, hover);
+            if (!hover || !FlxG.mouse.justPressed) continue;
+            switch (button.action)
+            {
+                case 'all': player.playlistOnly = false; musicScroll = 0;
+                case 'playlist': player.playlistOnly = true; musicScroll = 0;
+                case 'prev': stepSong(-1); return;
+                case 'next': stepSong(1); return;
+                case 'repeat':
+                    player.repeatSong = !player.repeatSong;
+                    refreshMusicButton(button, hover);
+                    return;
+                case 'play':
+                    if (player.tracks.length == 0) { if (player.songIndex >= 0) playSong(player.songIndex); else stepSong(1); return; }
+                    if (player.playing) for (track in player.tracks) track.pause();
+                    else for (track in player.tracks) track.resume();
+                    player.playing = !player.playing;
+                    updateMusicIcon(button.icon, player.playing ? 'Stop' : 'Play');
+                    refreshMusicButton(button, hover);
+                    
+            }
+            if (button.action == 'play') break;
+            showJukebox(); return;
+        }
+        for (row in musicRows)
+        {
+            var hover = overList && row.area.visible && FlxG.mouse.overlaps(row.area);
+            var current = row.index == player.songIndex && player.playing;
+            row.selection.visible = hover;
+            row.number.visible = row.area.visible && !hover && !current;
+            row.icon.visible = row.area.visible && (hover || current);
+            var rowIconAsset = current ? 'song icon' : 'Play';
+            if (row.iconAsset != rowIconAsset)
+            {
+                updateMusicIcon(row.icon, rowIconAsset);
+                row.iconAsset = rowIconAsset;
+            }
+            DesktopTheme.tint(this, row.icon, DesktopTheme.getColor(hover ? 'selected_text' : 'desktop_color2'));
+            row.title.color = hover ? DesktopTheme.getColor('selected_text') : (current ? DesktopTheme.getColor('desktop_color2') : DesktopTheme.getColor('desktop_color1'));
+            row.title.borderColor = row.title.color;
+            refreshMusicButton(row.button, overList && row.toggle.visible && FlxG.mouse.overlaps(row.toggle));
+            if (!overList || !row.area.visible || !FlxG.mouse.justPressed) continue;
+            if (row.toggle.visible && FlxG.mouse.overlaps(row.toggle))
+            {
+                var id = Std.string(player.songs[row.index].id);
+                if (player.playlist.indexOf(id) < 0) player.playlist.push(id); else player.playlist.remove(id);
+                Save.instance.modOptions.set('switcherooJukeboxPlaylist', player.playlist.copy()); Save.instance.flush();
+                showJukebox(); return;
+            }
+            if (FlxG.mouse.overlaps(row.area)) { playSong(row.index); return; }
+        }
+    }
+
+    function loadMails():Void
+    {
+        try
+        {
+            var path = Paths.file('data/mails/inbox.json');
+            if (!Assets.exists(path)) return;
+            var entries:Array<Dynamic> = Json.parse(Assets.getText(path));
+            for (entry in entries)
+            {
+                if (entry != null && entry.author != null && entry.subject != null
+                    && entry.date != null && entry.file != null) mails.push(entry);
+            }
+        }
+        catch (error:Dynamic) { trace('[EnterpriseWindow] Cannot load inbox: ' + error); }
+    }
+
+    function clearContent():Void
+    {
+        for (part in contentParts)
+        {
+            FlxTween.cancelTweensOf(part);
+            windowParts.remove(part);
+            remove(part, true);
+            part.destroy();
+        }
+        contentParts = [];
+        mailRows = [];
+        mailRowTexts = [];
+        mailSelection = null;
+        bodyParts = [];
+        bodyOffsets = [];
+        bodyHeight = 0;
+    }
+
+    function contentLabel(value:String, x:Float, y:Float, width:Float, size:Int):FlxText
+    {
+        var result = label(value, x, y, width, size);
+        contentParts.push(result);
+        return result;
+    }
+
+    function contentRect(x:Float, y:Float, width:Float, height:Float, color:Int):FlxSprite
+    {
+        var result = new FlxSprite(originX + x * windowScale, originY + y * windowScale);
+        
+        var pixelWidth = Std.int(Math.max(1, width * windowScale));
+        var pixelHeight = Std.int(Math.max(1, height * windowScale));
+        DesktopTheme.solid(result, pixelWidth, pixelHeight, color);
+        add(result);
+        windowParts.push(result);
+        contentParts.push(result);
+        return result;
+    }
+
+    function showInbox():Void
+    {
+        setWindowBackground('enterprise/background');
+        clearContent();
+        activeMail = -1;
+        closeGlyph.text = '×';
+        inboxButton = contentLabel(LanguageManager.getTranslation('mail_inbox', 'Inbox'), 204, 50, 600, 22);
+        var pageCount = Std.int(Math.ceil(mails.length / 9));
+        if (pageCount < 1) pageCount = 1;
+        pageLabel = contentLabel(pageCount > 1 ? (mailPage + 1) + ' / ' + pageCount + '  ·  Scroll' : '', 800, 660, 275, 18);
+        pageLabel.alignment = 'right';
+        if (mails.length == 0)
+        {
+            var empty = contentLabel('No new mail.', 208, 330, 860, 23);
+            empty.alignment = 'center';
+            return;
+        }
+        var count = Std.int(Math.min(9, mails.length - mailPage * 9));
+        for (i in 0...count)
+            mailRows.push(contentRect(184, 112 + i * 57, 912, 56, DesktopTheme.getColor('selected_text')));
+
+        mailSelection = DesktopTheme.load(this, new FlxSprite(originX + 184 * windowScale, originY + 112 * windowScale), 'enterprise/selection');
+        mailSelection.setGraphicSize(Std.int(912 * windowScale), Std.int(56 * windowScale));
+        mailSelection.updateHitbox();
+        mailSelection.flipX = true;
+        mailSelection.alpha = 0.45;
+        mailSelection.visible = false;
+        add(mailSelection);
+        windowParts.push(mailSelection);
+        contentParts.push(mailSelection);
+        for (i in 0...count)
+        {
+            var entry = mails[mailPage * 9 + i];
+            var y = 128 + i * 57;
+            var author = contentLabel(Std.string(entry.author), 230, y, 190, 20);
+            var subject = contentLabel(Std.string(entry.subject), 430, y, 470, 20);
+            var date = contentLabel(Std.string(entry.date), 910, y, 170, 20);
+            date.alignment = 'right';
+            for (text in [author, subject, date])
+            {
+                text.color = DesktopTheme.getColor('body_text');
+                text.borderColor = text.color;
+                text.wordWrap = false;
+                text.clipRect = new FlxRect(0, 0, text.width, 30 * windowScale);
+            }
+            mailRowTexts.push([author, subject, date]);
+        }
+    }
+
+    function openMail(index:Int):Void
+    {
+        setWindowBackground('mail/bg');
+        clearContent();
+        activeMail = index;
+        bodyScroll = 0;
+        var entry = mails[index];
+        closeGlyph.text = '←';
+        var body = 'No se pudo cargar este correo.';
+        try
+        {
+            var file = Std.string(entry.file);
+            if (!StringTools.endsWith(file, '.txt')) file += '.txt';
+            var path = Paths.file('data/' + file);
+            if (Assets.exists(path)) body = Assets.getText(path);
+        }
+        catch (error:Dynamic) { trace('[EnterpriseWindow] Cannot load mail: ' + error); }
+        
+        body = StringTools.replace(body, '\r\n', '\n');
+        if (StringTools.startsWith(body, '\uFEFF')) body = body.substr(1);
+        var date = Std.string(entry.date);
+        var lineEnd = body.indexOf('\n');
+        var firstLine = lineEnd < 0 ? body : body.substr(0, lineEnd);
+        if (StringTools.startsWith(firstLine, '#'))
+        {
+            var detailedDate = StringTools.trim(firstLine.substr(1));
+            if (detailedDate != '') date = detailedDate;
+            body = lineEnd < 0 ? '' : body.substr(lineEnd + 1);
+            if (StringTools.startsWith(body, '\n')) body = body.substr(1);
+        }
+        var sender = Std.string(entry.author);
+        if (entry.email != null && Std.string(entry.email) != '')
+            sender += ' <' + Std.string(entry.email) + '>';
+        var recipient = entry.to == null ? '' : Std.string(entry.to);
+        var headers:Array<String> = [
+            LanguageManager.getTranslation('mail_from', 'From:') + ' ' + sender,
+            LanguageManager.getTranslation('mail_to', 'To:') + ' ' + recipient,
+            LanguageManager.getTranslation('mail_date', 'Date:') + ' ' + date,
+            LanguageManager.getTranslation('mail_subject', 'Subject:') + ' ' + Std.string(entry.subject)
+        ];
+        var headerY:Float = 50;
+        for (value in headers)
+        {
+            var header = contentLabel(value, 204, headerY, 870, 18);
+            headerY += Math.max(28, header.height / windowScale + 4);
+        }
+        bodyTop = headerY + 16;
+        buildMailBody(body);
+        scrollBody(0);
+    }
+
+    function addBodyText(value:String):Void
+    {
+        if (value == '') return;
+        var part = contentLabel(value, 204, bodyTop + bodyHeight / windowScale, 870, 18);
+        if (textFilePreview)
+        {
+            part.x = originX + 226 * windowScale;
+            part.fieldWidth = 828 * windowScale;
+            part.setFormat(Paths.font('EnterpriseMono.ttf'), Std.int(18 * windowScale), DesktopTheme.getColor('file_text'), 'left');
+            part.wordWrap = true;
+        }
+        part.color = textFilePreview ? DesktopTheme.getColor('file_text') : DesktopTheme.getColor('body_text');
+        part.borderColor = part.color;
+        bodyParts.push(part);
+        bodyOffsets.push(bodyHeight);
+        bodyHeight += part.height + 8 * windowScale;
+    }
+
+    function buildMailBody(body:String):Void
+    {
+        var lines:Array<String> = [];
+        for (line in body.split('\n'))
+        {
+            var marker = StringTools.trim(line);
+            if (StringTools.startsWith(marker, '--"') && StringTools.endsWith(marker, '"') && marker.length > 4)
+            {
+                addBodyText(lines.join('\n'));
+                lines = [];
+                var key = marker.substr(3, marker.length - 4);
+                if (StringTools.endsWith(key.toLowerCase(), '.png')) key = key.substr(0, key.length - 4);
+                var attached:FlxSprite = null;
+                try
+                {
+                    var path = Paths.image(key);
+                    if (!Assets.exists(path)) throw 'Missing image: ' + key;
+                    attached = new FlxSprite().loadGraphic(path);
+                    
+                    var factor = Math.min(windowScale, 870 * windowScale / attached.width);
+                    attached.scale.set(factor, factor);
+                    attached.updateHitbox();
+                    attached.x = originX + 204 * windowScale;
+                    attached.antialiasing = true;
+                    add(attached);
+                    windowParts.push(attached);
+                    contentParts.push(attached);
+                    bodyParts.push(attached);
+                    bodyOffsets.push(bodyHeight);
+                    bodyHeight += attached.height + 12 * windowScale;
+                }
+                catch (error:Dynamic)
+                {
+                    if (attached != null) attached.destroy();
+                    trace('[EnterpriseWindow] Attachment: ' + error);
+                    addBodyText('[Imagen no disponible: ' + key + ']');
+                }
+            }
+            else lines.push(line);
+        }
+        addBodyText(lines.join('\n'));
+    }
+
+    function scrollBody(delta:Float):Void
+    {
+        var viewportHeight = Math.max(40, (textFilePreview || mode == 'pictures' ? 700 : 640) - bodyTop) * windowScale;
+        bodyScroll = Math.max(0, Math.min(Math.max(0, bodyHeight - viewportHeight), bodyScroll + delta));
+        var top = originY + (bodyTop + textOffsetY) * windowScale;
+        for (i in 0...bodyParts.length)
+        {
+            var part = bodyParts[i];
+            var relativeY = bodyOffsets[i] - bodyScroll;
+            part.y = top + relativeY;
+            var start = Math.max(0, -relativeY);
+            var end = Math.min(part.height, viewportHeight - relativeY);
+            part.visible = end > start;
+            if (part.visible)
+                part.clipRect = new FlxRect(0, start / part.scale.y, part.width / part.scale.x, (end - start) / part.scale.y);
+        }
+    }
+
+    function updateMail():Void
+    {
+        if (activeMail >= 0)
+        {
+            if (FlxG.mouse.wheel != 0) scrollBody(-FlxG.mouse.wheel * 40 * windowScale);
+            return;
+        }
+        if (FlxG.mouse.wheel != 0 && mails.length > 9)
+        {
+            var lastPage = Std.int((mails.length - 1) / 9);
+            var next = Std.int(Math.max(0, Math.min(lastPage, mailPage + (FlxG.mouse.wheel < 0 ? 1 : -1))));
+            if (next != mailPage) { mailPage = next; showInbox(); }
+        }
+        if (mailSelection == null) return;
+        mailSelection.visible = false;
+        for (i in 0...mailRows.length)
+        {
+            var hovered = FlxG.mouse.overlaps(mailRows[i]);
+            for (text in mailRowTexts[i])
+            {
+                text.color = hovered ? DesktopTheme.getColor('selected_text') : DesktopTheme.getColor('body_text');
+                text.borderColor = text.color;
+            }
+            if (hovered)
+            {
+                mailSelection.visible = true;
+                mailSelection.y = mailRows[i].y;
+                if (FlxG.mouse.justPressed) { openMail(mailPage * 9 + i); return; }
+            }
+        }
+    }
+
+    override public function close():Void
+    {
+        if (closing) return;
+        if (mode == 'settings' && draggingVolume) { saveVolume(); draggingVolume = false; }
+        closing = true;
+        FlxG.sound.play(Paths.sound('exitOS'));
+
+        for (part in windowParts)
+        {
+            FlxTween.cancelTweensOf(part);
+            FlxTween.tween(part, {alpha: 0, y: part.y + 12 * windowScale}, transitionTime, {ease: FlxEase.quadIn});
+        }
+        FlxTween.cancelTweensOf(backdrop);
+        FlxTween.tween(backdrop, {alpha: 0}, transitionTime, {
+            onComplete: function(tween:FlxTween) { finishClose(); }
+        });
+    }
+
+    function finishClose():Void
+    {
+        super.close();
+    }
+
+    override function destroy():Void
+    {
+
+        FlxTween.cancelTweensOf(backdrop);
+        for (part in windowParts) FlxTween.cancelTweensOf(part);
+        DesktopTheme.release(this);
+        super.destroy();
+    }
+}

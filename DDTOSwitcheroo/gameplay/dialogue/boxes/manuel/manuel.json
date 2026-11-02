@@ -1,0 +1,29 @@
+{
+  "version": "1.1.0",
+  "name": "DDTS",
+  "assetPath": "gameplay/dialogue/boxes/manuel/dialogueBox-monika",
+  "isPixel": true,
+  "flipX": false,
+  "flipY": false,
+  "offsets": [-10, -360],
+  "scale": 5.4,
+
+  "text": {
+    "offsets": [250, 510],
+    "width": 800,
+    "color": "#3F2021",
+    "fontFamily": "Pixel Arial 11 Bold",
+    "shadowColor": "#9494D8",
+    "shadowWidth": 2,
+    "fontSize": 42
+  },
+
+  "animations": [
+  {
+    "name": "enter",
+    "prefix": "Text Box Appear",
+    "offsets": [0, 0],
+    "frameRate": 24
+  }
+  ]
+}

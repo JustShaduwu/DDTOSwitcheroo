@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+Created with Funkin Packer v0.1.3 https://neeeoo.github.io/funkin-packer/
+-->
+<TextureAtlas imagePath="chris.png" width="463" height="344">
+	<SubTexture name="Idle0000" x="116" y="117" width="112" height="112" frameX="-8" frameY="-16" frameWidth="128" frameHeight="128"/>
+	<SubTexture name="Idle0001" x="119" y="232" width="115" height="109" frameX="-7" frameY="-19" frameWidth="128" frameHeight="128"/>
+	<SubTexture name="Idle0002" x="1" y="233" width="115" height="110" frameX="-7" frameY="-18" frameWidth="128" frameHeight="128"/>
+	<SubTexture name="Idle0003" x="1" y="1" width="113" height="113" frameX="-8" frameY="-15" frameWidth="128" frameHeight="128"/>
+	<SubTexture name="Idle0004" x="1" y="117" width="112" height="113" frameX="-8" frameY="-15" frameWidth="128" frameHeight="128"/>
+	<SubTexture name="Idle0005" x="117" y="1" width="112" height="112" frameX="-8" frameY="-16" frameWidth="128" frameHeight="128"/>
+	<SubTexture name="Idle0006" x="231" y="116" width="115" height="109" frameX="-7" frameY="-19" frameWidth="128" frameHeight="128"/>
+	<SubTexture name="Idle0007" x="347" y="1" width="115" height="107" frameX="-7" frameY="-21" frameWidth="128" frameHeight="128"/>
+	<SubTexture name="Idle0008" x="232" y="1" width="112" height="111" frameX="-8" frameY="-17" frameWidth="128" frameHeight="128"/>
+</TextureAtlas>

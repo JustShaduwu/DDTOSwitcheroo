@@ -1,0 +1,497 @@
+package switcheroo.states;
+
+import DesktopTheme;
+import DesktopNotifications;
+import openfl.display.Shape;
+import openfl.display.BitmapData;
+import flixel.FlxG;
+import flixel.FlxSprite;
+import flixel.text.FlxText;
+import flixel.text.FlxTextBorderStyle;
+import flixel.tweens.FlxTween;
+import flixel.tweens.FlxEase;
+import flixel.addons.transition.FlxTransitionableState;
+import skyredux.states.SwitcherooTitleState;
+import funkin.Paths;
+import funkin.PlayerSettings;
+import funkin.ui.MusicBeatState;
+import funkin.ui.ScriptedMusicBeatState;
+import Date;
+import JukeboxPlayer;
+import EnterpriseSettings;
+import LanguageManager;
+import SwitcherooProgress;
+import lime.app.Application;
+import switcheroo.substates.EnterpriseWindow;
+import switcheroo.substates.EnterprisePopup;
+import flixel.util.FlxSave;
+
+import funkin.Preferences;
+
+class EnterpriseDesktopState extends MusicBeatState
+{
+    var labels:Array<String> = ['DDTS', 'Side Stories', 'Files', 'Mail', 'Pictures', 'Music', 'Settings', 'Quit'];
+    var icons:Array<String> = ['ddlc icon', 'side stories icon', 'files icon_0', 'mail icon_0', 'photos icon', 'music icon_0', 'settings icon_0', 'quit icon_0'];
+    var menuSprites:Array<FlxSprite> = [];
+    var rowTexts:Array<FlxText> = [];
+    var rowIcons:Array<FlxSprite> = [];
+    var notificationDots:Array<Dynamic> = [];
+    var notificationSections:Array<String> = ['ddts', 'side_stories', 'files', 'mail', 'pictures', 'music', 'settings', 'quit'];
+
+    function notificationCircle(x:Float, y:Float, diameter:Int):FlxSprite
+    {
+        var shape = new Shape();
+        shape.graphics.beginFill(0xFFFFFF);
+        shape.graphics.drawCircle(diameter / 2, diameter / 2, diameter / 2);
+        shape.graphics.endFill();
+        var bitmap = new BitmapData(diameter, diameter, true, 0);
+        bitmap.draw(shape);
+        var sprite = new FlxSprite(x, y).loadGraphic(bitmap, false, 0, 0, true);
+        sprite.antialiasing = true;
+        add(sprite);
+        return sprite;
+    }
+
+    function refreshNotifications():Void
+    {
+        for (dot in notificationDots)
+        {
+            var visible = DesktopNotifications.hasNew(dot.section);
+            dot.border.visible = visible;
+            dot.fill.visible = visible;
+            dot.fill.color = DesktopTheme.getColor('desktop_color2');
+        }
+    }
+    var rowHitboxes:Array<FlxSprite> = [];
+    var logoHitbox:FlxSprite;
+    var dragSelection:FlxSprite;
+    var dragEdges:Array<FlxSprite> = [];
+    var draggingDesktop:Bool = false;
+    var dragStartX:Float = 0;
+    var dragStartY:Float = 0;
+    var selected:Int = -1;
+    var leaving:Bool = false;
+    var readyTime:Float = 0;
+    var scaleUI:Float = 1;
+    var menuTop:Float = 0;
+    var menuOffsetY:Float = 8; 
+    var barTop:Float = 0;
+    var highlight:FlxSprite;
+    var clockText:FlxText;
+    var desktopWallpaper:FlxSprite;
+    var previousMouseVisible:Bool;
+    var windowCloseHandler:Void->Void;
+    var closeConfirmationOpen:Bool = false;
+    var allowWindowClose:Bool = false;
+
+    override function create():Void
+    {
+        super.create();
+        DesktopTheme.restore();
+        DesktopTheme.attach(this);
+        EnterpriseSettings.restore();
+        refreshLanguage();
+        previousMouseVisible = FlxG.mouse.visible;
+        FlxG.autoPause = false;
+        FlxG.mouse.visible = true;
+        FlxG.camera.follow(null);
+        FlxG.camera.scroll.set(0, 0);
+        FlxG.camera.zoom = 1;
+        scaleUI = FlxG.height / 720;
+        barTop = FlxG.height - 40 * scaleUI;
+        menuTop = barTop - 400 * scaleUI + menuOffsetY * scaleUI;
+
+        add(new FlxSprite().makeGraphic(FlxG.width, FlxG.height, 0xFF000000));
+        desktopWallpaper = new FlxSprite();
+        desktopWallpaper.antialiasing = true;
+        add(desktopWallpaper);
+        refreshWallpaper();
+        
+        dragSelection = new FlxSprite().makeGraphic(1, 1, 0xFFB8B8B8);
+        dragSelection.alpha = 0.25;
+        dragSelection.visible = false;
+        add(dragSelection);
+        for (i in 0...4)
+        {
+            var edge = new FlxSprite().makeGraphic(1, 1, 0xFFD0D0D0);
+            edge.alpha = 0.65;
+            edge.visible = false;
+            dragEdges.push(edge);
+            add(edge);
+        }
+        var panel = graphic('start menu background', 0, menuTop, 290 * scaleUI, 400 * scaleUI);
+        menuSprites.push(panel);
+        highlight = graphic('selection', 0, menuTop + 6 * scaleUI, 290 * scaleUI, 48 * scaleUI);
+        menuSprites.push(highlight);
+
+        for (i in 0...labels.length)
+        {
+            rowHitboxes.push(hitbox(0, menuTop + (6 + i * 48) * scaleUI, 290 * scaleUI, 48 * scaleUI));
+            var y = menuTop + (8 + i * 48) * scaleUI;
+            if (icons[i] != '')
+            {
+                var icon = DesktopTheme.load(this, new FlxSprite(), 'enterprise/' + icons[i]);
+                icon.setGraphicSize(Std.int(28 * scaleUI));
+                icon.updateHitbox();
+                icon.setPosition(23 * scaleUI, y + (40 * scaleUI - icon.height) / 2);
+                icon.antialiasing = true;
+                add(icon);
+                menuSprites.push(icon);
+                rowIcons.push(icon);
+            }
+            else
+            {
+                var symbol = text(i == 1 ? '+' : '↪', 20 * scaleUI, y - 3 * scaleUI, 36 * scaleUI, 30, DesktopTheme.getColor('desktop_color2'));
+                menuSprites.push(symbol);
+                rowIcons.push(symbol);
+            }
+            var label = text(labels[i], 76 * scaleUI, y + 5 * scaleUI, 205 * scaleUI, 22, DesktopTheme.getColor('desktop_color1'));
+            menuSprites.push(label);
+            rowTexts.push(label);
+            var size = Std.int(Math.max(10, 16 * scaleUI));
+            var borderSize = Std.int(Math.max(1, 2 * scaleUI));
+            var dotX = 47 * scaleUI;
+            var dotY = y + 1 * scaleUI;
+            var border = notificationCircle(dotX, dotY, size);
+            var fill = notificationCircle(dotX + borderSize, dotY + borderSize, size - borderSize * 2);
+            notificationDots.push({section: notificationSections[i], border: border, fill: fill});
+        }
+
+        graphic('deskbar', 0, barTop, FlxG.width, 40 * scaleUI);
+        logoHitbox = hitbox(0, barTop, 100 * scaleUI, 40 * scaleUI);
+        rectangle(0, barTop, 100 * scaleUI, 40 * scaleUI, 0x30FFFFFF);
+        graphic('MES Logo button color', 33 * scaleUI, barTop + 4 * scaleUI, 32 * scaleUI, 32 * scaleUI);
+        clockText = text('', FlxG.width - 165 * scaleUI, barTop + 5 * scaleUI, 150 * scaleUI, 19, DesktopTheme.getColor('desktop_color1'));
+        clockText.alignment = 'center';
+        persistentUpdate = false;
+        refreshLanguage();
+        refreshSelection();
+        updateClock();
+        windowCloseHandler = function() { requestWindowClose(); };
+        Application.current.window.onClose.add(windowCloseHandler, false, 10000);
+
+    var modSave = new FlxSave();
+
+    if (modSave.bind("ddts", "teamHACKS"))
+    {
+        if (modSave.data.hasPlayed != true)
+        {
+            modSave.data.hasPlayed = true;
+            modSave.flush();
+        }
+    }
+
+    modSave.destroy();
+    }
+
+    function requestWindowClose():Void
+    {
+        if (allowWindowClose) return;
+        
+        Application.current.window.onClose.cancel();
+        if (closeConfirmationOpen) return;
+        closeConfirmationOpen = true;
+        var popup = new EnterprisePopup(
+            LanguageManager.getTranslation('desktop_quit', 'Quit'),
+            LanguageManager.getTranslation('desktop_confirm_exit', 'Are you sure you want to quit?'),
+            function(confirmed:Bool)
+            {
+                closeConfirmationOpen = false;
+                readyTime = 0;
+                if (!confirmed) return;
+                allowWindowClose = true;
+                leaving = true;
+                Application.current.window.close();
+            });
+        
+        var parent:Dynamic = this;
+        while (parent.subState != null) parent = parent.subState;
+        parent.openSubState(popup);
+    }
+
+    function refreshWallpaper():Void
+    {
+        if (desktopWallpaper == null) return;
+        try { desktopWallpaper.loadGraphic(Paths.image(EnterpriseSettings.getWallpaper())); }
+        catch (error:Dynamic) { DesktopTheme.load(this, desktopWallpaper, 'enterprise/desktopbg1'); }
+        var factor = Math.min(FlxG.width / desktopWallpaper.frameWidth, FlxG.height / desktopWallpaper.frameHeight);
+        desktopWallpaper.scale.set(factor, factor);
+        desktopWallpaper.updateHitbox();
+        desktopWallpaper.setPosition((FlxG.width - desktopWallpaper.width) / 2, (FlxG.height - desktopWallpaper.height) / 2);
+    }
+
+    function graphic(asset:String, x:Float, y:Float, w:Float, h:Float):FlxSprite
+    {
+        var sprite = DesktopTheme.load(this, new FlxSprite(x, y), 'enterprise/' + asset);
+        sprite.setGraphicSize(Std.int(w), Std.int(h));
+        sprite.updateHitbox();
+        sprite.antialiasing = true;
+        add(sprite);
+        return sprite;
+    }
+
+    function rectangle(x:Float, y:Float, w:Float, h:Float, color:Int):FlxSprite
+    {
+        var sprite = DesktopTheme.solid(new FlxSprite(x, y), Std.int(w), Std.int(h), color);
+        add(sprite);
+        return sprite;
+    }
+
+    function text(value:String, x:Float, y:Float, width:Float, size:Int, color:Int):FlxText
+    {
+        var label = new FlxText(x, y, width, value);
+        label.setFormat(Paths.font('GoNotoCurrent.ttf'), Std.int(size * scaleUI), color, 'left');
+        
+        label.setBorderStyle(FlxTextBorderStyle.OUTLINE, color, 0.1 * scaleUI, 1);
+        label.antialiasing = true;
+        add(label);
+        return label;
+    }
+
+    function hitbox(x:Float, y:Float, width:Float, height:Float):FlxSprite
+    {
+        var area = new FlxSprite(x, y);
+        area.setSize(width, height);
+        area.visible = false;
+        add(area);
+        return area;
+    }
+
+    function refreshSelection():Void
+    {
+        refreshNotifications();
+        FlxTween.cancelTweensOf(highlight);
+        highlight.alpha = 0;
+        if (selected >= 0)
+        {
+            highlight.y = menuTop + (6 + selected * 48) * scaleUI;
+            FlxTween.tween(highlight, {alpha: 1}, 0.15);
+        }
+        for (i in 0...rowTexts.length)
+        {
+            rowTexts[i].color = i == selected ? DesktopTheme.getColor('selected_text') : DesktopTheme.getColor('desktop_color1');
+            rowTexts[i].borderColor = rowTexts[i].color;
+            var rowAlpha:Float = i == 4 && !SwitcherooProgress.hasCompletedPrologue() ? 0.35 : 1;
+            rowTexts[i].alpha = rowAlpha;
+            rowIcons[i].alpha = rowAlpha;
+            if (icons[i] == '')
+            {
+                var symbol:FlxText = cast rowIcons[i];
+                symbol.color = i == selected ? DesktopTheme.getColor('selected_text') : DesktopTheme.getColor('desktop_color2');
+                symbol.borderColor = symbol.color;
+            }
+            else if (i == selected)
+            {
+                
+                DesktopTheme.tint(this, rowIcons[i], DesktopTheme.getColor('selected_text'));
+            }
+            else
+            {
+                DesktopTheme.tint(this, rowIcons[i], DesktopTheme.getColor('desktop_color2'));
+            }
+        }
+    }
+
+    function activate():Void
+    {
+        clearDesktopDrag();
+        if (selected < 0 || selected >= labels.length) return;
+
+        if (selected == 1)
+        {
+            selected = -1;
+            refreshSelection();
+            openSubState(new EnterprisePopup(
+                LanguageManager.getTranslation('progress_locked_title', 'Locked'),
+                LanguageManager.getTranslation('progress_full_campaign_required', 'Complete the ENTIRE Story Mode campaign to unlock this content.'),
+                null, true
+            ));
+            return;
+        }
+        if (selected == 4 && !SwitcherooProgress.hasCompletedPrologue())
+        {
+            selected = -1;
+            refreshSelection();
+            openSubState(new EnterprisePopup(
+                LanguageManager.getTranslation('progress_locked_title', 'Locked'),
+                LanguageManager.getTranslation('progress_prologue_required', 'Complete the prologue in Story Mode to unlock this content.'),
+                null, true
+            ));
+            return;
+        }
+        if (selected == 0)
+        {
+            JukeboxPlayer.stop();
+            leaving = true;
+            var curtain = new FlxSprite().makeGraphic(FlxG.width, FlxG.height, 0xFF000000);
+            curtain.scrollFactor.set(0, 0);
+            curtain.screenCenter();
+            curtain.scale.set(8 / FlxG.width, 8 / FlxG.height);
+            add(curtain);
+            FlxTween.tween(curtain.scale, {x: 1, y: 1}, 0.65, {
+                ease: FlxEase.quadInOut,
+                onComplete: function(tween:FlxTween) {
+                    FlxTransitionableState.skipNextTransIn = true;
+                    FlxTransitionableState.skipNextTransOut = true;
+                    FlxG.switchState(new SwitcherooTitleState(false));
+                }
+            });
+            return;
+        }
+        if (selected == 7)
+        {
+            allowWindowClose = true;
+            leaving = true;
+            Application.current.window.close();
+            return;
+        }
+
+        var descriptions:Array<String> = [
+            '',
+            '...',
+            'Aquí se podrá explorar el sistema de archivos del escritorio.',
+            'Aquí se podrán leer mensajes y correos.',
+            'Aquí se podrá mostrar la galería de imágenes.',
+            'Aquí se podrá abrir el reproductor de música.',
+            'Aquí se podrán mostrar los ajustes del escritorio.',
+            ''
+        ];
+        var openedSection = notificationSections[selected];
+        var title = labels[selected];
+        var body = descriptions[selected];
+        var mode = selected == 4 ? 'pictures' : selected == 2 ? 'files' : (selected == 3 ? 'mail' : (selected == 5 ? 'music' : (selected == 6 ? 'settings' : '')));
+        selected = -1;
+        refreshSelection();
+        openSubState(new EnterpriseWindow(title, body, mode, function() { refreshLanguage(); refreshWallpaper(); refreshNotifications(); }));
+        if (Std.isOfType(subState, EnterpriseWindow)) DesktopNotifications.markSeen(openedSection);
+        refreshNotifications();
+    }
+
+    function refreshLanguage():Void
+    {
+        labels = ['DDTS',
+            LanguageManager.getTranslation('desktop_side_stories', 'Side Stories'),
+            LanguageManager.getTranslation('desktop_files', 'Files'),
+            LanguageManager.getTranslation('desktop_mails', 'Mail'),
+            LanguageManager.getTranslation('desktop_pictures', 'Pictures'),
+            LanguageManager.getTranslation('desktop_music', 'Music'),
+            LanguageManager.getTranslation('desktop_settings', 'Settings'),
+            LanguageManager.getTranslation('desktop_quit', 'Quit')];
+        for (i in 0...rowTexts.length)
+        {
+            rowTexts[i].text = labels[i];
+            rowTexts[i].wordWrap = false;
+            rowTexts[i].size = Std.int(22 * scaleUI);
+            while (rowTexts[i].textField.textWidth > rowTexts[i].width - 4 && rowTexts[i].size > Std.int(14 * scaleUI))
+                rowTexts[i].size -= 1;
+        }
+    }
+
+    function updateClock():Void
+    {
+        var now = Date.now();
+        var hour = now.getHours();
+        var displayHour = hour % 12;
+        if (displayHour == 0) displayHour = 12;
+        var minute = now.getMinutes();
+        clockText.text = (displayHour < 10 ? '0' : '') + displayHour + ':' + (minute < 10 ? '0' : '') + minute + (hour >= 12 ? ' p. m.' : ' a. m.');
+    }
+
+    function clearDesktopDrag():Void
+    {
+        draggingDesktop = false;
+        dragSelection.visible = false;
+        for (edge in dragEdges) edge.visible = false;
+    }
+
+    function updateDesktopDrag():Bool
+    {
+        if (subState != null || leaving || !FlxG.mouse.pressed)
+        {
+            clearDesktopDrag();
+            return false;
+        }
+        var point = FlxG.mouse.getWorldPosition(camera);
+        var x = Math.max(0, Math.min(FlxG.width, point.x));
+        var y = Math.max(0, Math.min(barTop, point.y));
+        var overMenu = point.x >= 0 && point.x < 290 * scaleUI
+            && point.y >= menuTop && point.y < barTop;
+        if (FlxG.mouse.justPressed && !overMenu && point.y >= 0 && point.y < barTop)
+        {
+            draggingDesktop = true;
+            dragStartX = x;
+            dragStartY = y;
+        }
+        point.put();
+        if (!draggingDesktop) return false;
+        var left = Math.min(dragStartX, x);
+        var top = Math.min(dragStartY, y);
+        var width = Math.abs(x - dragStartX);
+        var height = Math.abs(y - dragStartY);
+        var visible = width >= 2 && height >= 2;
+        dragSelection.visible = visible;
+        for (edge in dragEdges) edge.visible = visible;
+        if (visible)
+        {
+            dragSelection.scale.set(width, height);
+            dragSelection.updateHitbox();
+            dragSelection.setPosition(left, top);
+            var thickness = Math.max(2, 2 * scaleUI);
+            for (i in 0...4)
+            {
+                var edge = dragEdges[i];
+                edge.scale.set(i < 2 ? width : thickness, i < 2 ? thickness : height);
+                edge.updateHitbox();
+                edge.setPosition(left + (i == 3 ? width - thickness : 0),
+                    top + (i == 1 ? height - thickness : 0));
+            }
+        }
+        return true;
+    }
+
+    override function update(elapsed:Float):Void
+    {
+        super.update(elapsed);
+        if (leaving || subState != null) { clearDesktopDrag(); return; }
+        updateClock();
+        readyTime += elapsed;
+        if (readyTime < 0.2) return;
+        if (updateDesktopDrag())
+        {
+            if (selected != -1) { selected = -1; refreshSelection(); }
+            return;
+        }
+        var row = -1;
+        for (i in 0...rowHitboxes.length)
+        {
+            if (FlxG.mouse.overlaps(rowHitboxes[i]))
+            {
+                row = i;
+                break;
+            }
+        }
+        if (row != selected)
+        {
+            selected = row;
+            refreshSelection();
+        }
+        var pad = PlayerSettings.player1.controls;
+        if (pad.BACK_P) return;
+        if (row >= 0)
+        {
+            if (FlxG.mouse.justPressed) { activate(); return; }
+        }
+        if (pad.ACCEPT_P) activate();
+    }
+
+    override function destroy():Void
+    {
+        if (windowCloseHandler != null)
+            Application.current.window.onClose.remove(windowCloseHandler);
+        FlxTween.cancelTweensOf(highlight);
+        FlxG.mouse.visible = previousMouseVisible;
+         FlxG.autoPause = Preferences.get_autoPause();
+        DesktopTheme.release(this);
+        super.destroy();
+    }
+}

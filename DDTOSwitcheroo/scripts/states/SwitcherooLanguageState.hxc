@@ -1,0 +1,209 @@
+package switcheroo.states;
+
+import LanguageManager;
+import flixel.tweens.FlxTween;
+import flixel.tweens.FlxEase;
+import flixel.addons.transition.FlxTransitionableState;
+import funkin.ui.ScriptedMusicBeatState;
+
+import flixel.FlxG;
+import flixel.FlxSprite;
+import flixel.addons.display.FlxBackdrop;
+import flixel.addons.display.FlxRuntimeShader;
+import lime.utils.Assets;
+import flixel.text.FlxText;
+import flixel.text.FlxTextBorderStyle;
+import funkin.Paths;
+import funkin.PlayerSettings;
+import funkin.save.Save;
+import funkin.ui.MusicBeatState;
+import funkin.ui.options.OptionsState;
+import switcheroo.states.SwitcherooMainMenuState;
+
+class SwitcherooLanguageState extends MusicBeatState
+{
+    var firstBoot:Bool = false;
+    var letter:FlxSprite;
+    var showingLetter:Bool = false;
+    var panel:Array<FlxSprite> = [];
+
+    public function new(firstBoot:Bool = false)
+    {
+        super();
+        this.firstBoot = firstBoot;
+    }
+    public function configureFirstBoot(value:Bool):Void { firstBoot = value; }
+
+    var locales:Array<String> = ['en-US', 'es-MX'];
+    var labels:Array<String> = ['English', 'Español (México) / Spanish'];
+    var rows:Array<FlxText> = [];
+    var selected:Int = 0;
+    var leaving:Bool = false;
+    var inputReady:Bool = false;
+
+    override function create():Void
+    {
+        super.create();
+        if (firstBoot && Save.instance.modOptions.get('switcherooFirstBoot') == true)
+        {
+            leaving = true;
+            returnToTitle();
+            return;
+        }
+        if (firstBoot && FlxG.sound.music != null) FlxG.sound.music.stop();
+        FlxG.camera.follow(null);
+        FlxG.camera.scroll.set(0, 0);
+
+        var saved = Save.instance.modOptions.get('switcherooLanguage');
+        if (saved == 'es-US') saved = 'es-MX';
+        var savedIndex = locales.indexOf(saved);
+        selected = savedIndex < 0 ? 0 : savedIndex;
+
+        var backdrop = new FlxBackdrop(Paths.image('scrollingBG'));
+        backdrop.velocity.set(-10, 0);
+        backdrop.antialiasing = true;
+        var colorMask:FlxRuntimeShader = new FlxRuntimeShader(
+            Assets.getText(Paths.frag('ColorMaskShader'))
+        );
+        colorMask.data.color1.value = [0.99215686274, 1.0, 1.0];
+        colorMask.data.color2.value = [0.49803921568, 0.92941176470, 0.94117647058];
+        backdrop.shader = colorMask;
+        add(backdrop);
+        var credits = new FlxBackdrop(Paths.image('credits/pocBackground'));
+        credits.velocity.set(-50, 0);
+        add(credits);
+        var scanlines = new FlxBackdrop(Paths.image('credits/scanlines'));
+        scanlines.velocity.set(0, 20);
+        add(scanlines);
+        var gradient = new FlxSprite().loadGraphic(Paths.image('credits/gradent'));
+        gradient.setGraphicSize(Std.int(gradient.width * 1.4));
+        gradient.updateHitbox();
+        gradient.screenCenter();
+        add(gradient);
+        var background = new FlxSprite().loadGraphic(Paths.image('language/background'));
+        add(background); panel.push(background);
+
+        for (i in 0...labels.length)
+        {
+            var row = new FlxText(252, 96 + i * 43, 800, labels[i]);
+            row.setFormat(Paths.font(i == 2 || i == 5 ? 'GoNotoCurrent.ttf' : 'riffic.ttf'),
+                27, 0xFFFFFFFF, 'left');
+            row.antialiasing = true;
+            rows.push(row);
+            panel.push(row);
+            add(row);
+        }
+        var overlay = new FlxSprite().loadGraphic(Paths.image('language/overlay'));
+        add(overlay); panel.push(overlay);
+        var title = new FlxText(200, 6, 800, LanguageManager.getTranslation("language", "Language"));
+        title.setFormat(Paths.font('HKGrotesk-Bold.otf'), 18, 0xFF1A5057, 'left');
+        add(title);
+        panel.push(title);
+        refreshSelection();
+    }
+
+    function refreshSelection():Void
+    {
+        for (i in 0...rows.length)
+        {
+            rows[i].setBorderStyle(FlxTextBorderStyle.OUTLINE,
+                i == selected ? 0xFF37D3D5 : 0xFF1A5057, i == selected ? 3 : 2);
+            rows[i].alpha = i == selected ? 1 : 0.7;
+        }
+    }
+
+    override function update(elapsed:Float):Void
+    {
+        super.update(elapsed);
+        if (leaving) return;
+        var pad = PlayerSettings.player1.controls;
+        if (!inputReady)
+        {
+            inputReady = !pad.ACCEPT && !pad.BACK;
+            return;
+        }
+        if (showingLetter)
+        {
+            if (pad.ACCEPT_P) finishFirstBoot();
+            return;
+        }
+        if (pad.BACK_P && !firstBoot)
+        {
+            returnToOptions();
+            return;
+        }
+        if (pad.UI_UP_P || pad.UI_DOWN_P)
+        {
+            selected = (selected + (pad.UI_UP_P ? -1 : 1) + locales.length) % locales.length;
+            FlxG.sound.play(Paths.sound('scrollMenu'));
+            refreshSelection();
+        }
+        if (pad.ACCEPT_P)
+        {
+            Save.instance.modOptions.set('switcherooLanguage', locales[selected]);
+            Save.instance.flush();
+            FlxG.sound.play(Paths.sound('confirmMenu'));
+            if (firstBoot) showLetter();
+            else returnToOptions();
+        }
+    }
+
+    function showLetter():Void
+    {
+        leaving = true;
+        for (sprite in panel)
+        {
+            FlxTween.tween(sprite.scale, {x: 0, y: 0}, 0.5, {ease: FlxEase.quadOut});
+            FlxTween.tween(sprite, {alpha: 0}, 0.5, {ease: FlxEase.quadOut});
+        }
+        letter = new FlxSprite().loadGraphic(LanguageManager.getImagePath('oopsie'));
+        var size = Math.min(1, Math.min(FlxG.width * 0.9 / letter.width, FlxG.height * 0.9 / letter.height));
+        letter.scale.set(size, size);
+        letter.updateHitbox();
+        letter.screenCenter();
+        letter.scale.set(0, 0);
+        letter.antialiasing = true;
+        add(letter);
+        FlxG.sound.play(Paths.sound('openOS'));
+        FlxTween.tween(letter.scale, {x: size, y: size}, 0.5, {
+            startDelay: 0.5, ease: FlxEase.quadOut,
+            onComplete: function(tween:FlxTween) {
+                showingLetter = true;
+                inputReady = false;
+                leaving = false;
+            }
+        });
+    }
+
+    function finishFirstBoot():Void
+    {
+        leaving = true;
+        FlxG.sound.play(Paths.sound('exitOS'));
+        FlxTween.tween(letter.scale, {x: 0, y: 0}, 0.5, {ease: FlxEase.quadOut});
+        for (member in members)
+            if (Std.isOfType(member, FlxSprite) && member != letter)
+                FlxTween.tween(member, {alpha: 0}, 1, {ease: FlxEase.quadOut});
+        FlxTween.tween(letter, {alpha: 0}, 1, {
+            ease: FlxEase.quadOut,
+            onComplete: function(tween:FlxTween) {
+                Save.instance.modOptions.set('switcherooFirstBoot', true);
+                Save.instance.flush();
+                returnToTitle();
+            }
+        });
+    }
+
+    function returnToTitle():Void
+    {
+        FlxTransitionableState.skipNextTransIn = true;
+        FlxTransitionableState.skipNextTransOut = true;
+        FlxG.switchState(ScriptedMusicBeatState.init('skyredux.states.SwitcherooTitleState'));
+    }
+
+    function returnToOptions():Void
+    {
+        leaving = true;
+        SwitcherooMainMenuState.openedOptions = true;
+        FlxG.switchState(new OptionsState());
+    }
+}

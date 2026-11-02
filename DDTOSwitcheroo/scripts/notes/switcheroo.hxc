@@ -1,0 +1,225 @@
+import funkin.data.notestyle.NoteStyleRegistry;
+import funkin.play.notes.NoteSplash;
+import funkin.modding.module.Module;
+import funkin.play.PlayState;
+import funkin.graphics.FunkinSprite;
+import funkin.Paths;
+import funkin.Preferences;
+import funkin.util.Constants;
+import funkin.Highscore;
+import funkin.play.scoring.Scoring;
+import funkin.play.notes.Strumline;
+import funkin.save.Save;
+import flixel.util.FlxTimer;
+import funkin.play.notes.notekind.ScriptedNoteKind;
+
+import funkin.audio.FunkinSound;
+
+using StringTools;
+
+class SwitcherooNotes extends ScriptedNoteKind
+{
+	public function new()
+	{
+		super("switcheroo", "Switcheroo Markov Note");
+		this.params = [
+			{
+				name: "shouldHit",
+				description: "Opponent Hit",
+				type: "Float",
+				data: {
+					min: 0,
+					max: 1,
+					defaultValue: 0
+				}
+			}
+		];
+		this.scoreable = true;
+	}
+
+	var missedCount:Int = 0;
+	var hasUsedMarkovNoteHold:Bool = false;
+var shieldActive:Bool = false;
+var shieldSound:FunkinSound;
+var shieldHealthLock:Float = 0;
+
+	function onCreate(event:ScriptEvent){
+
+	}
+	
+function onNoteHit(callback)
+{
+    if (callback.note.noteData.kind != "switcheroo")
+        return;
+
+    if (callback.doesNotesplash)
+    {
+        var play = PlayState.instance;
+        var line = callback.note.noteData.getStrumlineIndex() == 0 ? play.playerStrumline : play.opponentStrumline;
+        var direction = callback.note.noteData.getDirection();
+        var receptor = line.strumlineNotes.members[direction];
+        var style = NoteStyleRegistry.instance.fetchEntry('switcheroo-markov');
+        if (style != null && receptor != null)
+        {
+            callback.doesNotesplash = false;
+            var splash = new NoteSplash(style);
+            splash.cameras = receptor.cameras;
+            splash.scrollFactor.set(0, 0);
+            splash.setPosition(receptor.x, receptor.y);
+            splash.zIndex = line.zIndex + 1;
+            play.add(splash);
+            play.refresh();
+            splash.animation.onFinish.add(function(name:String) {
+                play.remove(splash, true);
+                splash.destroy();
+            });
+            splash.play(direction);
+            var splashOffsets = style.getSplashOffsets();
+            var initialOffset = -0.275 * Strumline.STRUMLINE_SIZE;
+            splash.setPosition(
+                line.x + line.getXPos(direction) + initialOffset + splashOffsets[0] * splash.scale.x,
+                line.y - initialOffset + splashOffsets[1] * splash.scale.y
+            );
+        }
+    }
+
+	attacked();
+	
+    var roll:Int = Std.int(Math.random() * 3); 
+
+    switch (roll)
+    {
+        case 0:
+            
+
+        case 1:
+	var powerupSound = FunkinSound.load(Paths.sound('POWERUP'), 0.6);
+    powerupSound.play();	
+
+            PlayState.instance.health += 50;
+            if (PlayState.instance.health > 100)
+                PlayState.instance.health = 100;
+
+
+        case 2:
+            activateShield();
+    }
+}
+
+function attacked()
+{
+                    FlxG.sound.play(
+                        Paths.sound('switcheroo_glitch')
+                    );
+PlayState.instance.currentStage.getBoyfriend().playAnimation('dodge', true, true);
+}
+	
+	function onNoteIncoming(callback) {
+		callback.note.lowPriority = true;
+
+		var strumline = switch (callback.note.noteData.getStrumlineIndex()) {
+			case 0: PlayState.instance.playerStrumline;
+			case 1: PlayState.instance.opponentStrumline;
+		}
+
+		if (callback.note.get_isHoldNote()) {
+			if (strumline.noteStyle.id.endsWith('pixel')) { 
+				callback.note.holdNoteSprite.loadGraphic(Paths.image('note-holds-evil'));	
+			}
+		}
+
+		if (strumline.noteStyle.id.endsWith('pixel')) callback.note.frames = Paths.getSparrowAtlas('switcherooPixel');
+		else {
+			callback.note.frames = Paths.getSparrowAtlas('switcherooPixel');
+			callback.note.x -= 4;
+		}
+
+		callback.note.animation.addByPrefix('greenScroll', 'green0', 24, true);
+		callback.note.animation.addByPrefix('redScroll', 'red0', 24, true);
+		callback.note.animation.addByPrefix('blueScroll', 'blue0', 24, true);
+		callback.note.animation.addByPrefix('purpleScroll', 'purple0', 24, true);
+
+		callback.note.updateHitbox();
+
+		var penis:String;
+
+		if(callback.note.noteData.data % 4 == 0) penis = "purpleScroll";
+		if(callback.note.noteData.data % 4 == 1) penis = "blueScroll";
+		if(callback.note.noteData.data % 4 == 2) penis = "greenScroll";
+		if(callback.note.noteData.data % 4 == 3) penis = "redScroll";
+
+		if (callback.note.animation.curAnim == null) {
+			callback.note.active = true;
+			callback.note.animation.play(penis);
+		}
+	}
+
+override function onUpdate(event:ScriptEvent)
+{
+    super.onUpdate(event);
+
+    if (shieldActive)
+    {
+        PlayState.instance.health = shieldHealthLock;
+    }
+}
+
+function onNoteMiss(callback)
+{
+    
+    if (shieldActive)
+    {
+        PlayState.instance.health = shieldHealthLock;
+        callback.cancelEvent();
+        return;
+    }
+
+    
+    if (callback.note.noteData.kind == "switcheroo")
+    {
+        PlayState.instance.health = -1;
+        return;
+    }
+}
+	override function onSongEnd(event: ScriptEvent): Void
+		{
+			super.onSongEnd(event);
+			var realTotalNotes = Highscore.tallies.totalNotes - missedCount;
+			Highscore.tallies.totalNotes = realTotalNotes;
+		}
+
+	override function onCountdownStart(event:CountdownScriptEvent):Void
+    	{
+        	super.onCountdownStart(event);
+			hasUsedMarkovNoteHold = false;
+			missedCount = 0;
+   		}	
+
+function activateShield()
+{
+    if (shieldActive)
+        return; 
+
+    shieldActive = true;
+    shieldHealthLock = PlayState.instance.health;
+
+    
+    shieldSound = FunkinSound.load(Paths.sound('SHIELDACTIVE'), 0.6);
+    shieldSound.looped = true;
+    shieldSound.play();
+
+    
+	new FlxTimer().start(4, function(tmr:FlxTimer)
+    {
+        shieldActive = false;
+
+        if (shieldSound != null)
+        {
+            shieldSound.stop();
+            shieldSound.destroy();
+            shieldSound = null;
+        }
+    });
+}
+
+}

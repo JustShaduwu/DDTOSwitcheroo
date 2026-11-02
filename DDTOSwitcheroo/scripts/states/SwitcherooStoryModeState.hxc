@@ -1,0 +1,1142 @@
+package switcheroo.states;
+
+import StoryPopupCatalog;
+import switcheroo.substates.StoryPopupSubState;
+import SwitcherooProgress;
+
+import LanguageManager;
+import StringTools;
+
+import lime.utils.Assets;
+
+import flixel.FlxG;
+import flixel.FlxSprite;
+import flixel.addons.display.FlxBackdrop;
+import flixel.addons.display.FlxRuntimeShader;
+import flixel.addons.transition.FlxTransitionableState;
+import flixel.effects.FlxFlicker;
+import flixel.text.FlxText;
+import flixel.text.FlxTextBorderStyle;
+import flixel.util.FlxTimer;
+import funkin.modding.module.ModuleHandler;
+
+import funkin.audio.FunkinSound;
+import funkin.data.song.SongRegistry;
+import funkin.data.story.level.LevelRegistry;
+import funkin.graphics.FunkinSprite;
+import funkin.play.PlayStatePlaylist;
+import funkin.play.song.Song;
+import funkin.ui.MusicBeatState;
+import funkin.ui.ScriptedMusicBeatState;
+import funkin.ui.ScriptedMusicBeatSubState;
+import funkin.ui.story.Level;
+import funkin.ui.transition.LoadingState;
+import funkin.util.Constants;
+import funkin.ui.transition.stickers.StickerSubState;
+import funkin.ui.transition.stickers.StickerSprite;
+import funkin.save.Save;
+
+import funkin.api.discord.DiscordClient;
+
+class SwitcherooStoryModeState extends MusicBeatState
+{
+    
+var weeks:Array<Dynamic> =
+[
+    {
+        levelId: 'prologue-just-manuel',
+        name: 'Prologue',
+        icon: 'dokistory/PrologueWeek',
+        x: 394,
+        y: 199,
+        locked: false
+    },
+    {
+        levelId: null,
+        name: '\n\n',
+        icon: 'dokistory/LockedWeek',
+        x: 612,
+        y: 199,
+        locked: true
+    },
+    {
+        levelId: null,
+        name: '\n\n',
+        icon: 'dokistory/LockedWeek',
+        x: 832,
+        y: 199,
+        locked: true
+    },
+    {
+        levelId: null,
+        name: '\n\n',
+        icon: 'dokistory/LockedWeek',
+        x: 1052,
+        y: 199,
+        locked: true
+    },
+    {
+        levelId: null,
+        name: '\n\n',
+        icon: 'dokistory/LockedWeek',
+        x: 394,
+        y: 369,
+        locked: true
+    },
+    {
+        levelId: null,
+        name: '\n\n',
+        icon: 'dokistory/LockedWeek',
+        x: 612,
+        y: 369,
+        locked: true
+    },
+    {
+        levelId: null,
+        name: '\n\n',
+        icon: 'dokistory/LockedWeek',
+        x: 832,
+        y: 369,
+        locked: true
+    },
+    {
+        levelId: null,
+        name: '\n\n',
+        icon: 'dokistory/LockedWeek',
+        x: 1052,
+        y: 369,
+        locked: true
+    }
+];
+
+var curSelected:Int = 0;
+var missingMode:Bool = false;
+var currentLevel:Level;
+
+var weekIcons:Array<FlxSprite> = [];
+
+
+
+    var acceptInputs:Bool = true;
+    var checkedStoryPopups:Bool = false;
+    var selectedSomething:Bool = false;
+
+    var backdrop:FlxBackdrop;
+    var backdropShader:FlxRuntimeShader;
+
+    var logo:FlxSprite;
+    var songListPanel:FlxSprite;
+    var logoBump:FlxSprite;
+
+    var storyCursor:FlxSprite;
+
+    var sideStories:FlxSprite;
+var sideStoriesLocked:Bool = true;
+
+var difficultySelectorActive:Bool = false;
+
+var difficultySprite:FlxSprite;
+
+var availableDifficulties:Array<String> = [];
+var currentDifficultyIndex:Int = 0;
+var currentDifficultyId:String = 'normal';
+
+    var weekTitle:FlxText;
+    var trackList:FlxText;
+public static var pendingStickers:Array<StickerSprite> = null;
+
+    var menuBPM:Float = 120;
+    var lastMenuBeat:Int = -1;
+
+    override function create():Void
+    {
+        super.create();
+
+        DiscordClient.setPresence(
+        {
+            state: 'Main Menu',
+            details: 'Doki Doki Takeover\': Switcheroo'
+        });
+
+        var missing = ModuleHandler.getModule('MissingMode');
+        missingMode = missing != null
+            && missing.scriptCall('refreshMissingMode', []) == true;
+
+    if (pendingStickers != null)
+{
+    var oldStickers:Array<StickerSprite> =
+        pendingStickers;
+
+    pendingStickers = null;
+
+    var stickerSubState:StickerSubState =
+        new StickerSubState(
+        {
+            oldStickers: oldStickers
+        });
+
+    persistentUpdate = true;
+    persistentDraw = true;
+
+    openSubState(stickerSubState);
+    stickerSubState.degenStickers();
+}
+
+        persistentUpdate = true;
+        persistentDraw = true;
+
+        playMenuMusic();
+
+        createBackdrop();
+        createLeftPanel();
+        createTexts();
+createWeekIcons();
+createDifficultySelector();
+updateSelection(0, false);
+
+
+        FlxG.mouse.visible = true;
+    }
+
+    function playMenuMusic():Void
+    {
+        FunkinSound.playMusic('gettinSwitched',
+        {
+            overrideExisting: true,
+            restartTrack: false,
+            persist: true
+        });
+    }
+
+    
+function createDifficultySelector():Void
+{
+    difficultySprite = new FlxSprite(610, 610);
+
+    difficultySprite.frames = LanguageManager.translatedSparrow(
+        'dokistory/difficulties'
+    );
+
+    difficultySprite.antialiasing = true;
+    difficultySprite.visible = false;
+
+    add(difficultySprite);
+}
+
+    function createBackdrop():Void
+    {
+        backdrop = new FlxBackdrop(
+            Paths.image('scrollingBG')
+        );
+
+        backdrop.velocity.set(-40, -40);
+        backdrop.antialiasing = true;
+
+        backdropShader = new FlxRuntimeShader(
+            Assets.getText(
+                Paths.frag('ColorMaskShader')
+            )
+        );
+
+        
+        backdropShader.data.color1.value =
+        [
+            0.99215686274,
+            1.0,
+            1.0
+        ];
+
+        
+        backdropShader.data.color2.value =
+        [
+            0.49803921568,
+            0.92941176470,
+            0.94117647058
+        ];
+
+        backdrop.shader = backdropShader;
+
+        add(backdrop);
+    }
+
+    function createLeftPanel():Void
+    {
+        logo = new FlxSprite(-60, 0);
+        logo.loadGraphic(
+            Paths.image('Credits_LeftSide')
+        );
+        logo.antialiasing = true;
+        add(logo);
+
+        songListPanel = new FlxSprite(-60, 0);
+        songListPanel.loadGraphic(
+            LanguageManager.getImagePath(
+                'dokistory/song_list_lazy_smile'
+            )
+        );
+        songListPanel.antialiasing = true;
+        add(songListPanel);
+
+        logoBump = new FlxSprite(40, -40);
+        logoBump.frames = Paths.getSparrowAtlas(
+            'Start_Screen_AssetsPlus'
+        );
+
+        logoBump.antialiasing = true;
+        logoBump.scale.set(0.5, 0.5);
+
+        logoBump.animation.addByPrefix(
+            'bump',
+            'logo bumpin',
+            24,
+            false
+        );
+
+        logoBump.animation.play('bump', true);
+        logoBump.updateHitbox();
+
+        add(logoBump);
+    }
+
+    function createTexts():Void
+    {
+        weekTitle = new FlxText(
+            224,
+            150,
+            1000,
+            '',
+            32
+        );
+
+        weekTitle.setFormat(
+            Paths.font('riffic.ttf'),
+            32,
+            0xFFFFFFFF,
+            'center'
+        );
+
+        weekTitle.scale.set(1.2, 1.2);
+
+        weekTitle.setBorderStyle(
+            FlxTextBorderStyle.OUTLINE,
+            0xFF1A5057,
+            2,
+            1
+        );
+
+        weekTitle.alignment = 'center';
+        weekTitle.antialiasing = true;
+        weekTitle.updateHitbox();
+
+        add(weekTitle);
+
+        trackList = new FlxText(
+            -230,
+            400,
+            1000,
+            '',
+            32
+        );
+
+        trackList.setFormat(
+            Paths.font('riffic.ttf'),
+            32,
+            0xFFFFFFFF,
+            'center'
+        );
+
+        trackList.alignment = 'center';
+        trackList.scale.set(0.8, 0.8);
+
+        trackList.setBorderStyle(
+            FlxTextBorderStyle.OUTLINE,
+            0xFF37D3D5,
+            3,
+            1
+        );
+
+        trackList.antialiasing = true;
+        trackList.updateHitbox();
+
+        add(trackList);
+    }
+
+
+function hasCompletedCurrentLevel():Bool
+{
+    if (currentLevel == null)
+        return false;
+
+    for (difficulty in currentLevel.getDifficulties())
+    {
+        if (
+            Save.instance.getLevelScore(
+                currentLevel.id,
+                difficulty
+            ) != null
+        )
+        {
+            return true;
+        }
+    }
+
+    return false;
+}
+
+function createWeekIcons():Void
+{
+    weekIcons = [];
+
+    for (index in 0...weeks.length)
+    {
+        var week:Dynamic = weeks[index];
+
+        var icon:FlxSprite = new FlxSprite(
+            week.x,
+            week.y
+        );
+
+        icon.frames = Paths.getSparrowAtlas(
+            missingMode && week.levelId == 'prologue-just-manuel'
+                ? 'dokistory/PrologueWeek-missing' : week.icon
+        );
+
+        icon.antialiasing = true;
+        icon.scale.set(0.5, 0.5);
+
+        icon.animation.addByPrefix(
+            'idle',
+            'idle',
+            24,
+            true
+        );
+
+        icon.animation.play('idle', true);
+        icon.updateHitbox();
+        icon.ID = index;
+
+        weekIcons.push(icon);
+        add(icon);
+    }
+
+    storyCursor = new FlxSprite(
+        weeks[0].x,
+        weeks[0].y
+    );
+
+    storyCursor.loadGraphic(
+        Paths.image('dokistory/cursor')
+    );
+
+    add(storyCursor);
+
+    sideStories = new FlxSprite(395, 542);
+
+sideStories.frames = Paths.getSparrowAtlas(
+    'dokistory/SideStories'
+);
+
+sideStories.antialiasing = true;
+
+sideStories.animation.addByPrefix(
+    'idle',
+    'Side Stories0',
+    20,
+    true
+);
+
+sideStories.animation.addByPrefix(
+    'selected',
+    'Side Stories Selected',
+    20,
+    false
+);
+
+sideStories.animation.addByPrefix(
+    'highlighted',
+    'Side Stories highlighted',
+    20,
+    true
+);
+
+sideStories.animation.play('idle', true);
+
+sideStories.ID = 8;
+
+sideStories.visible = false;
+
+add(sideStories);
+}
+
+function updateSelection(
+    change:Int = 0,
+    playSound:Bool = true
+):Void
+{
+    var previousSelection:Int = curSelected;
+
+    curSelected += change;
+
+    if (curSelected >= weeks.length)
+        curSelected = 0;
+
+    if (curSelected < 0)
+        curSelected = weeks.length - 1;
+
+    if (
+        playSound &&
+        previousSelection != curSelected
+    )
+    {
+        FunkinSound.playOnce(
+            Paths.sound('scrollMenu')
+        );
+    }
+
+    var selectedWeek:Dynamic = weeks[curSelected];
+
+    storyCursor.setPosition(
+        selectedWeek.x,
+        selectedWeek.y
+    );
+
+    for (icon in weekIcons)
+    {
+        if (icon == null)
+            continue;
+
+        if (icon.ID == curSelected)
+        {
+            icon.animation.play('idle', true);
+        }
+        else
+        {
+            icon.animation.stop();
+            icon.animation.frameIndex = -1;
+        }
+    }
+
+    updateLevelText();
+}
+
+function updateLevelText():Void
+{
+    var selectedWeek:Dynamic =
+        weeks[curSelected];
+
+    if (
+        selectedWeek.locked == true ||
+        selectedWeek.levelId == null
+    )
+    {
+        currentLevel = null;
+
+        weekTitle.text =
+            selectedWeek.name.toUpperCase();
+
+        trackList.text =
+            '\n\n';
+
+        return;
+    }
+
+    currentLevel =
+        LevelRegistry.instance.fetchEntry(
+            selectedWeek.levelId
+        );
+
+    if (currentLevel == null)
+    {
+        weekTitle.text =
+            selectedWeek.name.toUpperCase();
+
+        trackList.text =
+            '\n\n' + LanguageManager.getTranslation('level_not_found', 'LEVEL NOT FOUND:') + '\n' +
+            selectedWeek.levelId.toUpperCase();
+
+        trace(
+            'No se encontró el level: ' +
+            selectedWeek.levelId
+        );
+
+        return;
+    }
+
+    weekTitle.text =
+        LanguageManager.getTranslation('story.' + selectedWeek.levelId, currentLevel.getTitle()).toUpperCase();
+
+    if (missingMode && selectedWeek.levelId == 'prologue-just-manuel')
+        weekTitle.text = StringTools.trim(StringTools.replace(weekTitle.text, 'MANUEL', ''));
+
+var displayNames:Array<String> = [];
+
+var showPieceByPiece:Bool =
+    hasCompletedCurrentLevel();
+
+for (songId in currentLevel.getSongs())
+{
+    if (
+        songId == 'piece-by-piece' &&
+        !showPieceByPiece
+    )
+    {
+        continue;
+    }
+
+    var song:Song =
+        SongRegistry.instance.fetchEntry(
+            songId,
+            {
+                variation:
+                    Constants.DEFAULT_VARIATION
+            }
+        );
+
+    if (song == null)
+    {
+        displayNames.push('Unknown');
+    }
+    else
+    {
+        var displayName:String = song.songName;
+        var parenthesis:Int = displayName.indexOf('(');
+        if (parenthesis >= 0)
+        {
+            displayName = displayName.substr(0, parenthesis);
+        }
+        displayNames.push(StringTools.trim(displayName));
+    }
+}
+
+trackList.text =
+    '\n\n' +
+    displayNames.join('\n').toUpperCase();
+}
+
+override function update(elapsed:Float):Void
+{
+    super.update(elapsed);
+
+    updateMenuBeat();
+
+    
+    if (subState != null) return;
+    
+    if (acceptInputs && !selectedSomething && FlxG.keys.justPressed.F1)
+    {
+        if (StoryPopupSubState.openPopup(this, 'prologue', true)) return;
+    }
+    if (!checkedStoryPopups && !selectedSomething)
+    {
+        checkedStoryPopups = true;
+        
+        if (SwitcherooProgress.hasCompletedPrologue()
+            && !StoryPopupCatalog.parentWasSeen('prologue'))
+        {
+            if (StoryPopupSubState.openPopup(this, 'prologue')) return;
+        }
+    }
+
+    if (!acceptInputs || selectedSomething)
+        return;
+
+    if (difficultySelectorActive)
+    {
+        updateDifficultyControls();
+    }
+    else
+    {
+        updateWeekControls();
+    }
+}
+
+function updateWeekControls():Void
+{
+    if (controls.UI_LEFT_P)
+        updateSelection(-1);
+
+    if (controls.UI_RIGHT_P)
+        updateSelection(1);
+
+    if (controls.UI_UP_P)
+        updateSelection(-4);
+
+    if (controls.UI_DOWN_P)
+        updateSelection(4);
+
+    for (icon in weekIcons)
+    {
+        if (
+            icon != null &&
+            FlxG.mouse.overlaps(icon)
+        )
+        {
+            if (curSelected != icon.ID)
+            {
+                curSelected = icon.ID;
+                updateSelection(0);
+            }
+
+            if (FlxG.mouse.justPressed)
+            {
+                trySelectedWeek();
+            }
+        }
+    }
+
+    if (controls.ACCEPT_P)
+    {
+        trySelectedWeek();
+    }
+
+    if (controls.BACK_P)
+    {
+        returnToMainMenu();
+    }
+}
+
+function changeDifficulty(change:Int):Void
+{
+    if (!difficultySelectorActive)
+        return;
+
+    if (
+        availableDifficulties == null ||
+        availableDifficulties.length == 0
+    )
+    {
+        return;
+    }
+
+    currentDifficultyIndex += change;
+
+    if (currentDifficultyIndex < 0)
+    {
+        currentDifficultyIndex =
+            availableDifficulties.length - 1;
+    }
+
+    if (
+        currentDifficultyIndex >=
+        availableDifficulties.length
+    )
+    {
+        currentDifficultyIndex = 0;
+    }
+
+    currentDifficultyId =
+        availableDifficulties[
+            currentDifficultyIndex
+        ];
+
+    FunkinSound.playOnce(
+        Paths.sound('scrollMenu')
+    );
+
+    updateDifficultyVisual();
+}
+
+function updateDifficultyControls():Void
+{
+    if (controls.UI_LEFT_P)
+    {
+        changeDifficulty(-1);
+    }
+
+    if (controls.UI_RIGHT_P)
+    {
+        changeDifficulty(1);
+    }
+
+
+    if (controls.BACK_P)
+    {
+        closeDifficultySelector();
+        return;
+    }
+
+    if (controls.ACCEPT_P)
+    {
+        confirmDifficulty();
+    }
+}
+
+function closeDifficultySelector():Void
+{
+    difficultySelectorActive = false;
+
+    difficultySprite.visible = false;
+
+    FunkinSound.playOnce(
+        Paths.sound('cancelMenu')
+    );
+}
+
+function confirmDifficulty():Void
+{
+    if (!difficultySelectorActive)
+        return;
+
+    difficultySelectorActive = false;
+
+    difficultySprite.visible = false;
+
+    selectLevel(currentDifficultyId);
+}
+
+function trySelectedWeek():Void
+{
+    var selectedWeek:Dynamic =
+        weeks[curSelected];
+
+    if (
+        selectedWeek.locked == true ||
+        selectedWeek.levelId == null
+    )
+    {
+        FunkinSound.playOnce(
+            Paths.sound('cancelMenu')
+        );
+
+        return;
+    }
+
+    openDifficultySelector();
+}
+
+    function updateMenuBeat():Void
+    {
+        if (FlxG.sound.music == null)
+            return;
+
+        var crochet:Float = 60000 / menuBPM;
+
+        var currentBeat:Int = Math.floor(
+            FlxG.sound.music.time / crochet
+        );
+
+        if (currentBeat == lastMenuBeat)
+            return;
+
+        lastMenuBeat = currentBeat;
+
+        if (logoBump != null)
+        {
+            logoBump.animation.play(
+                'bump',
+                true
+            );
+        }
+    }
+
+function openDifficultySelector():Void
+{
+    if (currentLevel == null)
+    {
+        FunkinSound.playOnce(
+            Paths.sound('skyBack')
+        );
+
+        return;
+    }
+
+    if (!currentLevel.isUnlocked())
+    {
+        FunkinSound.playOnce(
+            Paths.sound('skyBack')
+        );
+
+        return;
+    }
+
+    availableDifficulties =
+        currentLevel.getDifficulties();
+
+    if (
+        availableDifficulties == null ||
+        availableDifficulties.length == 0
+    )
+    {
+        availableDifficulties = ['normal'];
+    }
+
+    registerDifficultyAnimations();
+
+    currentDifficultyIndex =
+        availableDifficulties.indexOf('normal');
+
+    if (currentDifficultyIndex < 0)
+        currentDifficultyIndex = 0;
+
+    currentDifficultyId =
+        availableDifficulties[
+            currentDifficultyIndex
+        ];
+
+    difficultySelectorActive = true;
+    difficultySprite.visible = true;
+
+    updateDifficultyVisual();
+
+    FunkinSound.playOnce(
+        Paths.sound('confirmMenu')
+    );
+}
+
+function registerDifficultyAnimations():Void
+{
+    if (difficultySprite == null)
+        return;
+
+    for (difficultyId in availableDifficulties)
+    {
+        if (
+            difficultySprite.animation.getByName(
+                difficultyId
+            ) != null
+        )
+        {
+            continue;
+        }
+
+        difficultySprite.animation.addByPrefix(
+            difficultyId,
+            'diff_' + difficultyId,
+            24,
+            true
+        );
+    }
+}
+
+function updateDifficultyVisual():Void
+{
+    if (
+        difficultySprite == null ||
+        currentDifficultyId == null
+    )
+    {
+        return;
+    }
+
+    var difficultyAnimation =
+        difficultySprite.animation.getByName(
+            currentDifficultyId
+        );
+
+    if (difficultyAnimation != null)
+    {
+        difficultySprite.animation.play(
+            currentDifficultyId,
+            true
+        );
+    }
+    else
+    {
+        trace(
+            'No existe la animación para dificultad: ' +
+            currentDifficultyId +
+            ' | Se esperaba el prefijo: diff_' +
+            currentDifficultyId
+        );
+
+       
+        if (
+            difficultySprite.animation.getByName(
+                'normal'
+            ) != null
+        )
+        {
+            difficultySprite.animation.play(
+                'normal',
+                true
+            );
+        }
+    }
+
+    difficultySprite.updateHitbox();
+}
+
+    public function selectLevel(difficulty:String):Void
+    {
+        if (
+            !acceptInputs ||
+            selectedSomething ||
+            currentLevel == null
+        )
+        {
+            return;
+        }
+
+        if (!currentLevel.isUnlocked())
+        {
+            FunkinSound.playOnce(
+                Paths.sound('skyBack')
+            );
+
+            return;
+        }
+
+        acceptInputs = false;
+        selectedSomething = true;
+
+        persistentUpdate = false;
+
+        FunkinSound.playOnce(
+            Paths.sound('confirmMenu')
+        );
+
+        storyCursor.visible = false;
+
+var selectedIcon:FlxSprite =
+    weekIcons[curSelected];
+
+FlxFlicker.flicker(
+    selectedIcon,
+    1,
+    0.06,
+    false,
+    false
+);
+
+        PlayStatePlaylist.playlistSongIds =
+            currentLevel.getSongs();
+
+        PlayStatePlaylist.isStoryMode = true;
+                        ModuleHandler
+                    .getModule('SwitcherooMenuHandler')
+                    .scriptCall(
+                        'setStory', [PlayStatePlaylist.isStoryMode]
+                    );
+        PlayStatePlaylist.campaignScore = 0;
+
+        PlayStatePlaylist.campaignId =
+            currentLevel.id;
+
+        PlayStatePlaylist.campaignTitle =
+            currentLevel.getTitle();
+
+        PlayStatePlaylist.campaignDifficulty =
+            difficulty;
+
+        if (
+            PlayStatePlaylist.playlistSongIds == null ||
+            PlayStatePlaylist.playlistSongIds.length == 0
+        )
+        {
+            trace(
+                'El level no contiene canciones: ' +
+                currentLevel.id
+            );
+
+            resetSelection();
+            return;
+        }
+
+        var targetSongId:String =
+            PlayStatePlaylist.playlistSongIds.shift();
+
+        var targetSong:Song =
+            SongRegistry.instance.fetchEntry(
+                targetSongId,
+                {
+                    variation:
+                        Constants.DEFAULT_VARIATION
+                }
+            );
+
+        if (targetSong == null)
+        {
+            trace(
+                'No se encontró la canción: ' +
+                targetSongId
+            );
+
+            resetSelection();
+            return;
+        }
+
+        new FlxTimer().start(
+            1,
+            function(timer:FlxTimer)
+            {
+                var targetVariation:String =
+                    targetSong.getFirstValidVariation(
+                        difficulty
+                    );
+
+                FlxTransitionableState.skipNextTransIn =
+                    false;
+
+                FlxTransitionableState.skipNextTransOut =
+                    false;
+
+                FlxG.camera.fade(
+                    0xFF000000,
+                    0.2,
+                    false,
+                    function()
+                    {
+                        LoadingState.loadPlayState(
+                        {
+                            targetSong: targetSong,
+                            targetDifficulty: difficulty,
+                            targetVariation:
+                                targetVariation
+                        },
+                        true
+                        );
+                    }
+                );
+            }
+        );
+    }
+
+function resetSelection():Void
+{
+    acceptInputs = true;
+    selectedSomething = false;
+    persistentUpdate = true;
+
+    storyCursor.visible = true;
+
+    var selectedIcon:FlxSprite =
+        weekIcons[curSelected];
+
+    if (selectedIcon != null)
+    {
+        selectedIcon.visible = true;
+
+        selectedIcon.animation.play(
+            'idle',
+            true
+        );
+    }
+}
+
+    function returnToMainMenu():Void
+    {
+        if (!acceptInputs)
+            return;
+
+        acceptInputs = false;
+
+        FunkinSound.playOnce(
+            Paths.sound('cancelMenu')
+        );
+
+			FlxG.switchState(ScriptedMusicBeatState.init('switcheroo.states.SwitcherooMainMenuState'));
+    }
+
+    override function closeSubState():Void
+    {
+        
+        if (Std.isOfType(subState, StoryPopupSubState) && subState.allowClose != true) return;
+        super.closeSubState();
+
+        if (!selectedSomething)
+        {
+            persistentUpdate = true;
+            acceptInputs = true;
+        }
+    }
+}

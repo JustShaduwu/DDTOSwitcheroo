@@ -1,0 +1,18 @@
+import funkin.play.notes.notekind.ScriptedNoteKind;
+import funkin.graphics.FunkinSprite;
+import funkin.play.PlayState;
+
+using StringTools;
+
+class AzaleaNoteKind extends ScriptedNoteKind
+{
+	public function new()
+	{
+		super("azalea", "Azalea Sing");
+	}
+
+	function onNoteHit(callback) {
+		super.onNoteHit(callback);
+		this.noanim = true;
+	}
+}

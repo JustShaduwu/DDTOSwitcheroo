@@ -1,0 +1,64 @@
+{
+ "version": "2.2.4",
+ "songName": "College Dispute",
+ "artist": "STR09 & AquaKnight11",
+ "charter": "STR09",
+ "divisions": 96,
+ "pause": "manuel",
+ "looped": false,
+ "offsets": {
+  "instrumental": 0,
+  "altInstrumentals": {  },
+  "vocals": {  },
+  "altVocals": {  }
+ },
+ "playData": {
+  "songVariations": [],
+  "difficulties": [
+   "easy", "normal", "hard"
+  ],
+  "characters": {
+   "player": "pixelkaity-new",
+   "girlfriend": "Pixel Chris",
+   "opponent": "manuel-pixel",
+   "instrumental": "",
+   "altInstrumentals": [],
+   "opponentVocals": [
+    "manuel-pixel"
+   ],
+   "playerVocals": [
+    "pixelkaity-new"
+   ]
+  },
+  "stage": "schoolErect-switcheroo",
+  "noteStyle": "ddtspixel",
+  "ratings": {
+   "easy": 0,
+   "hard": 0,
+   "normal": 3
+  },
+  "previewStart": 0,
+  "stickerPack": "switcheroo-prologue",
+  "previewEnd": 0
+ },
+ "generatedBy": "Friday Night Funkin' - v0.8.1",
+ "timeFormat": "ms",
+ "timeChanges": [
+  {
+   "t": 0,
+   "b": 0,
+   "bpm": 135,
+   "n": 4,
+   "d": 4,
+   "bt": [4, 4, 4, 4]
+  },
+  {
+   "t": 28453.6667,
+   "b": 64.0208,
+   "bpm": 135,
+   "n": 4,
+   "d": 4,
+   "bt": [4, 4, 4, 4]
+  }
+ ]
+}

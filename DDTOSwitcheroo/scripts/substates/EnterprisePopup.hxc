@@ -1,0 +1,136 @@
+package switcheroo.substates;
+
+import DesktopTheme;
+import flixel.FlxG;
+import flixel.FlxSprite;
+import flixel.text.FlxText;
+import funkin.Paths;
+import funkin.PlayerSettings;
+import funkin.ui.MusicBeatSubState;
+import LanguageManager;
+import lime.utils.Assets;
+import openfl.geom.Rectangle;
+
+
+class EnterprisePopup extends MusicBeatSubState
+{
+    var singleButton:Bool = false;
+    var title:String;
+    var message:String;
+    var onResult:Bool->Void;
+    var buttons:Array<Dynamic> = [];
+    var ready:Bool = false;
+    var finished:Bool = false;
+    var selection:Int = 1;
+    var keyboardSelection:Bool = false;
+    var uiScale:Float;
+    var left:Float;
+    var top:Float;
+
+    public function new(title:String, message:String, onResult:Bool->Void = null, useSingleButton:Bool = false)
+    {
+        super();
+        this.title = title;
+        this.message = message;
+        this.onResult = onResult;
+        singleButton = useSingleButton;
+        if (useSingleButton) selection = 0;
+    }
+
+    public function useOkButton():Void
+    {
+        singleButton = true;
+        selection = 0;
+    }
+
+    override function create():Void
+    {
+        super.create();
+        DesktopTheme.attach(this);
+        if (Assets.exists(Paths.sound('popUpOS'))) FlxG.sound.play(Paths.sound('popUpOS'));
+        persistentUpdate = false;
+        uiScale = Math.min(FlxG.width / 1280, FlxG.height / 720);
+        left = (FlxG.width - 640 * uiScale) / 2;
+        top = (FlxG.height - 400 * uiScale) / 2;
+        add(new FlxSprite().makeGraphic(FlxG.width, FlxG.height, 0x88000000));
+        var panel = DesktopTheme.load(this, new FlxSprite(left, top), 'enterprise/popup');
+        panel.setGraphicSize(Std.int(640 * uiScale), Std.int(400 * uiScale));
+        panel.updateHitbox();
+        panel.antialiasing = true;
+        add(panel);
+        text(title, 24, 5, 592, 20, true);
+        var question = text(message, 32, 140, 576, 22, false);
+        question.alignment = 'center';
+        
+        if (question.height > 105 * uiScale)
+        {
+            question.y = top + 60 * uiScale;
+            while (question.height > 190 * uiScale && question.size > Std.int(14 * uiScale))
+                question.size -= 1;
+        }
+        for (i in 0...(singleButton ? 1 : 2))
+        {
+            var buttonX = singleButton ? 220 : 88 + i * 264;
+            var x = left + buttonX * uiScale;
+            var y = top + 265 * uiScale;
+            var border = DesktopTheme.solid(new FlxSprite(x, y), Std.int(200 * uiScale), Std.int(40 * uiScale), DesktopTheme.getColor('desktop_color1'), true);
+            var edge = Std.int(Math.max(1, uiScale));
+            border.pixels.fillRect(new Rectangle(edge, edge, border.frameWidth - edge * 2, border.frameHeight - edge * 2), 0x00000000);
+            border.dirty = true;
+            add(border);
+            var fill = DesktopTheme.solid(new FlxSprite(x + uiScale, y + uiScale), Std.int(198 * uiScale), Std.int(38 * uiScale), DesktopTheme.getColor('selected_text'));
+            fill.alpha = 0;
+            add(fill);
+            var label = text(singleButton ? LanguageManager.getTranslation('popup_ok', 'OK').toUpperCase() : LanguageManager.getTranslation(i == 0 ? 'popup_yes' : 'popup_no', i == 0 ? 'Yes' : 'No'), buttonX, 270, 200, 21, false);
+            label.alignment = 'center';
+            buttons.push({area: border, fill: fill, label: label});
+        }
+    }
+
+    function text(value:String, x:Float, y:Float, width:Float, size:Int, bold:Bool):FlxText
+    {
+        var label = new FlxText(left + x * uiScale, top + y * uiScale, width * uiScale, value);
+        label.setFormat(Paths.font(bold ? 'HKGrotesk-Bold.otf' : 'GoNotoCurrent.ttf'), Std.int(size * uiScale), DesktopTheme.getColor('desktop_color1'));
+        label.antialiasing = true;
+        add(label);
+        return label;
+    }
+
+    override function update(elapsed:Float):Void
+    {
+        super.update(elapsed);
+        if (finished) return;
+        var controls = PlayerSettings.player1.controls;
+        if (!ready)
+        {
+            ready = !FlxG.mouse.pressed && !controls.ACCEPT_P && !controls.BACK_P;
+            return;
+        }
+        if (controls.BACK_P) { finish(false); return; }
+        if (controls.UI_LEFT_P) { selection = 0; keyboardSelection = true; }
+        if (controls.UI_RIGHT_P && !singleButton) { selection = 1; keyboardSelection = true; }
+        for (i in 0...buttons.length)
+        {
+            var button = buttons[i];
+            var hover = FlxG.mouse.overlaps(button.area);
+            button.label.color = hover ? DesktopTheme.getColor('desktop_color2') : DesktopTheme.getColor('desktop_color1');
+            button.fill.alpha = (hover || (keyboardSelection && selection == i)) ? 0.25 : 0;
+            if (hover && FlxG.mouse.justPressed) { finish(i == 0); return; }
+        }
+        if (controls.ACCEPT_P) finish(selection == 0);
+    }
+
+    function finish(confirmed:Bool):Void
+    {
+        if (finished) return;
+        finished = true;
+        var callback = onResult;
+        close();
+        if (callback != null) callback(confirmed);
+    }
+    override function destroy():Void
+    {
+        DesktopTheme.release(this);
+        super.destroy();
+    }
+}

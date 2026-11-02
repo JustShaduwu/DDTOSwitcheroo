@@ -1,0 +1,289 @@
+import funkin.play.PlayState;
+import funkin.play.song.Song;
+import funkin.modding.module.ModuleHandler;
+import flixel.tweens.FlxTween;
+import flixel.FlxSprite;
+import funkin.play.PlayStatePlaylist;
+
+class DeathByDeathSong extends Song
+{
+    var hasPlayedIntroCutscene:Bool;
+    var hasPlayedOutroCutscene:Bool;
+
+    var fakeDeath:Bool;
+
+    var blackScreen:FlxSprite;
+
+
+    public function new()
+    {
+        super('death-by-death');
+    }
+
+
+    public override function onCreate(event):Void
+    {
+        super.onCreate(event);
+
+
+		blackScreen = new FlxSprite(-FlxG.width * FlxG.camera.zoom, -FlxG.height * FlxG.camera.zoom).makeGraphic(FlxG.width * 3, FlxG.height * 3, 0xFF000000);
+		blackScreen.scrollFactor.set();
+		blackScreen.alpha = 1;
+		PlayState.instance.add(blackScreen);
+        
+        hasPlayedIntroCutscene =
+            false;
+
+
+        hasPlayedOutroCutscene =
+            false;
+
+
+        fakeDeath =
+            true;
+
+        setEvil();
+    }
+
+    public override function onCountdownStart(event):Void
+    {
+        super.onCountdownStart(event);
+
+        if (!PlayStatePlaylist.isStoryMode)
+           hasPlayedIntroCutscene = true;
+
+        if (hasPlayedIntroCutscene)
+        {
+            return;
+        }
+
+
+        if (
+            PlayState.instance == null ||
+            PlayState.instance.currentStage == null ||
+            PlayState.instance.isMinimalMode
+        )
+        {
+            hasPlayedIntroCutscene =
+                true;
+
+            return;
+        }
+
+
+        hasPlayedIntroCutscene =
+            true;
+
+
+        event.cancel();
+
+
+        PlayState.instance.isInCutscene =
+            true;
+
+
+        startIntroDialogue();
+    }
+
+
+    function startIntroDialogue():Void
+    {
+        var dialogueManager =
+            ModuleHandler.getModule(
+                'DialogueManager'
+            );
+
+
+        if (dialogueManager == null)
+        {
+            finishIntroCutscene();
+
+            return;
+        }
+
+
+        dialogueManager.scriptCall(
+            'startDialogue',
+            [
+                'dialogue/conversations/death by death/IntroDialogue',
+
+                function()
+                {
+                    finishIntroCutscene();
+                }
+            ]
+        );
+    }
+
+
+    function finishIntroCutscene():Void
+    {
+        PlayState.instance.isInCutscene =
+            false;
+
+
+        PlayState.instance.startCountdown();
+    }
+
+    public override function onSongEnd(event):Void
+    {
+        super.onSongEnd(event);
+        var missing = ModuleHandler.getModule('MissingMode');
+        if (missing != null && missing.scriptCall('interceptSongEnd', [event]) == true) return;
+
+
+        if (!PlayStatePlaylist.isStoryMode)
+            hasPlayedOutroCutscene = true;
+
+        if (fakeDeath)
+        {
+            fakeDeath =
+                false;
+
+
+            event.cancel();
+
+
+            triggerFakeDeath();
+
+
+            return;
+        }
+
+        if (!hasPlayedOutroCutscene)
+        {
+            hasPlayedOutroCutscene =
+                true;
+
+
+            event.cancel();
+
+
+            PlayState.instance.isInCutscene =
+                true;
+
+
+            startEndDialogue();
+
+
+            return;
+        }
+    }
+
+    function triggerFakeDeath():Void
+    {
+        if (PlayState.instance == null)
+        {
+            return;
+        }
+
+
+        PlayState.instance.shouldSubstatePause =
+            true;
+
+
+        PlayState.instance.openSubState(
+            new switcheroo.substates.FakeGameOverSubState(
+                function()
+                {
+                    PlayState.instance.endSong();
+                }
+            )
+        );
+    }
+
+    function startEndDialogue():Void
+    {
+        var dialogueManager =
+            ModuleHandler.getModule(
+                'DialogueManager'
+            );
+
+
+        if (dialogueManager == null)
+        {
+            finishOutroCutscene();
+
+            return;
+        }
+
+
+        dialogueManager.scriptCall(
+            'startDialogue',
+            [
+                'dialogue/conversations/death by death/EndDialogue',
+
+                function()
+                {
+                    finishOutroCutscene();
+                }
+            ]
+        );
+    }
+
+
+    function finishOutroCutscene():Void
+    {
+        PlayState.instance.isInCutscene =
+            false;
+
+        PlayState.instance.endSong();
+    }
+
+    function setEvil():Void
+    {
+        if (
+            PlayState.instance == null ||
+            PlayState.instance.currentStage == null
+        )
+        {
+            return;
+        }
+
+        if (PlayState.instance.isMinimalMode)
+        {
+            return;
+        }
+
+        PlayState.instance.currentStage.evilSchool();
+    }
+
+    public override function onSongRetry(event):Void
+    {
+        super.onSongRetry(event);
+
+        blackScreen.alpha = 1;
+
+        hasPlayedIntroCutscene =
+            true;
+
+        hasPlayedOutroCutscene =
+            false;
+
+
+        fakeDeath =
+            true;
+
+        setEvil();
+    }
+
+	function onStepHit(event:SongTimeScriptEvent):Void
+		{	
+			switch(event.step)
+			{
+				case 0:
+					FlxTween.tween(blackScreen, {alpha: 0}, 0.5);
+				case 271:
+					blackScreen.alpha = 1;
+				case 288:
+					blackScreen.alpha = 0;
+				case 1840:
+					blackScreen.alpha = 1;
+				case 1855:
+					blackScreen.alpha = 0;
+				case 2110:
+					FlxTween.tween(blackScreen, {alpha: 1}, 1);
+			}
+
+		}
+}

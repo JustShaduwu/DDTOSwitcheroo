@@ -1,0 +1,992 @@
+import funkin.play.PlayState;
+import funkin.play.event.ScriptedSongEvent;
+
+import funkin.modding.module.ModuleHandler;
+
+import flixel.FlxG;
+import flixel.FlxSprite;
+
+import flixel.util.FlxColor;
+import flixel.util.FlxTimer;
+
+import flixel.tweens.FlxTween;
+import flixel.tweens.FlxEase;
+import funkin.play.Countdown;
+
+class BadAppleEvent extends ScriptedSongEvent
+{
+ 
+  var whitebg:FlxSprite;
+
+
+ 
+  var whitebgStage:Dynamic;
+
+
+ 
+  var missRecolorTimer:FlxTimer;
+
+
+
+var currentActivation:Int = 0;
+
+
+  public function new()
+  {
+    super('BadAppleEvent');
+  }
+
+
+ 
+
+  function setMissRecolorActive(
+    value:Bool
+  ):Void
+  {
+    var missRecolor =
+      ModuleHandler.getModule(
+        'MissRecolor'
+      );
+
+    if (missRecolor == null)
+      return;
+
+    missRecolor.scriptCall(
+      'setRecolorActive',
+      [
+        value
+      ]
+    );
+  }
+
+
+  function cancelMissRecolorTimer():Void
+  {
+    if (missRecolorTimer == null)
+      return;
+
+    missRecolorTimer.cancel();
+    missRecolorTimer = null;
+  }
+
+
+  function restoreMissRecolorAfter(
+    duration:Float
+  ):Void
+  {
+    cancelMissRecolorTimer();
+
+
+   
+    if (duration <= 0)
+    {
+      setMissRecolorActive(
+        true
+      );
+
+      return;
+    }
+
+
+    missRecolorTimer =
+      new FlxTimer().start(
+        duration,
+        function(timer:FlxTimer)
+        {
+          missRecolorTimer = null;
+
+
+         
+if (currentActivation == 0)
+{
+  setMissRecolorActive(
+    true
+  );
+}
+        }
+      );
+  }
+
+
+ 
+
+  public override function handleEvent(
+    data
+  ):Void
+  {
+    if (
+      PlayState.instance == null ||
+      PlayState.instance.isMinimalMode
+    )
+    {
+      return;
+    }
+
+
+   
+    ensureWhiteBackground();
+
+
+    var activation:Int =
+      Std.int(
+        data.value.activation ?? 0
+      );
+
+
+    var speed:Float =
+      Std.parseFloat(
+        Std.string(
+          data.value.speed ?? 0.5
+        )
+      );
+
+
+    if (Math.isNaN(speed))
+    {
+      speed = 0.5;
+    }
+
+
+    badApple(
+      activation,
+      Math.max(
+        0,
+        speed
+      )
+    );
+  }
+
+
+ 
+
+  function ensureWhiteBackground():Void
+  {
+    if (PlayState.instance == null)
+      return;
+
+
+    var currentStage =
+      PlayState.instance.currentStage;
+
+
+   
+    if (
+      whitebg != null &&
+      whitebgStage != currentStage
+    )
+    {
+      FlxTween.cancelTweensOf(
+        whitebg
+      );
+
+      whitebg = null;
+      whitebgStage = null;
+
+
+     
+      currentActivation = 0;
+
+      cancelMissRecolorTimer();
+
+      setMissRecolorActive(
+        true
+      );
+    }
+
+
+   
+    if (whitebg != null)
+      return;
+
+
+    whitebg =
+      new FlxSprite();
+
+
+    whitebg.makeGraphic(
+      FlxG.width * 4,
+      FlxG.height * 4,
+      FlxColor.WHITE
+    );
+
+
+    whitebg.scrollFactor.set(
+      0,
+      0
+    );
+
+
+    whitebg.screenCenter();
+
+
+   
+    whitebg.alpha = 0;
+    whitebg.visible = false;
+    whitebg.color = FlxColor.WHITE;
+
+
+    whitebg.cameras =
+    [
+      PlayState.instance.camGame
+    ];
+
+
+    whitebgStage =
+      currentStage;
+
+
+    addBackgroundToStage();
+  }
+
+
+ 
+
+  function addBackgroundToStage():Void
+  {
+    if (
+      PlayState.instance == null ||
+      whitebg == null
+    )
+    {
+      return;
+    }
+
+
+    var stage =
+      PlayState.instance.currentStage;
+
+
+   
+    if (stage == null)
+    {
+      PlayState.instance.add(
+        whitebg
+      );
+
+      return;
+    }
+
+
+   
+    var gf =
+      stage.getGirlfriend();
+
+
+    if (gf != null)
+    {
+      var gfIndex:Int =
+        stage.members.indexOf(
+          gf
+        );
+
+
+      if (gfIndex >= 0)
+      {
+        stage.insert(
+          gfIndex,
+          whitebg
+        );
+
+        return;
+      }
+    }
+
+
+   
+    var insertIndex:Int =
+      stage.members.length;
+
+
+    var characters:Array<Dynamic> =
+    [
+      stage.getBoyfriend(),
+      stage.getDad(),
+      stage.getGirlfriend()
+    ];
+
+
+    for (character in characters)
+    {
+      if (character == null)
+        continue;
+
+
+      var index:Int =
+        stage.members.indexOf(
+          character
+        );
+
+
+      if (
+        index >= 0 &&
+        index < insertIndex
+      )
+      {
+        insertIndex =
+          index;
+      }
+    }
+
+
+    if (
+      insertIndex >= 0 &&
+      insertIndex < stage.members.length
+    )
+    {
+      stage.insert(
+        insertIndex,
+        whitebg
+      );
+    }
+    else
+    {
+     
+      stage.insert(
+        0,
+        whitebg
+      );
+    }
+  }
+
+
+ 
+
+  function badApple(
+    activation:Int,
+    speed:Float
+  ):Void
+  {
+    if (
+      PlayState.instance == null ||
+      whitebg == null
+    )
+    {
+      return;
+    }
+
+
+    var stage =
+      PlayState.instance.currentStage;
+
+
+    if (stage == null)
+      return;
+
+
+   
+    currentActivation =
+      activation;
+
+
+    var boyfriend =
+      stage.getBoyfriend();
+
+    var dad =
+      stage.getDad();
+
+    var gf =
+      stage.getGirlfriend();
+
+
+   
+
+    FlxTween.cancelTweensOf(
+      whitebg
+    );
+
+
+if (boyfriend != null)
+{
+  FlxTween.cancelTweensOf(
+    boyfriend
+  );
+
+  if (boyfriend.colorTransform != null)
+  {
+    FlxTween.cancelTweensOf(
+      boyfriend.colorTransform
+    );
+  }
+}
+
+if (dad != null)
+{
+  FlxTween.cancelTweensOf(
+    dad
+  );
+
+  if (dad.colorTransform != null)
+  {
+    FlxTween.cancelTweensOf(
+      dad.colorTransform
+    );
+  }
+}
+
+if (gf != null)
+{
+  FlxTween.cancelTweensOf(
+    gf
+  );
+
+  if (gf.colorTransform != null)
+  {
+    FlxTween.cancelTweensOf(
+      gf.colorTransform
+    );
+  }
+}
+
+   
+
+    switch (activation)
+    {
+
+case 0:
+
+  setMissRecolorActive(false);
+
+  FlxTween.tween(
+    whitebg,
+    {
+      alpha: 0
+    },
+    speed,
+    {
+      ease: FlxEase.sineOut,
+
+      onComplete:
+        function(tween:FlxTween)
+        {
+          if (
+            whitebg != null &&
+            currentActivation == 0
+          )
+          {
+            whitebg.visible = false;
+          }
+        }
+    }
+  );
+
+  tweenCharacterColorReset(
+    dad,
+    speed
+  );
+
+  tweenCharacterColorReset(
+    gf,
+    speed
+  );
+
+  tweenCharacterColorReset(
+    boyfriend,
+    speed
+  );
+
+ 
+  if (gf != null)
+  {
+    FlxTween.tween(
+      gf,
+      {
+        alpha: 1
+      },
+      speed,
+      {
+        ease: FlxEase.sineOut
+      }
+    );
+  }
+
+  restoreMissRecolorAfter(
+    speed
+  );
+
+case 1:
+
+  cancelMissRecolorTimer();
+  setMissRecolorActive(false);
+
+  whitebg.visible = true;
+  whitebg.color = FlxColor.WHITE;
+
+  FlxTween.tween(
+    whitebg,
+    {
+      alpha: 1
+    },
+    speed,
+    {
+      ease: FlxEase.sineIn
+    }
+  );
+
+ 
+  if (gf != null)
+  {
+    FlxTween.tween(
+      gf,
+      {
+        alpha: 1
+      },
+      speed,
+      {
+        ease: FlxEase.sineIn
+      }
+    );
+  }
+
+  tweenCharacterSolidColor(
+    dad,
+    speed,
+    FlxColor.BLACK
+  );
+
+  tweenCharacterSolidColor(
+    gf,
+    speed,
+    FlxColor.BLACK
+  );
+
+  tweenCharacterSolidColor(
+    boyfriend,
+    speed,
+    FlxColor.BLACK
+  );
+
+case 2:
+
+  cancelMissRecolorTimer();
+  setMissRecolorActive(false);
+
+  whitebg.visible = true;
+  whitebg.color = FlxColor.BLACK;
+
+  FlxTween.tween(
+    whitebg,
+    {
+      alpha: 1
+    },
+    speed,
+    {
+      ease: FlxEase.sineIn
+    }
+  );
+
+ 
+  if (gf != null)
+  {
+    FlxTween.tween(
+      gf,
+      {
+        alpha: 0
+      },
+      speed,
+      {
+        ease: FlxEase.sineIn
+      }
+    );
+  }
+
+  tweenCharacterSolidColor(
+    boyfriend,
+    speed,
+    FlxColor.BLUE
+  );
+
+  tweenCharacterSolidColor(
+    dad,
+    speed,
+    FlxColor.RED
+  );
+
+
+      default:
+
+        trace(
+          'BadAppleEvent: activation desconocida: ' +
+          activation
+        );
+    }
+  }
+
+
+ 
+
+function tweenCharacterSolidColor(
+  character:Dynamic,
+  duration:Float,
+  targetColor:FlxColor
+):Void
+{
+  if (
+    character == null ||
+    character.colorTransform == null
+  )
+  {
+    return;
+  }
+
+
+ 
+  var colorInt:Int =
+    targetColor;
+
+
+  var targetRed:Float =
+    (colorInt >> 16) & 0xFF;
+
+  var targetGreen:Float =
+    (colorInt >> 8) & 0xFF;
+
+  var targetBlue:Float =
+    colorInt & 0xFF;
+
+
+ 
+  var values =
+  {
+    redMultiplier:
+      character.colorTransform.redMultiplier,
+
+    greenMultiplier:
+      character.colorTransform.greenMultiplier,
+
+    blueMultiplier:
+      character.colorTransform.blueMultiplier,
+
+    redOffset:
+      character.colorTransform.redOffset,
+
+    greenOffset:
+      character.colorTransform.greenOffset,
+
+    blueOffset:
+      character.colorTransform.blueOffset
+  };
+
+
+  FlxTween.tween(
+    values,
+    {
+     
+      redMultiplier: 0,
+      greenMultiplier: 0,
+      blueMultiplier: 0,
+
+
+     
+      redOffset:
+        targetRed,
+
+      greenOffset:
+        targetGreen,
+
+      blueOffset:
+        targetBlue
+    },
+    duration,
+    {
+      ease:
+        FlxEase.linear,
+
+
+      onUpdate:
+        function(tween:FlxTween)
+        {
+          if (character == null)
+            return;
+
+
+          character.setColorTransform(
+            values.redMultiplier,
+            values.greenMultiplier,
+            values.blueMultiplier,
+            1,
+
+            values.redOffset,
+            values.greenOffset,
+            values.blueOffset,
+            0
+          );
+        }
+    }
+  );
+}
+
+function tweenCharacterColorReset(
+  character:Dynamic,
+  duration:Float
+):Void
+{
+  if (character == null)
+    return;
+
+
+  var values =
+  {
+    redMultiplier:
+      character.colorTransform.redMultiplier,
+
+    greenMultiplier:
+      character.colorTransform.greenMultiplier,
+
+    blueMultiplier:
+      character.colorTransform.blueMultiplier,
+
+    redOffset:
+      character.colorTransform.redOffset,
+
+    greenOffset:
+      character.colorTransform.greenOffset,
+
+    blueOffset:
+      character.colorTransform.blueOffset
+  };
+
+
+  FlxTween.tween(
+    values,
+    {
+     
+      redMultiplier: 1,
+      greenMultiplier: 1,
+      blueMultiplier: 1,
+
+      redOffset: 0,
+      greenOffset: 0,
+      blueOffset: 0
+    },
+    duration,
+    {
+      ease:
+        FlxEase.linear,
+
+      onUpdate:
+        function(tween:FlxTween)
+        {
+          if (character == null)
+            return;
+
+          character.setColorTransform(
+            values.redMultiplier,
+            values.greenMultiplier,
+            values.blueMultiplier,
+            1,
+
+            values.redOffset,
+            values.greenOffset,
+            values.blueOffset,
+            0
+          );
+        }
+    }
+  );
+}
+ 
+
+  function resetBadApple():Void
+  {
+   
+
+    cancelMissRecolorTimer();
+
+
+   
+
+    if (whitebg != null)
+    {
+      FlxTween.cancelTweensOf(
+        whitebg
+      );
+
+
+      whitebg.alpha =
+        0;
+
+
+      whitebg.visible =
+        false;
+
+
+      whitebg.color =
+        FlxColor.WHITE;
+    }
+
+
+   
+
+    if (
+      PlayState.instance != null &&
+      PlayState.instance.currentStage != null
+    )
+    {
+      var stage =
+        PlayState.instance.currentStage;
+
+
+      var boyfriend =
+        stage.getBoyfriend();
+
+      var dad =
+        stage.getDad();
+
+      var gf =
+        stage.getGirlfriend();
+
+
+      resetCharacterColor(
+        boyfriend
+      );
+
+
+      resetCharacterColor(
+        dad
+      );
+
+
+      resetCharacterColor(
+        gf
+      );
+    }
+
+
+   
+    setMissRecolorActive(
+      true
+    );
+
+
+    currentActivation =
+      0;
+  }
+
+
+function resetCharacterColor(
+  character:Dynamic
+):Void
+{
+  if (character == null)
+    return;
+
+  FlxTween.cancelTweensOf(
+    character
+  );
+
+  if (character.colorTransform != null)
+  {
+    FlxTween.cancelTweensOf(
+      character.colorTransform
+    );
+  }
+
+  character.setColorTransform(
+    1,
+    1,
+    1,
+    1,
+
+    0,
+    0,
+    0,
+    0
+  );
+
+  character.color =
+    FlxColor.WHITE;
+
+ 
+  character.alpha =
+    1;
+}
+
+function ensureReset()
+{
+	    resetBadApple();
+
+    whitebg =
+      null;
+
+
+    whitebgStage =
+      null;
+}
+	public function onCountdownStart(event):Void {
+		super.onCountdownStart(event);
+    ensureReset();
+	}
+
+ 
+
+  public function onSongRetry(
+    event
+  ):Void
+  {
+    ensureReset();
+  }
+
+
+ 
+
+  public function onStateChangeBegin(
+    event
+  ):Void
+  {
+    ensureReset();
+  }
+
+
+ 
+
+ public function getEventSchema()
+{
+  return [
+    {
+      name:
+        'activation',
+
+      title:
+        'Mode',
+
+      defaultValue:
+        0,
+
+      type:
+        'enum',
+
+      keys:
+      [
+        'Off' => 0,
+        'Black silhouettes' => 1,
+        'Red and blue' => 2
+      ]
+    },
+
+    {
+      name:
+        'speed',
+
+      title:
+        'Transition speed',
+
+      defaultValue:
+        0.5,
+
+      type:
+        'float',
+
+      step:
+        0.1,
+
+      min:
+        0
+    }
+  ];
+}
+
+  public function getTitle():String
+  {
+    return 'Bad Apple';
+  }
+}

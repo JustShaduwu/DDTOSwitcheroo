@@ -1,0 +1,104 @@
+{
+	"version": "1.0.0",
+	"renderType": "sparrow",
+	"offsets": [
+		10,
+		-17
+	],
+	"danceEvery": 1,
+	"scale": 6,
+	"name": "Manu",
+	"cameraOffsets": [
+		0,
+		100
+	],
+	"flipX": false,
+	"startingAnimation": "idle",
+	"isPixel": true,
+	"singTime": 8,
+	"flipY": false,
+	"healthIcon": {
+		"isPixel": false,
+		"offsets": [
+			0,
+			0
+		],
+		"scale": 1,
+		"id": "Manu-pixel",
+		"flipX": false
+	},
+	"assetPath": "gameplay/characters/manu-pixel/Manu",
+	"generatedBy": "Nova Character Editor v3.0.1",
+	"animations": [
+		{
+			"offsets": [
+				0,
+				0
+			],
+			"frameIndices": [],
+			"prefix": "Idle",
+			"name": "idle",
+			"looped": false,
+			"flipX": false,
+			"flipY": false,
+			"frameRate": 16,
+			"assetPath": null
+		},
+		{
+			"offsets": [
+				0,
+				0
+			],
+			"frameIndices": [],
+			"prefix": "Left",
+			"name": "singLEFT",
+			"looped": false,
+			"flipX": false,
+			"flipY": false,
+			"frameRate": 16,
+			"assetPath": null
+		},
+		{
+			"offsets": [
+				1,
+				0
+			],
+			"frameIndices": [],
+			"prefix": "Right",
+			"name": "singRIGHT",
+			"looped": false,
+			"flipX": false,
+			"flipY": false,
+			"frameRate": 16,
+			"assetPath": null
+		},
+		{
+			"offsets": [
+				0,
+				0
+			],
+			"frameIndices": [],
+			"prefix": "Up",
+			"name": "singUP",
+			"looped": false,
+			"flipX": false,
+			"flipY": false,
+			"frameRate": 16,
+			"assetPath": null
+		},
+		{
+			"offsets": [
+				0,
+				0
+			],
+			"frameIndices": [],
+			"prefix": "Down",
+			"name": "singDOWN",
+			"looped": false,
+			"flipX": false,
+			"flipY": false,
+			"frameRate": 16,
+			"assetPath": null
+		}
+	]
+}

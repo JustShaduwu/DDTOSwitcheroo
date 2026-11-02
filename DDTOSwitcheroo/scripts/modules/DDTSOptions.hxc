@@ -1,0 +1,138 @@
+package skyredux.modules;
+
+import funkin.save.Save;
+import funkin.util.ReflectUtil;
+import funkin.modding.module.Module;
+import funkin.modding.module.ModuleHandler;
+import funkin.ui.ScriptedMusicBeatState;
+import funkin.ui.options.OptionsState;
+import haxe.ds.StringMap;
+
+class DDTSOptions extends Module
+{
+    function new()
+    {
+        super(
+            'DDTSOptions',
+            1,
+            {state: OptionsState}
+        );
+
+
+        if (
+            !Save.instance.modOptions.exists(
+                'switcherooHUD'
+            )
+        )
+        {
+            Save.instance.modOptions.set(
+                'switcherooHUD',
+                true
+            );
+        }
+
+
+        if (
+            !Save.instance.modOptions.exists(
+                'timeTxt_type'
+            )
+        )
+        {
+            Save.instance.modOptions.set(
+                'timeTxt_type',
+                'Time Left'
+            );
+        }
+    }
+
+
+    public function onStateChangeEnd(event)
+    {
+        super.onStateChangeEnd(event);
+
+
+        if (
+            !Std.isOfType(
+                event.targetState,
+                OptionsState
+            )
+        )
+        {
+            return;
+        }
+
+
+        var preferences =
+            event.targetState
+                .optionsCodex
+                .pages
+                .get('preferences');
+
+
+       
+
+        preferences.createPrefItemCheckbox(
+            'Toggle Switcheroo UI',
+            'When enabled, toggle the HUD seeing in Doki Doki Takeover Switcheroo 1.5 / 1.7',
+            function(value:Bool)
+            {
+                Save.instance.modOptions.set(
+                    'switcherooHUD',
+                    value
+                );
+
+                Save.instance.flush();
+            },
+            Save.instance.modOptions.get(
+                'switcherooHUD'
+            )
+        );
+
+
+       
+
+var timeTxtValues =
+    new StringMap();
+
+        timeTxtValues.set(
+            'Time Left',
+            'Time Left'
+        );
+
+        timeTxtValues.set(
+            'Time Elapsed',
+            'Time Elapsed'
+        );
+
+        timeTxtValues.set(
+            'Song Progress',
+            'Song Progress'
+        );
+
+        timeTxtValues.set(
+            'Song Name',
+            'Song Name'
+        );
+
+
+        timeTxtValues.set('No Timebar', 'No Timebar');
+
+        preferences.createPrefItemEnum(
+            'Timebar Display Text',
+            'Changes what the time bar displays.',
+            timeTxtValues,
+            function(key:String, value:String)
+            {
+                Save.instance.modOptions.set(
+                    'timeTxt_type',
+                    value
+                );
+
+                Save.instance.flush();
+            },
+            Save.instance.modOptions.get(
+                'timeTxt_type'
+            )
+        );
+    }
+}

@@ -1,0 +1,23 @@
+import funkin.play.PlayState;
+import flixel.addons.display.FlxBackdrop; 
+import funkin.play.song.Song;
+import funkin.play.Countdown;
+import flixel.util.FlxTimer;
+
+class ShinkyokuSwitcherooMixSong extends Song
+{
+	function new()
+	{
+		super('shinkyoku-switcheroo-mix');
+	}
+
+	override function onCreate(event) {
+		super.onCreate(event);
+		if (PlayState.instance == null || PlayState.instance.currentStage == null) return;
+		if (PlayState.instance.isMinimalMode) return;
+		
+		if (PlayState.instance.currentStage.freaksSprite != null)
+		PlayState.instance.currentStage.freaksSprite.alpha = 1;
+
+	}
+}

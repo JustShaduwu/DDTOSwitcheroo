@@ -1,0 +1,189 @@
+{
+	"startingMusic": "",
+	"initStyle": "pixel",
+	"dialogue": 
+	[
+		{
+			"isCommand": false,
+			"name": "seira",
+			"expression": "angry",
+			"string": "And, just by chance, that's MY microphone?! And to make matters worse, my favorite!?",
+			"key": "sovIntro1",
+			"keyCensored": "sovIntroCensored1",
+			"side": "left"
+		},
+		{
+			"isCommand": false,
+			"name": "seira",
+			"expression": "angry",
+			"string": "How did you got that!?",
+			"key": "sovIntro2",
+			"keyCensored": "sovIntroCensored2",
+			"side": "left"
+		},
+		{
+			"isCommand": false,
+			"name": "manuel",
+			"expression": "gasp",
+			"string": "Wait-",
+			"key": "sovIntro3",
+			"keyCensored": "sovIntroCensored3",
+			"side": "right"
+		},
+		{
+			"isCommand": false,
+			"name": "seira",
+			"expression": "angry",
+			"string": "Are we gonna have a problem?",
+			"key": "sovIntro4",
+			"keyCensored": "sovIntroCensored4",
+			"side": "left"
+		},
+		{
+			"isCommand": false,
+			"name": "manuel",
+			"expression": "sad",
+			"string": "No! I don't want any problems! That's the last thing I want right now!-",
+			"key": "sovIntro5",
+			"keyCensored": "sovIntroCensored5",
+			"side": "right"
+		},
+		{
+			"isCommand": false,
+			"name": "seira",
+			"expression": "",
+			"string": "And you darling...",
+			"key": "sovIntro6",
+			"keyCensored": "sovIntroCensored6",
+			"side": "left"
+		},
+		{
+			"isCommand": false,
+			"name": "seira",
+			"expression": "angry",
+			"string": "what are you doing here?",
+			"key": "sovIntro7",
+			"keyCensored": "sovIntroCensored7",
+			"side": "left"
+		},
+		{
+			"isCommand": false,
+			"name": "bf",
+			"expression": "what",
+			"string": "Skup Boop Bip!",
+			"key": "sovIntro8",
+			"stringCensored": "Skup Boop!",
+			"keyCensored": "sovIntroCensored8",
+			"side": "right"
+		},
+		{
+			"isCommand": false,
+			"name": "seira",
+			"expression": "angry",
+			"string": "Ah! Who am I kidding!?",
+			"key": "sovIntro9",
+			"keyCensored": "sovIntroCensored9",
+			"side": "left"
+		},
+		{
+			"isCommand": false,
+			"name": "seira",
+			"expression": "angry",
+			"string": "GIVE. ME. BACK. MY. MICROPHONE.",
+			"key": "sovIntro10",
+			"keyCensored": "sovIntroCensored10",
+			"side": "left"
+		},
+		{
+			"isCommand": false,
+			"name": "seira",
+			"expression": "angry",
+			"string": "NOW!",
+			"key": "sovIntro11",
+			"keyCensored": "sovIntroCensored11",
+			"side": "left"
+		},
+		{
+			"isCommand": false,
+			"name": "manuel",
+			"expression": "ugh",
+			"string": "O-Okay! Just a sec-",
+			"key": "sovIntro12",
+			"keyCensored": "sovIntroCensored12",
+			"side": "right"
+                },
+		{
+			"isCommand": false,
+			"name": "no_one",
+			"expression": "gone",
+			"string": "*Seira grabs the microphone in Manuel's hand tightly, pulling angrily*",
+			"key": "sovIntro13",
+			"keyCensored": "sovIntroCensored13",
+			"side": "left"
+		},
+		{
+			"isCommand": false,
+			"name": "manuel",
+			"expression": "pissed",
+			"string": "Hey! Calm down!!!",
+			"key": "sovIntro14",
+			"keyCensored": "sovIntroCensored14",
+			"side": "right"
+		},
+		{
+			"isCommand": false,
+			"name": "seira",
+			"expression": "angry",
+			"string": "GIVE IT BACK!!",
+			"key": "sovIntro15",
+			"keyCensored": "sovIntroCensored15",
+			"side": "left"
+                },
+		{
+			"isCommand": false,
+			"name": "manuel",
+			"expression": "angry",
+			"string": "No need to shout!-",
+			"key": "sovIntro16",
+			"keyCensored": "sovIntroCensored16",
+			"side": "right"
+		},
+		{
+			"isCommand": false,
+			"name": "seira",
+			"expression": "angry",
+			"string": "SHUT THE FUCK UP AND GIVE IT BACK!",
+			"key": "sovIntro17",
+			"stringCensored": "SHUT YOUR MOUTH AND GIVE IT BACK!",
+			"keyCensored": "sovIntroCensored17",
+			"side": "left"
+		},
+		{
+			"isCommand": false,
+			"name": "manuel",
+			"expression": "angry",
+			"string": "Whoa! *Dodges*",
+			"key": "sovIntro18",
+			"keyCensored": "sovIntroCensored18",
+			"side": "right"
+                },
+		{
+			"isCommand": false,
+			"name": "manuel",
+			"expression": "angry",
+			"string": "If you want your microphone back, you have to ask nicely!-",
+			"key": "sovIntro19",
+			"keyCensored": "sovIntroCensored19",
+			"side": "right"
+                },
+		{
+			"isCommand": false,
+			"name": "seira",
+			"expression": "angry",
+			"string": "GIVE IT BACK!",
+			"key": "sovIntro20",
+			"keyCensored": "sovIntroCensored20",
+			"side": "left"
+		}
+	]
+}

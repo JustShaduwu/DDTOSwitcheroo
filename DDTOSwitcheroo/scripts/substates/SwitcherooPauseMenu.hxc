@@ -1,0 +1,967 @@
+package skyredux.substates;
+
+import LanguageManager;
+import StringTools;
+
+import haxe.Json;
+import lime.utils.Assets;
+
+import flixel.FlxG;
+import flixel.FlxSprite;
+import flixel.group.FlxGroup.FlxTypedGroup;
+import flixel.sound.FlxSound;
+import flixel.text.FlxText;
+import flixel.text.FlxTextBorderStyle;
+import flixel.tweens.FlxEase;
+import flixel.tweens.FlxTween;
+import flixel.util.FlxColor;
+import flixel.util.FlxTimer;
+
+import funkin.Paths;
+import funkin.audio.FunkinSound;
+import funkin.data.song.SongRegistry;
+import funkin.play.PlayState;
+import funkin.play.PlayStatePlaylist;
+import funkin.play.song.Song;
+import funkin.ui.MusicBeatSubState;
+import funkin.ui.ScriptedMusicBeatState;
+import funkin.util.Constants;
+import funkin.modding.module.ModuleHandler;
+
+
+using StringTools;
+
+class SwitcherooPauseMenu extends MusicBeatSubState
+{
+    var defaultItems:Array<String> =
+    [
+        'Resume',
+        'Restart Song',
+        'Difficulty',
+        'Practice Mode',
+        'Exit to Menu'
+    ];
+
+var conversationItems:Array<String> =
+[
+    'Resume',
+    'Restart Dialogue',
+    'Skip Dialogue',
+    'Exit to Menu'
+];
+
+    var menuItems:Array<String> = [];
+
+    var availableDifficulties:Array<String> = [];
+
+    var curSelected:Int = 0;
+    var difficultyMode:Bool = false;
+    var allowInput:Bool = false;
+
+    var pauseMusic:FunkinSound;
+    var pauseMode:String = 'default';
+
+    var bg:FlxSprite;
+    var pauseArt:FlxSprite;
+    var logo:FlxSprite;
+    var logoBump:FlxSprite;
+
+    var menuGroup:FlxTypedGroup<FlxText>;
+
+    var songNameText:FlxText;
+    var charterText:FlxText;
+    var deathText:FlxText;
+    var practiceText:FlxText;
+    var artistText:FlxText;
+
+    var itemColor:FlxColor = 0xFF1A5057;
+    var selectedColor:FlxColor = 0xFF37D3D5;
+
+    var pauseImage:String = 'fumo';
+
+public function new(
+    mode:String = 'default'
+)
+{
+    super();
+
+    pauseMode =
+        mode == null
+            ? 'default'
+            : mode.toLowerCase();
+}
+override function create():Void
+{
+    super.create();
+
+    FlxG.mouse.visible = true;
+
+    if (pauseMode != 'conversation')
+    {
+        loadSongMetadata();
+    }
+
+    createPauseMusic();
+
+    createVisuals();
+
+    if (pauseMode != 'conversation')
+    {
+        createInformation();
+    }
+
+
+    setupMainMenu();
+
+    createMenuItems();
+
+
+    new FlxTimer().start(
+        0.15,
+        function(timer:FlxTimer)
+        {
+            allowInput =
+                true;
+        }
+    );
+}
+
+function setupMainMenu():Void
+{
+    difficultyMode =
+        false;
+
+    if (pauseMode == 'conversation')
+    {
+        menuItems =
+            conversationItems.copy();
+
+        return;
+    }
+
+    menuItems =
+        defaultItems.copy();
+
+
+    if (PlayStatePlaylist.isStoryMode)
+    {
+        menuItems =
+        [
+            'Resume',
+            'Restart Song',
+            'Exit to Menu'
+        ];
+    }
+}
+
+function loadSongMetadata():Void
+{
+    var songId:String =
+        PlayState.instance.currentSong.id;
+
+    var variation = '';
+    if (PlayState.instance.currentVariation != Constants.DEFAULT_VARIATION)
+    variation = '-' + PlayState.instance.currentVariation;
+    var metadataPath:String =
+        'gameplay/songs/' +
+        songId +
+        '/' +
+        songId +
+        '-metadata' + variation + '.json';
+
+
+    if (Assets.exists(metadataPath))
+    {
+        var metadata:Dynamic =
+            Json.parse(
+                Assets.getText(metadataPath)
+            );
+
+        if (
+            metadata.pause != null &&
+            metadata.pause != ''
+        )
+        {
+            pauseImage = metadata.pause;
+        }
+    }
+}
+var musicpath = 'disco';
+    function createPauseMusic():Void
+    {
+        if (PlayState.instance.playerStrumline.noteStyle.id.startsWith('bean')) musicpath = 'beanPause';
+        pauseMusic = FunkinSound.load(
+            Paths.music(musicpath),
+            0.0,
+            true
+        );
+
+        pauseMusic.play();
+        pauseMusic.fadeIn(0.5, 0.0, 0.5);
+    }
+
+    function createVisuals():Void
+    {
+        bg = new FlxSprite();
+
+        bg.makeGraphic(
+            FlxG.width,
+            FlxG.height,
+            FlxColor.BLACK
+        );
+
+        bg.alpha = 0;
+        bg.scrollFactor.set();
+
+        add(bg);
+
+        FlxTween.tween(
+            bg,
+            {
+                alpha: 0.6
+            },
+            0.4,
+            {
+                ease: FlxEase.quartInOut
+            }
+        );
+
+if (pauseMode != 'conversation')
+{
+        pauseArt = new FlxSprite(
+            FlxG.width,
+            0
+        );
+
+        pauseArt.loadGraphic(
+            Paths.image(
+                'pause/' + pauseImage
+            )
+        );
+
+        pauseArt.antialiasing = true;
+        pauseArt.scrollFactor.set();
+
+        add(pauseArt);
+
+        FlxTween.tween(
+            pauseArt,
+            {
+                x:
+                    FlxG.width -
+                    pauseArt.width
+            },
+            1.2,
+            {
+                ease: FlxEase.quartInOut,
+                startDelay: 0.2
+            }
+        );
+
+}
+
+        logo = new FlxSprite(-260, 0);
+
+        logo.loadGraphic(
+            Paths.image(
+                'Credits_LeftSide'
+            )
+        );
+
+        logo.antialiasing = true;
+        logo.scrollFactor.set();
+
+        add(logo);
+
+        FlxTween.tween(
+            logo,
+            {
+                x: -60
+            },
+            1.2,
+            {
+                ease: FlxEase.elasticOut
+            }
+        );
+
+        logoBump = new FlxSprite(
+            -160,
+            -40
+        );
+
+        logoBump.frames =
+            Paths.getSparrowAtlas(
+                'Start_Screen_AssetsPlus'
+            );
+
+        logoBump.antialiasing = true;
+        logoBump.scale.set(0.5, 0.5);
+
+        logoBump.animation.addByPrefix(
+            'bump',
+            'logo bumpin',
+            24,
+            true
+        );
+
+        logoBump.animation.play(
+            'bump',
+            true
+        );
+
+        logoBump.updateHitbox();
+        logoBump.scrollFactor.set();
+
+        add(logoBump);
+
+        FlxTween.tween(
+            logoBump,
+            {
+                x: 40
+            },
+            1.2,
+            {
+                ease: FlxEase.elasticOut
+            }
+        );
+    }
+
+function createInformation():Void
+{
+    songNameText = createInfoText(
+        PlayState.instance.currentChart.songName,
+        20
+    );
+
+    artistText = createInfoText(
+        LanguageManager.getTranslation("artist", "Artist:") + ' ' + PlayState.instance.currentChart.songArtist,
+        57
+    );
+
+    charterText = createInfoText(
+        LanguageManager.getTranslation("charted_by", "Charted by") + ' ' + PlayState.instance.currentChart.charter,
+        94
+    );
+
+    deathText = createInfoText(
+        LanguageManager.getTranslation("deleted", "Deleted:") + ' ' +
+        PlayState.instance.deathCounter,
+        131
+    );
+
+    practiceText = createInfoText(
+        LanguageManager.getTranslation("practice_mode_label", "PRACTICE MODE"),
+        168
+    );
+
+    practiceText.visible =
+        PlayState.instance.isPracticeMode;
+
+    add(songNameText);
+    add(artistText);
+    add(charterText);
+    add(deathText);
+    add(practiceText);
+
+    positionInfoText(songNameText);
+    positionInfoText(artistText);
+    positionInfoText(charterText);
+    positionInfoText(deathText);
+    positionInfoText(practiceText);
+
+    tweenInfoText(songNameText, 0.3);
+    tweenInfoText(artistText, 0.45);
+    tweenInfoText(charterText, 0.6);
+    tweenInfoText(deathText, 0.75);
+    tweenInfoText(practiceText, 0.9);
+}
+
+    function createInfoText(
+        text:String,
+        yPosition:Float
+    ):FlxText
+    {
+        var result:FlxText =
+            new FlxText(
+                20,
+                yPosition,
+                0,
+                text,
+                32
+            );
+
+        result.setFormat(
+            Paths.font('Aller_Rg.ttf'),
+            32,
+            FlxColor.WHITE,
+            'right'
+        );
+
+        result.setBorderStyle(
+            FlxTextBorderStyle.OUTLINE,
+            FlxColor.BLACK,
+            1.25
+        );
+
+        result.antialiasing = true;
+        result.scrollFactor.set();
+        result.alpha = 0;
+        result.updateHitbox();
+
+        return result;
+    }
+
+    function positionInfoText(
+        text:FlxText
+    ):Void
+    {
+        text.x =
+            FlxG.width -
+            text.width -
+            20;
+    }
+
+    function tweenInfoText(
+        text:FlxText,
+        delay:Float
+    ):Void
+    {
+        FlxTween.tween(
+            text,
+            {
+                alpha: 1,
+                y: text.y + 5
+            },
+            0.4,
+            {
+                ease: FlxEase.quartInOut,
+                startDelay: delay
+            }
+        );
+    }
+
+    function createMenuItems():Void
+    {
+        menuGroup = new FlxTypedGroup();
+        add(menuGroup);
+
+        rebuildMenu(true);
+    }
+
+    function rebuildMenu(
+        animateIn:Bool = false
+    ):Void
+    {
+        while (
+            menuGroup.members.length > 0
+        )
+        {
+            var oldItem:FlxText =
+                menuGroup.members[0];
+
+            menuGroup.remove(
+                oldItem,
+                true
+            );
+
+            oldItem.destroy();
+        }
+
+        curSelected = 0;
+
+        for (index in 0...menuItems.length)
+        {
+            var displayName:String =
+                menuItems[index];
+            displayName = LanguageManager.getTranslation(
+                StringTools.replace(displayName.toLowerCase(), " ", "_"), displayName);
+
+            var text:FlxText =
+                new FlxText(
+                    animateIn ? -350 : 50,
+                    370 + index * 50,
+                    0,
+                    displayName,
+                    27
+                );
+
+            text.setFormat(
+                Paths.font('riffic.ttf'),
+                27,
+                FlxColor.WHITE,
+                'left'
+            );
+
+            text.setBorderStyle(
+                FlxTextBorderStyle.OUTLINE,
+                itemColor,
+                2
+            );
+
+            text.antialiasing = true;
+            text.ID = index;
+
+            menuGroup.add(text);
+
+            if (animateIn)
+            {
+                FlxTween.tween(
+                    text,
+                    {
+                        x: 50
+                    },
+                    1.2 + index * 0.2,
+                    {
+                        ease:
+                            FlxEase.elasticOut
+                    }
+                );
+            }
+        }
+
+        updateSelection(0, false);
+    }
+
+function callDialogueManager(
+    functionName:String
+):Void
+{
+    var dialogueManager =
+        ModuleHandler.getModule(
+            'DialogueManager'
+        );
+
+
+    if (dialogueManager == null)
+    {
+        trace(
+            '[SwitcherooPauseMenu] DialogueManager no encontrado.'
+        );
+
+        return;
+    }
+
+
+    dialogueManager.scriptCall(
+        functionName,
+        []
+    );
+}
+
+    override function update(
+        elapsed:Float
+    ):Void
+    {
+        super.update(elapsed);
+
+        if (!allowInput)
+            return;
+
+        if (controls.UI_UP_P)
+        {
+            updateSelection(-1);
+        }
+
+        if (controls.UI_DOWN_P)
+        {
+            updateSelection(1);
+        }
+
+        if (controls.BACK_P)
+        {
+            if (difficultyMode)
+            {
+                showDefaultMenu();
+            }
+            else
+            {
+                closeMenu();
+            }
+
+            return;
+        }
+
+        if (controls.ACCEPT_P)
+        {
+            confirmSelection();
+        }
+    }
+
+    function updateSelection(
+        change:Int = 0,
+        playSound:Bool = true
+    ):Void
+    {
+        curSelected += change;
+
+        if (curSelected < 0)
+        {
+            curSelected =
+                menuItems.length - 1;
+        }
+
+        if (
+            curSelected >=
+            menuItems.length
+        )
+        {
+            curSelected = 0;
+        }
+
+        if (playSound)
+        {
+            FunkinSound.playOnce(
+                Paths.sound(
+                    'scrollMenu'
+                ),
+                0.7
+            );
+        }
+
+        for (item in menuGroup.members)
+        {
+            if (item == null)
+                continue;
+
+            item.setBorderStyle(
+                FlxTextBorderStyle.OUTLINE,
+                item.ID == curSelected
+                    ? selectedColor
+                    : itemColor,
+                2
+            );
+        }
+    }
+
+    function confirmSelection():Void
+    {
+        if (
+            curSelected < 0 ||
+            curSelected >= menuItems.length
+        )
+        {
+            return;
+        }
+
+        var selectedItem:String =
+            menuItems[curSelected];
+
+        if (difficultyMode)
+        {
+            if (selectedItem == 'Back')
+            {
+                showDefaultMenu();
+            }
+            else
+            {
+                changeDifficulty(
+                    selectedItem
+                );
+            }
+
+            return;
+        }
+
+ switch (selectedItem)
+{
+    case 'Resume':
+        closeMenu();
+
+    case 'Restart Dialogue':
+        callDialogueManager(
+            'restartDialogueFromPause'
+        );
+
+        close();
+    case 'Skip Dialogue':
+        callDialogueManager(
+            'finishDialogue'
+        );
+
+        close();
+
+    case 'Restart Song':
+        PlayState.instance.needsReset =
+            true;
+
+        close();
+
+    case 'Difficulty':
+        showDifficultyMenu();
+
+    case 'Practice Mode':
+        PlayState.instance.isPracticeMode =
+            !PlayState.instance
+                .isPracticeMode;
+
+        if (practiceText != null)
+        {
+            practiceText.visible =
+                PlayState.instance
+                    .isPracticeMode;
+        }
+
+
+    case 'Exit to Menu':
+        exitToMenu();
+}
+    }
+
+    function showDifficultyMenu():Void
+    {
+        availableDifficulties =
+            PlayState.instance.currentSong
+                .listDifficulties(
+                    PlayState.instance.currentVariation,
+                    null,
+                    false,
+                    false
+                );
+
+        if (
+            availableDifficulties == null ||
+            availableDifficulties.length == 0
+        )
+        {
+            availableDifficulties =
+            [
+                PlayState.instance
+                    .currentDifficulty
+            ];
+        }
+
+        menuItems = [];
+
+        for (
+            difficulty in
+            availableDifficulties
+        )
+        {
+            menuItems.push(
+                formatDifficultyName(
+                    difficulty
+                )
+            );
+        }
+
+        menuItems.push('Back');
+
+        difficultyMode = true;
+
+        rebuildMenu(false);
+    }
+
+    function showDefaultMenu():Void
+    {
+        difficultyMode = false;
+
+        menuItems =
+            defaultItems.copy();
+
+        if (PlayStatePlaylist.isStoryMode)
+        {
+            menuItems =
+            [
+                'Resume',
+                'Restart Song',
+                'Difficulty',
+                'Exit to Menu'
+            ];
+        }
+
+        rebuildMenu(false);
+    }
+
+    function formatDifficultyName(
+        difficulty:String
+    ):String
+    {
+        if (
+            difficulty == null ||
+            difficulty.length == 0
+        )
+        {
+            return 'Normal';
+        }
+
+        return
+            difficulty.substr(0, 1)
+                .toUpperCase() +
+            difficulty.substr(1);
+    }
+
+    function getDifficultyId(
+        displayName:String
+    ):String
+    {
+        return displayName.toLowerCase();
+    }
+
+    function changeDifficulty(
+        displayName:String
+    ):Void
+    {
+        var difficultyId:String =
+            getDifficultyId(
+                displayName
+            );
+
+        // Only accept a difficulty offered by the current variation.
+        if (availableDifficulties.indexOf(difficultyId) < 0)
+            return;
+
+        PlayStatePlaylist.campaignScore = 0;
+
+        PlayStatePlaylist.campaignDifficulty =
+            difficultyId;
+
+        PlayState.instance.previousDifficulty =
+            PlayState.instance
+                .currentDifficulty;
+
+        PlayState.instance.currentDifficulty =
+            difficultyId;
+
+        PlayState.instance.needsReset = true;
+
+        close();
+    }
+
+    function exitToMenu():Void
+    {
+        allowInput = false;
+
+        PlayState.instance.deathCounter = 0;
+
+        if (pauseMusic != null)
+        {
+            pauseMusic.stop();
+        }
+
+        if (PlayStatePlaylist.isStoryMode)
+        {
+            FlxG.switchState(
+                ScriptedMusicBeatState.init(
+                    'switcheroo.states.SwitcherooStoryModeState'
+                )
+            );
+
+            PlayStatePlaylist.reset();
+        }
+        else
+        {
+            FlxG.switchState(
+                ScriptedMusicBeatState.init(
+                    'switcheroo.states.SwitcherooFreeplayState'
+                )
+            );
+        }
+    }
+
+    function closeMenu():Void
+    {
+        if (!allowInput)
+            return;
+
+        allowInput = false;
+
+        FunkinSound.playOnce(
+            Paths.sound('confirmMenu')
+        );
+
+     if (pauseMode != 'conversation')   FlxTween.cancelTweensOf(pauseArt);
+        FlxTween.cancelTweensOf(logo);
+        FlxTween.cancelTweensOf(logoBump);
+        FlxTween.cancelTweensOf(bg);
+
+        for (item in menuGroup.members)
+        {
+            if (item == null)
+                continue;
+
+            FlxTween.cancelTweensOf(item);
+
+            FlxTween.tween(
+                item,
+                {
+                    x: -350
+                },
+                0.5,
+                {
+                    ease:
+                        FlxEase.quartInOut
+                }
+            );
+        }
+
+        if (pauseMode != 'conversation')
+        {
+
+       
+
+        FlxTween.tween(
+            pauseArt,
+            {
+                x: FlxG.width
+            },
+            0.7,
+            {
+                ease: FlxEase.quartInOut
+            }
+        );
+         }
+
+        FlxTween.tween(
+            logo,
+            {
+                x: -500
+            },
+            0.7,
+            {
+                ease: FlxEase.quartInOut
+            }
+        );
+
+        FlxTween.tween(
+            logoBump,
+            {
+                x: -500
+            },
+            0.7,
+            {
+                ease: FlxEase.quartInOut
+            }
+        );
+
+        FlxTween.tween(
+            bg,
+            {
+                alpha: 0
+            },
+            0.6,
+            {
+                ease: FlxEase.quartInOut
+            }
+        );
+
+        new FlxTimer().start(
+            0.6,
+            function(timer:FlxTimer)
+            {
+                close();
+            }
+        );
+    }
+
+    override function destroy():Void
+    {
+        if (pauseMusic != null)
+        {
+            pauseMusic.stop();
+        }
+
+     //   FlxG.mouse.visible = false;
+
+        super.destroy();
+    }
+}

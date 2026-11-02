@@ -1,0 +1,23 @@
+import funkin.modding.module.Module;
+import funkin.play.PlayState;
+import funkin.play.GameOverSubState;
+import switcheroo.substates.FakeGameOverSubState;
+
+class SwitcherooGameOver extends Module
+{
+    public function new() { super('SwitcherooGameOver'); }
+
+    override function onSubStateOpenBegin(event):Void
+    {
+        super.onSubStateOpenBegin(event);
+        if (!Std.isOfType(event.targetState, GameOverSubState)) return;
+        var play = PlayState.instance;
+        if (play == null) return;
+        event.cancelEvent();
+        play.persistentUpdate = false;
+        play.persistentDraw = true;
+        play.openSubState(new FakeGameOverSubState(function() {
+            if (PlayState.instance == play) play.needsReset = true;
+        }, true));
+    }
+}

@@ -1,0 +1,6 @@
+{
+  "notifications": [
+    {"key": "prologue-pictures", "section": "pictures", "requiresPrologue": true},
+    {"key": "prologue-music", "section": "music", "requiresPrologue": true}
+  ]
+}

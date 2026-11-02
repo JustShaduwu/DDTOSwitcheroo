@@ -1,0 +1,112 @@
+{
+    "version": "1.0.0",
+    "name": "Just Manuel Pixel",
+    "assetPath": "gameplay/characters/manuel-demise/ManuelDemisePixelnew",
+    "flipX": false,
+    "singTime": 4,
+	"cameraOffsets": [
+		300,
+		50
+	],
+	"offsets": [
+		100,
+		0
+	],
+	"healthIcon": {
+		"offsets": [
+			0,
+			0
+		],
+		"isPixel": false,
+		"scale": 1,
+		"flipX": false,
+		"id": "manuel-demise"
+	},
+    "animations": [
+        {
+            "name": "idle",
+            "prefix": "BonikaIdle",
+            "offsets": [
+                0,
+                0
+            ]
+        },
+        {
+            "name": "singUP",
+            "prefix": "BonikaUp",
+            "offsets": [
+                0,
+                2
+            ]
+        },
+        {
+            "name": "singRIGHT",
+            "prefix": "BonikaRight0",
+            "offsets": [
+                0,
+                1
+            ]
+        },
+        {
+            "name": "singLEFT",
+            "prefix": "BonikaLeft",
+            "offsets": [
+                0,
+                1
+            ]
+        },
+        {
+            "name": "singDOWN",
+            "prefix": "BonikaDown0",
+            "offsets": [
+                0,
+                2
+            ]
+        },
+        {
+            "name": "shoot",
+            "prefix": "BonikaShot",
+			"frameRate": 24,
+            "offsets": [
+                0,
+                2
+            ]
+        },
+        {
+            "name": "singUP-alt",
+            "prefix": "BonikaGlitchUp",
+            "offsets": [
+                0,
+                2
+            ]
+        },
+        {
+            "name": "singRIGHT-alt",
+            "prefix": "BonikaGlitchRight",
+            "offsets": [
+                0,
+                1
+            ]
+        },
+        {
+            "name": "singLEFT-alt",
+            "prefix": "BonikaGlitchLeft",
+            "offsets": [
+                0,
+                1
+            ]
+        },
+        {
+            "name": "singDOWN-alt",
+            "prefix": "BonikaGlitchDown",
+            "offsets": [
+                0,
+                2
+            ]
+        }
+    ],
+    "startingAnimation": "",
+    "isPixel": true,
+    "scale": 6,
+    "Made_With": "the cigs Converter"
+}

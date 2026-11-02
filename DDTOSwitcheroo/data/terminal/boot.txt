@@ -1,0 +1,16 @@
+Initializing...
+Connecting........ Connected
+Stopping virtual machine...
+Stopped
+Beginning virtual machine restore
+Restoring environment database...
+ENVIRONMENT_ENTRIES[75D2D9C76E7170F1/CEAC297DC44B09FC/00000481]
+ENVIRONMENT_ENTRIES[63F6003420B34BF4/EF2D5D0D6E265BB2/00000154]
+ENVIRONMENT_ENTRIES[93314A31969D3851/5BF7AB000A24E019/00000151]
+ENVIRONMENT_ENTRIES[14F10CD14AF8D32D/73E488393759E144/00000853]
+Restoring Entities
+ENTITY[13K1V14T21U5U12, 'MANUAL_USER_ELEMENT]
+Rebuilding filesystem
+Filesystem rebuild complete
+Virtual machine restored successfully.
+Starting Virtual Machine..

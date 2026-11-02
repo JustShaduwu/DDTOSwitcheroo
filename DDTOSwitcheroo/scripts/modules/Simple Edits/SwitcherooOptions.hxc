@@ -1,0 +1,3439 @@
+package mod;
+
+import LanguageManager;
+import switcheroo.states.SwitcherooMainMenuState;
+import StringTools;
+
+import funkin.modding.module.Module;
+
+import funkin.ui.options.OptionsState;
+
+import funkin.Paths;
+
+import flixel.FlxG;
+import flixel.FlxSprite;
+
+import flixel.addons.display.FlxBackdrop;
+import flixel.addons.display.FlxRuntimeShader;
+
+import flixel.text.FlxText;
+import flixel.text.FlxTextBorderStyle;
+
+import flixel.util.FlxColor;
+
+import flixel.tweens.FlxTween;
+import flixel.tweens.FlxEase;
+
+import flixel.math.FlxMath;
+
+import lime.utils.Assets;
+import funkin.ui.ScriptedMusicBeatState;
+import Reflect;
+
+
+class SwitchOpt extends Module
+{
+   
+
+    var optionsState:OptionsState = null;
+
+    var currentPage:Dynamic = null;
+
+    var currentItems:Dynamic = null;
+
+var controlsPromptBlack:FlxSprite;
+
+var controlsPromptWasOpen:Bool = false;
+var acceptInput:Bool = false;
+var switchbef:Bool = false;
+var pageChangedThisFrame:Bool = false;
+    var backdrop:FlxBackdrop;
+
+    var logo:FlxSprite;
+
+    var logoBump:FlxSprite;
+
+
+    var displayTexts:Array<FlxText> = [];
+
+
+    var descriptionBG:FlxSprite;
+
+    var descriptionText:FlxText;
+
+
+   
+
+    var PAGE_SIZE:Int = 15;
+
+
+    var defaultColor:Int =
+        0xFF1A5057;
+
+
+    var selectedColor:Int =
+        0xFF37D3D5;
+
+
+    var lastSelectedIndex:Int =
+        -1;
+
+
+    var lastPageName:String =
+        '';
+
+
+    var menuBPM:Float =
+        120;
+
+
+    var lastMenuBeat:Int =
+        -1;
+
+
+    public function new()
+    {
+        super(
+            'SwitcherooOptions',
+            0
+        );
+    }
+
+override function onStateChangeBegin(event)
+{
+    super.onStateChangeBegin(event);
+
+
+   
+    if (
+        Std.isOfType(
+            event.targetState,
+            OptionsState
+        )
+    )
+    {
+        switchbef = false;
+
+
+       
+        var previousState =
+            FlxG.state;
+
+
+        if (previousState != null)
+        {
+            var stateClass =
+                Type.getClass(
+                    previousState
+                );
+
+
+            if (stateClass != null)
+            {
+                var stateName:String =
+                    Type.getClassName(
+                        stateClass
+                    );
+
+
+               
+                if (
+                    stateName != null &&
+                    stateName.indexOf(
+                        'SwitcherooMainMenuState'
+                    ) != -1
+                )
+                {
+                    switchbef =
+                        true;
+                }
+            }
+        }
+
+
+        trace(
+            '[SwitcherooOptions] From SkyMainMenu: ' +
+            switchbef
+        );
+    }
+}
+
+
+function updateSkyOptionsBack():Void
+{
+if (
+    !switchbef ||
+    optionsState == null ||
+    currentPage == null ||
+    pageChangedThisFrame
+)
+{
+    return;
+}
+
+    if (
+        getCurrentPageName() !=
+        'OPTIONS'
+    )
+    {
+        return;
+    }
+
+
+    var backPressed:Bool =
+        false;
+
+
+    try
+    {
+        backPressed =
+            currentPage.controls.BACK_P;
+    }
+    catch (e:Dynamic)
+    {
+        backPressed =
+            FlxG.keys.justPressed.ESCAPE;
+    }
+
+
+    if (!backPressed)
+    {
+        return;
+    }
+
+
+   
+    switchbef =
+        false;
+
+
+    FlxG.switchState(
+        new SwitcherooMainMenuState()
+    );
+}
+
+override function onStateChangeEnd(event)
+{
+    super.onStateChangeEnd(
+        event
+    );
+
+
+    var state =
+        event.targetState;
+
+
+    if (
+        !Std.isOfType(
+            state,
+            OptionsState
+        )
+    )
+    {
+        cleanupReferences();
+
+        return;
+    }
+
+
+   
+
+    switchbef =
+        SwitcherooMainMenuState.openedOptions;
+
+
+   
+
+    SwitcherooMainMenuState.openedOptions =
+        false;
+
+
+    trace(
+        '[SwitcherooOptions] Opened from SwitcherooMainMenuState: ' +
+        switchbef
+    );
+    if (!switchbef)
+    {
+        cleanupReferences();
+
+        return;
+    }
+
+
+    optionsState =
+        cast state;
+
+
+    setupOptionsSkin();
+}
+
+
+   
+
+    function setupOptionsSkin():Void
+    {
+        if (optionsState == null)
+        {
+            return;
+        }
+
+        var rootPage = optionsState.optionsCodex.pages.get('options');
+        var exitItem = rootPage.items.getItem('EXIT');
+        var languageItem = rootPage.createItem('Language', function()
+        {
+            FlxG.switchState(ScriptedMusicBeatState.init(
+                'switcheroo.states.SwitcherooLanguageState'));
+        });
+        if (exitItem != null)
+        {
+            rootPage.items.members.remove(languageItem);
+            rootPage.items.members.insert(rootPage.items.members.indexOf(exitItem), languageItem);
+        }
+        for (i in 0...rootPage.items.members.length)
+        {
+            rootPage.items.members[i].y = 100 + i * 100;
+        }
+
+
+       
+
+        FlxG.camera.follow(
+            null
+        );
+
+
+        FlxG.camera.scroll.set(
+            0,
+            0
+        );
+
+
+       
+
+        hideVanillaBackground();
+
+
+       
+
+        createBackdrop();
+
+        createLogo();
+
+        createDisplayTexts();
+
+        createDescriptionBar();
+        createControlsPromptSkin();
+
+       
+        refreshCurrentPage(
+            true
+        );
+    }
+
+
+   
+
+    function hideVanillaBackground():Void
+    {
+        if (
+            optionsState == null ||
+            optionsState.members == null
+        )
+        {
+            return;
+        }
+
+
+       
+        for (member in optionsState.members)
+        {
+            if (
+                member != null &&
+                Std.isOfType(
+                    member,
+                    FlxSprite
+                )
+            )
+            {
+                var sprite:FlxSprite =
+                    cast member;
+
+
+                sprite.visible =
+                    false;
+
+
+                break;
+            }
+        }
+    }
+
+
+   
+
+    function createBackdrop():Void
+    {
+        backdrop =
+            new FlxBackdrop(
+                Paths.image(
+                    'scrollingBG'
+                )
+            );
+
+
+        backdrop.velocity.set(
+            -40,
+            -40
+        );
+
+
+        backdrop.antialiasing =
+            true;
+
+
+       
+        var colorMask:FlxRuntimeShader =
+            new FlxRuntimeShader(
+                Assets.getText(
+                    Paths.frag(
+                        'ColorMaskShader'
+                    )
+                )
+            );
+
+
+        colorMask.data.color1.value =
+        [
+            0.99215686274,
+            1.0,
+            1.0
+        ];
+
+
+        colorMask.data.color2.value =
+        [
+            0.49803921568,
+            0.92941176470,
+            0.94117647058
+        ];
+
+
+        backdrop.shader =
+            colorMask;
+
+
+       
+        optionsState.insert(
+            0,
+            backdrop
+        );
+    }
+
+
+   
+
+    function createLogo():Void
+    {
+       
+
+        logo =
+            new FlxSprite(
+                -260,
+                0
+            );
+
+
+        logo.loadGraphic(
+            Paths.image(
+                'Credits_LeftSide'
+            )
+        );
+
+
+        logo.antialiasing =
+            true;
+
+
+        optionsState.add(
+            logo
+        );
+
+
+        FlxTween.tween(
+            logo,
+            {
+                x:
+                    -60
+            },
+            1.2,
+            {
+                ease:
+                    FlxEase.elasticOut
+            }
+        );
+
+
+       
+
+        logoBump =
+            new FlxSprite(
+                -160,
+                -40
+            );
+
+
+        logoBump.frames =
+            Paths.getSparrowAtlas(
+                'Start_Screen_AssetsPlus'
+            );
+
+
+        logoBump.antialiasing =
+            true;
+
+
+        logoBump.scale.set(
+            0.5,
+            0.5
+        );
+
+
+        logoBump.animation.addByPrefix(
+            'bump',
+            'logo bumpin',
+            24,
+            false
+        );
+
+
+        logoBump.animation.play(
+            'bump',
+            true
+        );
+
+
+        logoBump.updateHitbox();
+
+
+        optionsState.add(
+            logoBump
+        );
+
+
+        FlxTween.tween(
+            logoBump,
+            {
+                x:
+                    40
+            },
+            1.2,
+            {
+                ease:
+                    FlxEase.elasticOut
+            }
+        );
+    }
+
+
+   
+
+    function createDisplayTexts():Void
+    {
+        displayTexts =
+            [];
+
+
+        for (
+            i in
+            0...PAGE_SIZE
+        )
+        {
+var text =
+    new FlxText(
+        460,
+        20 + (45 * i),
+        0,
+        '',
+        36
+    );
+
+
+            text.setFormat(
+                Paths.font(
+                    'riffic.ttf'
+                ),
+                36,
+                FlxColor.WHITE,
+                'center'
+            );
+
+
+            text.setBorderStyle(
+                FlxTextBorderStyle.OUTLINE,
+                defaultColor,
+                2
+            );
+
+
+            text.antialiasing =
+                true;
+
+
+            text.scrollFactor.set(
+                0,
+                0
+            );
+
+
+            text.visible =
+                false;
+
+
+            text.ID =
+                i;
+
+
+            displayTexts.push(
+                text
+            );
+
+
+            optionsState.add(
+                text
+            );
+        }
+    }
+
+
+   
+
+    function createDescriptionBar():Void
+    {
+       
+
+        descriptionText =
+            new FlxText(
+                5,
+                FlxG.height + 40,
+                FlxG.width - 10,
+                '',
+                16
+            );
+
+
+        descriptionText.setFormat(
+            Paths.font(
+                'Aller_Rg.ttf'
+            ),
+            16,
+            FlxColor.WHITE,
+            'left',
+            FlxTextBorderStyle.OUTLINE,
+            FlxColor.BLACK
+        );
+
+
+        descriptionText.scrollFactor.set(
+            0,
+            0
+        );
+
+
+        descriptionText.antialiasing =
+            true;
+
+
+       
+
+        descriptionBG =
+            new FlxSprite(
+                0,
+                FlxG.height + 40
+            );
+
+
+        descriptionBG.makeGraphic(
+            FlxG.width,
+            620,
+            FlxColor.BLACK
+        );
+
+
+        descriptionBG.alpha =
+            0.5;
+
+
+        descriptionBG.scrollFactor.set(
+            0,
+            0
+        );
+
+
+        optionsState.add(
+            descriptionBG
+        );
+
+
+        optionsState.add(
+            descriptionText
+        );
+
+
+       
+
+        FlxTween.tween(
+            descriptionText,
+            {
+                y:
+                    FlxG.height -
+                    22
+            },
+            2,
+            {
+                ease:
+                    FlxEase.elasticInOut
+            }
+        );
+
+
+        FlxTween.tween(
+            descriptionBG,
+            {
+                y:
+                    FlxG.height -
+                    22
+            },
+            2,
+            {
+                ease:
+                    FlxEase.elasticInOut
+            }
+        );
+    }
+
+
+   
+
+    override function onUpdate(event)
+    {
+        super.onUpdate(
+            event
+        );
+
+
+        if (
+            optionsState == null ||
+            FlxG.state != optionsState
+        )
+        {
+            return;
+        }
+
+
+       
+        refreshCurrentPage(
+            false
+        );
+
+        updateSkyOptionsBack();
+
+        updateControlsPromptSkin();
+
+        updateMenuBeat();
+    }
+
+
+function refreshCurrentPage(
+    force:Bool
+):Void
+{
+    pageChangedThisFrame = false;
+
+    if (
+        optionsState == null ||
+        optionsState.optionsCodex == null
+    )
+    {
+        return;
+    }
+
+
+        var page =
+            optionsState
+                .optionsCodex
+                .currentPage;
+
+
+try
+{
+    if (
+        getCurrentPageName() ==
+        'OPTIONS'
+    )
+    {
+        currentPage.canExit =
+            !switchbef;
+    }
+}
+catch (e:Dynamic)
+{
+}
+
+        if (page == null)
+        {
+            return;
+        }
+
+
+       
+
+ if (
+    force ||
+    page != currentPage
+)
+{
+    pageChangedThisFrame = true;
+
+    restoreCurrentItems();
+
+    currentPage =
+        page;
+
+    currentItems =
+        getPageItems(
+            currentPage
+        );
+
+    lastSelectedIndex =
+        -1;
+
+    lastPageName =
+        getCurrentPageName();
+
+    FlxG.camera.follow(
+        null
+    );
+
+    FlxG.camera.scroll.set(
+        0,
+        0
+    );
+}
+
+if (
+    switchbef &&
+    getCurrentPageName() == 'OPTIONS'
+)
+{
+    try
+    {
+        currentPage.canExit =
+            false;
+    }
+    catch (e:Dynamic)
+    {
+    }
+}
+
+if (isControlsPage())
+{
+    refreshControlsPage();
+    return;
+}
+
+
+
+
+if (currentItems != null)
+{
+    hideVanillaItems();
+
+    hideVanillaPageExtras();
+
+    renderCurrentItems();
+
+    refreshDescription();
+}
+else
+{
+    hideDisplayTexts();
+
+    descriptionText.text =
+        getCurrentPageName();
+}
+    }
+
+    function isControlsPage():Bool
+{
+    if (currentPage == null)
+    {
+        return false;
+    }
+
+    try
+    {
+        return (
+            currentPage.controlGrid != null &&
+            currentPage.labels != null
+        );
+    }
+    catch (e:Dynamic)
+    {
+    }
+
+    return false;
+}
+
+function getPageItems(
+    page:Dynamic
+):Dynamic
+{
+    if (page == null)
+    {
+        return null;
+    }
+
+   
+    try
+    {
+        return page.items;
+    }
+    catch (e:Dynamic)
+    {
+        trace(
+            '[SwitcherooOptions] La página no tiene items: ' +
+            Std.string(page)
+        );
+    }
+
+    return null;
+}
+   
+function hideVanillaItems():Void
+{
+    if (currentItems == null)
+    {
+        return;
+    }
+
+    var members = currentItems.members;
+
+    if (members == null)
+    {
+        return;
+    }
+
+    for (item in members)
+    {
+        if (item == null)
+        {
+            continue;
+        }
+
+       
+        item.visible = false;
+    }
+}
+
+function hideVanillaPageExtras():Void
+{
+    if (currentPage == null)
+    {
+        return;
+    }
+
+
+   
+
+    try
+    {
+        if (currentPage.itemDesc != null)
+        {
+            currentPage.itemDesc.visible = false;
+        }
+    }
+    catch (e:Dynamic)
+    {
+    }
+
+
+   
+
+    try
+    {
+        if (currentPage.itemDescBox != null)
+        {
+            currentPage.itemDescBox.visible = false;
+        }
+    }
+    catch (e:Dynamic)
+    {
+    }
+
+
+   
+
+    try
+    {
+        if (
+            currentPage.preferenceItems != null &&
+            currentPage.preferenceItems.members != null
+        )
+        {
+            for (
+                prefVisual in
+                currentPage.preferenceItems.members
+            )
+            {
+                if (prefVisual == null)
+                {
+                    continue;
+                }
+
+                prefVisual.visible = false;
+            }
+        }
+    }
+    catch (e:Dynamic)
+    {
+    }
+}
+
+function hideVanillaControls():Void
+{
+    if (currentPage == null)
+    {
+        return;
+    }
+
+
+   
+
+    try
+    {
+        if (
+            currentPage.controlGrid != null &&
+            currentPage.controlGrid.members != null
+        )
+        {
+            for (
+                item in
+                currentPage.controlGrid.members
+            )
+            {
+                if (item != null)
+                {
+                    item.visible = false;
+                }
+            }
+        }
+    }
+    catch (e:Dynamic)
+    {
+    }
+
+
+   
+
+    try
+    {
+        if (
+            currentPage.labels != null &&
+            currentPage.labels.members != null
+        )
+        {
+            for (
+                label in
+                currentPage.labels.members
+            )
+            {
+                if (label != null)
+                {
+                    label.visible = false;
+                }
+            }
+        }
+    }
+    catch (e:Dynamic)
+    {
+    }
+
+
+   
+
+    try
+    {
+        if (
+            currentPage.members != null &&
+            currentPage.members.length > 1
+        )
+        {
+            var headers =
+                currentPage.members[1];
+
+            if (
+                headers != null &&
+                headers.members != null
+            )
+            {
+                for (
+                    header in
+                    headers.members
+                )
+                {
+                    if (header != null)
+                    {
+                        header.visible = false;
+                    }
+                }
+            }
+        }
+    }
+    catch (e:Dynamic)
+    {
+    }
+
+
+   
+
+    try
+    {
+        if (
+            currentPage.deviceList != null &&
+            currentPage.deviceList.members != null
+        )
+        {
+            for (
+                item in
+                currentPage.deviceList.members
+            )
+            {
+                if (item != null)
+                {
+                    item.visible = false;
+                }
+            }
+
+
+           
+
+            if (
+                currentPage.members != null &&
+                currentPage.members.length > 3
+            )
+            {
+                var deviceBG =
+                    currentPage.members[3];
+
+                if (deviceBG != null)
+                {
+                    deviceBG.visible = false;
+                }
+            }
+        }
+    }
+    catch (e:Dynamic)
+    {
+    }
+}
+
+function stopControlsCamera():Void
+{
+    if (currentPage == null)
+    {
+        return;
+    }
+
+    try
+    {
+        if (
+            currentPage.menuCamera != null
+        )
+        {
+            currentPage.menuCamera.follow(
+                null
+            );
+
+            currentPage.menuCamera.scroll.set(
+                0,
+                0
+            );
+        }
+    }
+    catch (e:Dynamic)
+    {
+    }
+}
+
+function getControlSection(
+    control:Dynamic
+):String
+{
+    if (control == null)
+    {
+        return 'OTHER';
+    }
+
+
+    var name:String = '';
+
+    try
+    {
+        name =
+            Std.string(
+                control.getName()
+            );
+    }
+    catch (e:Dynamic)
+    {
+        name =
+            Std.string(
+                control
+            );
+    }
+
+
+    if (
+        name.indexOf(
+            'NOTE_'
+        ) == 0
+    )
+    {
+        return 'NOTES';
+    }
+
+
+    if (
+        name.indexOf(
+            'UI_'
+        ) == 0
+    )
+    {
+        return 'UI';
+    }
+
+
+    if (
+        name.indexOf(
+            'CUTSCENE_'
+        ) == 0
+    )
+    {
+        return 'CUTSCENE';
+    }
+
+
+    if (
+        name.indexOf(
+            'FREEPLAY_'
+        ) == 0
+    )
+    {
+        return 'FREEPLAY';
+    }
+
+
+    if (
+        name.indexOf(
+            'WINDOW_'
+        ) == 0
+    )
+    {
+        return 'WINDOW';
+    }
+
+
+    if (
+        name.indexOf(
+            'VOLUME_'
+        ) == 0
+    )
+    {
+        return 'VOLUME';
+    }
+
+
+    if (
+        name.indexOf(
+            'DEBUG_'
+        ) == 0
+    )
+    {
+        return 'DEBUG';
+    }
+
+
+    return 'OTHER';
+}
+
+function getControlLabel(
+    row:Int
+):String
+{
+   
+
+    try
+    {
+        var label =
+            currentPage
+                .labels
+                .members[row];
+
+
+        if (
+            label != null &&
+            label.text != null
+        )
+        {
+            return Std.string(
+                label.text
+            );
+        }
+    }
+    catch (e:Dynamic)
+    {
+    }
+
+
+   
+
+    try
+    {
+        var item =
+            currentPage
+                .controlGrid
+                .members[
+                    row * 2
+                ];
+
+
+        var name:String =
+            Std.string(
+                item.control.getName()
+            );
+
+
+       
+
+        var section =
+            getControlSection(
+                item.control
+            );
+
+
+        switch (section)
+        {
+            case 'NOTES':
+                name =
+                    name.substr(5);
+
+            case 'UI':
+                name =
+                    name.substr(3);
+
+            case 'CUTSCENE':
+                name =
+                    name.substr(9);
+
+            case 'FREEPLAY':
+                name =
+                    name.substr(9);
+
+            case 'WINDOW':
+                name =
+                    name.substr(7);
+
+            case 'VOLUME':
+                name =
+                    name.substr(7);
+
+            case 'DEBUG':
+                name =
+                    name.substr(6);
+        }
+
+
+        return name
+            .split('_')
+            .join(' ');
+    }
+    catch (e:Dynamic)
+    {
+    }
+
+
+    return '???';
+}
+function getBindingLabel(
+    item:Dynamic
+):String
+{
+    if (item == null)
+    {
+        return '---';
+    }
+
+
+    try
+    {
+        if (
+            item.label != null &&
+            item.label.text != null
+        )
+        {
+            return Std.string(
+                item.label.text
+            );
+        }
+    }
+    catch (e:Dynamic)
+    {
+    }
+
+
+    return '---';
+}
+function getControlRowText(
+    row:Int,
+    selectedIndex:Int
+):String
+{
+    var grid =
+        currentPage.controlGrid;
+
+
+    var leftIndex:Int =
+        row * 2;
+
+
+    var rightIndex:Int =
+        leftIndex + 1;
+
+
+    var leftItem =
+        leftIndex < grid.members.length
+            ? grid.members[leftIndex]
+            : null;
+
+
+    var rightItem =
+        rightIndex < grid.members.length
+            ? grid.members[rightIndex]
+            : null;
+
+
+   
+    var name:String =
+        getControlLabel(
+            row
+        );
+
+
+   
+    var left:String =
+        getBindingLabel(
+            leftItem
+        );
+
+
+    var right:String =
+        getBindingLabel(
+            rightItem
+        );
+
+
+   
+    var rowSelected:Bool =
+        selectedIndex == leftIndex ||
+        selectedIndex == rightIndex;
+
+
+    var prefix:String =
+        rowSelected
+            ? '> '
+            : '  ';
+
+
+   
+
+    if (
+        selectedIndex ==
+        leftIndex
+    )
+    {
+        left =
+            '< ' +
+            left +
+            ' >';
+    }
+
+
+    if (
+        selectedIndex ==
+        rightIndex
+    )
+    {
+        right =
+            '< ' +
+            right +
+            ' >';
+    }
+
+
+   
+
+    return
+        prefix +
+        name +
+        '     ' +
+        left +
+        '     /     ' +
+        right;
+}
+
+function buildControlsDisplayList():Array<Dynamic>
+{
+    var result:Array<Dynamic> =
+        [];
+
+
+    var grid =
+        currentPage.controlGrid;
+
+
+    if (
+        grid == null ||
+        grid.members == null
+    )
+    {
+        return result;
+    }
+
+
+   
+
+    try
+    {
+        if (
+            currentPage.deviceList != null
+        )
+        {
+            result.push({
+                type:
+                    'header',
+
+                text:
+                    'INPUT DEVICE',
+
+                row:
+                    -1,
+
+                deviceIndex:
+                    -1
+            });
+
+
+            for (
+                i in
+                0...currentPage.deviceList.members.length
+            )
+            {
+                var item =
+                    currentPage
+                        .deviceList
+                        .members[i];
+
+
+                if (item == null)
+                {
+                    continue;
+                }
+
+
+                result.push({
+                    type:
+                        'device',
+
+                    text:
+                        getBindingLabel(
+                            item
+                        ),
+
+                    row:
+                        -1,
+
+                    deviceIndex:
+                        i
+                });
+            }
+        }
+    }
+    catch (e:Dynamic)
+    {
+    }
+
+
+   
+
+    var rowCount:Int =
+        Std.int(
+            Math.ceil(
+                grid.members.length /
+                2
+            )
+        );
+
+
+    var lastSection:String =
+        '';
+
+
+    for (
+        row in
+        0...rowCount
+    )
+    {
+        var itemIndex:Int =
+            row * 2;
+
+
+        if (
+            itemIndex >=
+            grid.members.length
+        )
+        {
+            break;
+        }
+
+
+        var item =
+            grid.members[
+                itemIndex
+            ];
+
+
+        if (item == null)
+        {
+            continue;
+        }
+
+
+        var section:String =
+            getControlSection(
+                item.control
+            );
+
+
+       
+
+        if (
+            section !=
+            lastSection
+        )
+        {
+            lastSection =
+                section;
+
+
+            result.push({
+                type:
+                    'header',
+
+                text:
+                    section,
+
+                row:
+                    -1,
+
+                deviceIndex:
+                    -1
+            });
+        }
+
+
+       
+
+        result.push({
+            type:
+                'control',
+
+            text:
+                '',
+
+            row:
+                row,
+
+            deviceIndex:
+                -1
+        });
+    }
+
+
+    return result;
+}
+
+function refreshControlsPage():Void
+{
+   
+
+    hideVanillaControls();
+
+    stopControlsCamera();
+
+
+    var grid =
+        currentPage.controlGrid;
+
+
+    if (
+        grid == null ||
+        grid.members == null ||
+        grid.members.length == 0
+    )
+    {
+        hideDisplayTexts();
+
+        return;
+    }
+
+
+   
+
+    var entries:Array<Dynamic> =
+        buildControlsDisplayList();
+
+
+    if (entries.length == 0)
+    {
+        hideDisplayTexts();
+
+        return;
+    }
+
+
+   
+
+    var selectedGridIndex:Int =
+        grid.selectedIndex;
+
+
+    var selectedRow:Int =
+        Std.int(
+            selectedGridIndex /
+            2
+        );
+
+
+    var selectedDisplayIndex:Int =
+        0;
+
+
+   
+
+    var onDeviceList:Bool =
+        false;
+
+
+    try
+    {
+        onDeviceList =
+            currentPage.deviceList != null &&
+            currentPage.deviceListSelected;
+    }
+    catch (e:Dynamic)
+    {
+    }
+
+
+   
+
+    for (
+        i in
+        0...entries.length
+    )
+    {
+        var entry =
+            entries[i];
+
+
+        if (onDeviceList)
+        {
+            if (
+                entry.type ==
+                'device'
+            )
+            {
+                try
+                {
+                    if (
+                        entry.deviceIndex ==
+                        currentPage
+                            .deviceList
+                            .selectedIndex
+                    )
+                    {
+                        selectedDisplayIndex =
+                            i;
+
+                        break;
+                    }
+                }
+                catch (e:Dynamic)
+                {
+                }
+            }
+        }
+        else
+        {
+            if (
+                entry.type ==
+                    'control' &&
+                entry.row ==
+                    selectedRow
+            )
+            {
+                selectedDisplayIndex =
+                    i;
+
+                break;
+            }
+        }
+    }
+
+
+   
+
+    var startIndex:Int =
+        selectedDisplayIndex -
+        Std.int(
+            PAGE_SIZE /
+            2
+        );
+
+
+    var maxStart:Int =
+        Std.int(
+            Math.max(
+                0,
+                entries.length -
+                PAGE_SIZE
+            )
+        );
+
+
+    startIndex =
+        Std.int(
+            FlxMath.bound(
+                startIndex,
+                0,
+                maxStart
+            )
+        );
+
+
+   
+
+    for (
+        slot in
+        0...PAGE_SIZE
+    )
+    {
+        var display:FlxText =
+            displayTexts[
+                slot
+            ];
+
+
+        var entryIndex:Int =
+            startIndex +
+            slot;
+
+
+        if (
+            entryIndex >=
+            entries.length
+        )
+        {
+            display.text =
+                '';
+
+            display.visible =
+                false;
+
+            continue;
+        }
+
+
+        var entry =
+            entries[
+                entryIndex
+            ];
+
+
+        display.visible =
+            true;
+
+
+       
+
+        if (
+            entry.type ==
+            'header'
+        )
+        {
+            display.text =
+                entry.text;
+
+
+            display.setFormat(
+                Paths.font(
+                    'riffic.ttf'
+                ),
+                28,
+                FlxColor.WHITE,
+                'center'
+            );
+
+
+            display.setBorderStyle(
+                FlxTextBorderStyle.OUTLINE,
+                defaultColor,
+                2
+            );
+
+
+            display.alpha =
+               1;
+
+
+            continue;
+        }
+
+
+       
+
+        if (
+            entry.type ==
+            'control'
+        )
+        {
+            display.text =
+                getControlRowText(
+                    entry.row,
+                    selectedGridIndex
+                );
+        }
+        else
+        {
+           
+            display.text =
+                entry.text;
+        }
+
+
+        display.setFormat(
+            Paths.font(
+                'riffic.ttf'
+            ),
+            36,
+            FlxColor.WHITE,
+            'center'
+        );
+
+
+        var selected:Bool =
+            entryIndex ==
+            selectedDisplayIndex;
+
+
+        display.setBorderStyle(
+            FlxTextBorderStyle.OUTLINE,
+
+            selected
+                ? selectedColor
+                : defaultColor,
+
+            2
+        );
+
+
+        display.alpha =
+            selected
+                ? 1
+                : 1;
+    }
+
+
+   
+
+    if (onDeviceList)
+    {
+        descriptionText.text =
+            'Select which input device to configure.';
+    }
+    else
+    {
+        var selectedName:String =
+            getControlLabel(
+                selectedRow
+            );
+
+
+        descriptionText.text =
+            selectedName +
+            ' | Press Enter to change this binding.';
+    }
+}
+
+function restoreCurrentItems():Void
+{
+    if (currentItems == null)
+    {
+        return;
+    }
+
+    var members = currentItems.members;
+
+    if (members == null)
+    {
+        return;
+    }
+
+    for (item in members)
+    {
+        if (item == null)
+        {
+            continue;
+        }
+
+       
+        item.visible = true;
+    }
+}
+function renderCurrentItems():Void
+{
+    if (currentItems == null)
+    {
+        hideDisplayTexts();
+        return;
+    }
+
+    var members = currentItems.members;
+
+    if (
+        members == null ||
+        members.length == 0
+    )
+    {
+        hideDisplayTexts();
+        return;
+    }
+
+
+   
+
+    var selectedIndex:Int = 0;
+
+    try
+    {
+        selectedIndex =
+            currentItems.selectedIndex;
+    }
+    catch (e:Dynamic)
+    {
+       
+        try
+        {
+            var selectedItem =
+                currentItems.selectedItem;
+
+            if (selectedItem != null)
+            {
+                var found =
+                    members.indexOf(
+                        selectedItem
+                    );
+
+                if (found >= 0)
+                {
+                    selectedIndex =
+                        found;
+                }
+            }
+        }
+        catch (e2:Dynamic)
+        {
+            selectedIndex = 0;
+        }
+    }
+
+
+    if (selectedIndex < 0)
+    {
+        selectedIndex = 0;
+    }
+
+    if (
+        selectedIndex >=
+        members.length
+    )
+    {
+        selectedIndex =
+            members.length - 1;
+    }
+
+
+var startIndex:Int =
+    selectedIndex -
+    Std.int(PAGE_SIZE / 1.5);
+
+    var maxStart:Int =
+        Std.int(
+            Math.max(
+                0,
+                members.length -
+                PAGE_SIZE
+            )
+        );
+
+    startIndex =
+        Std.int(
+            FlxMath.bound(
+                startIndex,
+                0,
+                maxStart
+            )
+        );
+
+
+   
+
+    for (
+        slot in
+        0...PAGE_SIZE
+    )
+    {
+        var display:FlxText =
+            displayTexts[slot];
+
+            display.setFormat(
+    Paths.font('riffic.ttf'),
+    36,
+    FlxColor.WHITE,
+    'center'
+);
+
+display.alpha = 1;
+
+        var itemIndex:Int =
+            startIndex + slot;
+
+
+        if (
+            itemIndex >=
+            members.length
+        )
+        {
+            display.text = '';
+            display.visible = false;
+            continue;
+        }
+
+
+        var item =
+            members[itemIndex];
+
+
+        if (item == null)
+        {
+            display.text = '';
+            display.visible = false;
+            continue;
+        }
+
+
+var itemText:String =
+    getItemDisplayText(
+        item,
+        itemIndex
+    );
+
+
+
+if (
+    getCurrentPageName() ==
+    'OPTIONS'
+)
+{
+    itemText =
+        capitalizeWords(
+            itemText
+        );
+}
+
+
+display.text = LanguageManager.getTranslation(
+    "options." + StringTools.replace(itemText.toLowerCase(), " ", "_"), itemText);
+
+
+        display.visible = true;
+        display.exists = true;
+
+
+        var selected:Bool =
+            itemIndex ==
+            selectedIndex;
+
+
+        display.setBorderStyle(
+            FlxTextBorderStyle.OUTLINE,
+            selected
+                ? selectedColor
+                : defaultColor,
+            2
+        );
+
+
+        display.alpha =
+            selected
+                ? 1
+                : 1;
+    }
+
+
+    lastSelectedIndex =
+        selectedIndex;
+}
+
+function capitalizeWords(text:String):String
+{
+    if (text == null || text.length == 0)
+    {
+        return '';
+    }
+
+    var words:Array<String> =
+        text.toLowerCase().split(' ');
+
+    for (i in 0...words.length)
+    {
+        var word:String =
+            words[i];
+
+        if (word.length > 0)
+        {
+            words[i] =
+                word.charAt(0).toUpperCase() +
+                word.substr(1);
+        }
+    }
+
+    return words.join(' ');
+}
+
+function getItemDisplayText(
+    item:Dynamic,
+    itemIndex:Int
+):String
+{
+    if (item == null)
+    {
+        return '';
+    }
+
+
+    var result:String =
+        '';
+
+
+   
+
+    try
+    {
+        if (
+            item.label != null &&
+            item.label.text != null
+        )
+        {
+            result =
+                Std.string(
+                    item.label.text
+                );
+        }
+    }
+    catch (e:Dynamic)
+    {
+    }
+
+
+   
+
+    if (result == '')
+    {
+        try
+        {
+            if (item.text != null)
+            {
+                result =
+                    Std.string(
+                        item.text
+                    );
+            }
+        }
+        catch (e:Dynamic)
+        {
+        }
+    }
+
+
+   
+
+    if (result == '')
+    {
+        try
+        {
+            if (item.name != null)
+            {
+                result =
+                    Std.string(
+                        item.name
+                    );
+            }
+        }
+        catch (e:Dynamic)
+        {
+        }
+    }
+
+
+   
+
+    var value:String =
+        getPreferenceValueAt(
+            itemIndex
+        );
+
+
+    if (value != '')
+    {
+       
+
+        if (
+            value == 'On' ||
+            value == 'Off'
+        )
+        {
+            result +=
+                ' ' +
+                value;
+        }
+        else
+        {
+            result +=
+                ' < ' +
+                value +
+                ' >';
+        }
+    }
+
+
+    if (result == '')
+    {
+        result =
+            '???';
+    }
+
+
+    return result;
+}
+
+function getPreferenceValueAt(
+    index:Int
+):String
+{
+    if (currentPage == null)
+    {
+        return '';
+    }
+
+
+    try
+    {
+        var prefGroup =
+            currentPage.preferenceItems;
+
+
+        if (
+            prefGroup == null ||
+            prefGroup.members == null ||
+            index < 0 ||
+            index >= prefGroup.members.length
+        )
+        {
+            return '';
+        }
+
+
+        var visual =
+            prefGroup.members[index];
+
+
+        if (visual == null)
+        {
+            return '';
+        }
+
+
+       
+        try
+        {
+            var curValue =
+                visual.currentValue;
+
+
+            if (
+                Std.isOfType(
+                    curValue,
+                    Bool
+                )
+            )
+            {
+                return curValue
+                    ? 'On'
+                    : 'Off';
+            }
+        }
+        catch (e:Dynamic)
+        {
+        }
+
+
+       
+        try
+        {
+            if (visual.text != null)
+            {
+                return Std.string(
+                    visual.text
+                );
+            }
+        }
+        catch (e:Dynamic)
+        {
+        }
+    }
+    catch (e:Dynamic)
+    {
+    }
+
+
+    return '';
+}
+
+function createControlsPromptSkin():Void
+{
+controlsPromptBlack =
+    new FlxSprite(
+        0,
+        0
+    );
+
+
+controlsPromptBlack.makeGraphic(
+    FlxG.width,
+    FlxG.height,
+    FlxColor.BLACK
+);
+
+
+controlsPromptBlack.alpha =
+    0;
+
+
+controlsPromptBlack.visible =
+    false;
+
+
+controlsPromptBlack.scrollFactor.set(
+    0,
+    0
+);
+
+
+optionsState.add(
+    controlsPromptBlack
+);
+
+    controlsPromptBox =
+        new FlxSprite();
+
+
+    controlsPromptBox.frames =
+        Paths.getSparrowAtlas(
+            'dokistory/popup'
+        );
+
+
+    controlsPromptBox.animation.addByPrefix(
+        'normal',
+        'normal'
+    );
+
+
+    controlsPromptBox.animation.addByPrefix(
+        'glitch',
+        'glitch'
+    );
+
+
+    controlsPromptBox.animation.addByPrefix(
+        'va11halla',
+        'va11halla'
+    );
+
+
+    controlsPromptBox.animation.addByPrefix(
+        'libitina',
+        'libitina'
+    );
+
+
+    controlsPromptBox.animation.play(
+        'normal'
+    );
+
+
+   
+    controlsPromptBox.antialiasing =
+        true;
+
+
+    controlsPromptBox.screenCenter();
+
+
+    controlsPromptBox.offset.set(
+        -71
+    );
+
+
+    controlsPromptBox.scrollFactor.set(
+        0,
+        0
+    );
+
+
+    controlsPromptBox.visible =
+        false;
+
+
+    optionsState.add(
+        controlsPromptBox
+    );
+
+
+   
+
+    controlsPromptText =
+        new FlxText(
+            0,
+            0,
+            600,
+            '',
+            26
+        );
+
+
+    controlsPromptText.setFormat(
+        Paths.font(
+            'Aller_Rg.ttf'
+        ),
+        32,
+        FlxColor.BLACK,
+        'center'
+    );
+
+
+    controlsPromptText.antialiasing =
+        true;
+
+
+    controlsPromptText.scrollFactor.set(
+        0,
+        0
+    );
+
+
+    controlsPromptText.visible =
+        false;
+
+
+    optionsState.add(
+        controlsPromptText
+    );
+}
+
+function updateControlsPromptSkin():Void
+{
+    if (
+        controlsPromptBox == null ||
+        controlsPromptText == null ||
+        controlsPromptBlack == null
+    )
+    {
+        return;
+    }
+
+
+    var promptOpen:Bool =
+        false;
+
+
+    if (isControlsPage())
+    {
+        try
+        {
+            if (
+                currentPage.prompt != null
+            )
+            {
+               
+                currentPage.prompt.visible =
+                    false;
+
+
+                if (
+                    currentPage.prompt.back != null
+                )
+                {
+                    currentPage.prompt.back.visible =
+                        false;
+                }
+
+
+                promptOpen =
+                    currentPage.prompt.exists;
+            }
+        }
+        catch (e:Dynamic)
+        {
+        }
+    }
+
+
+    if (
+        promptOpen &&
+        !controlsPromptWasOpen
+    )
+    {
+        openControlsPromptVisuals();
+    }
+
+
+    if (
+        !promptOpen &&
+        controlsPromptWasOpen
+    )
+    {
+        closeControlsPromptVisuals();
+    }
+
+
+    controlsPromptWasOpen =
+        promptOpen;
+
+
+    if (!promptOpen)
+    {
+        return;
+    }
+
+    controlsPromptText.text =
+        'Press any key to rebind\n\n' +
+        'Backspace to unbind\n' +
+        'Escape to cancel';
+
+
+    controlsPromptText.x =
+        controlsPromptBox.x +
+        (
+            controlsPromptBox.width -
+            controlsPromptText.width
+        ) / 2;
+
+
+    controlsPromptText.y =
+        controlsPromptBox.y +
+        (
+            controlsPromptBox.height -
+            controlsPromptText.height
+        ) / 2 - 30;
+}
+
+    function getAtlasTextString(
+        atlasText:Dynamic
+    ):String
+    {
+        if (atlasText == null)
+        {
+            return '';
+        }
+
+
+        if (
+            Reflect.hasField(
+                atlasText,
+                'text'
+            )
+        )
+        {
+            var text =
+                Reflect.field(
+                    atlasText,
+                    'text'
+                );
+
+
+            if (text != null)
+            {
+                return Std.string(
+                    text
+                );
+            }
+        }
+
+
+        return '';
+    }
+
+function openControlsPromptVisuals():Void
+{
+    if (
+        controlsPromptBlack == null ||
+        controlsPromptBox == null ||
+        controlsPromptText == null
+    )
+    {
+        return;
+    }
+
+
+    acceptInput =
+        false;
+
+
+   
+
+    controlsPromptBlack.visible =
+        true;
+
+
+    controlsPromptBox.visible =
+        true;
+
+
+    controlsPromptText.visible =
+        true;
+
+
+   
+
+    controlsPromptBlack.alpha =
+        0;
+
+
+   
+
+    FlxTween.cancelTweensOf(
+        controlsPromptBlack
+    );
+
+
+   
+
+    FlxTween.tween(
+        controlsPromptBlack,
+        {
+            alpha:
+                0.7
+        },
+        0.8,
+        {
+            ease:
+                FlxEase.expoInOut,
+
+            onComplete:
+                function(flx:FlxTween)
+                {
+                    acceptInput =
+                        true;
+                }
+        }
+    );
+
+
+   
+
+    controlsPromptBox.animation.play(
+        'normal',
+        true
+    );
+}
+
+function closeControlsPromptVisuals():Void
+{
+    acceptInput =
+        false;
+
+
+    if (
+        controlsPromptBox != null
+    )
+    {
+        controlsPromptBox.visible =
+            false;
+    }
+
+
+    if (
+        controlsPromptText != null
+    )
+    {
+        controlsPromptText.visible =
+            false;
+    }
+
+
+    if (
+        controlsPromptBlack == null
+    )
+    {
+        return;
+    }
+
+
+    FlxTween.cancelTweensOf(
+        controlsPromptBlack
+    );
+
+
+    FlxTween.tween(
+        controlsPromptBlack,
+        {
+            alpha:
+                0
+        },
+        0.35,
+        {
+            ease:
+                FlxEase.expoOut,
+
+            onComplete:
+                function(flx:FlxTween)
+                {
+                    controlsPromptBlack.visible =
+                        false;
+                }
+        }
+    );
+}
+
+function refreshDescription():Void
+{
+    if (
+        descriptionText == null ||
+        currentPage == null
+    )
+    {
+        return;
+    }
+
+
+    var description:String = '';
+
+
+   
+
+    try
+    {
+        if (
+            currentPage.itemDesc != null &&
+            currentPage.itemDesc.text != null
+        )
+        {
+            description =
+                Std.string(
+                    currentPage.itemDesc.text
+                );
+        }
+    }
+    catch (e:Dynamic)
+    {
+    }
+
+
+   
+
+    if (description == '')
+    {
+        try
+        {
+            var descriptions =
+                currentPage.preferenceDesc;
+
+            var index:Int =
+                currentItems.selectedIndex;
+
+
+            if (
+                descriptions != null &&
+                index >= 0 &&
+                index < descriptions.length
+            )
+            {
+                description =
+                    descriptions[index];
+            }
+        }
+        catch (e:Dynamic)
+        {
+        }
+    }
+
+
+   
+
+    var value:String =
+        getCurrentPreferenceValue();
+
+
+   
+
+    if (
+        value != '' &&
+        description != ''
+    )
+    {
+        descriptionText.text =
+            value +
+            ' | ' +
+            description;
+    }
+    else if (description != '')
+    {
+        descriptionText.text =
+            description;
+    }
+    else
+    {
+       
+        descriptionText.text =
+            '';
+    }
+}
+
+function getCurrentPreferenceValue():String
+{
+    if (
+        currentPage == null ||
+        currentItems == null
+    )
+    {
+        return '';
+    }
+
+
+    var index:Int =
+        currentItems.selectedIndex;
+
+
+    try
+    {
+        var prefGroup =
+            currentPage.preferenceItems;
+
+
+        if (
+            prefGroup == null ||
+            prefGroup.members == null ||
+            index < 0 ||
+            index >= prefGroup.members.length
+        )
+        {
+            return '';
+        }
+
+
+        var visual =
+            prefGroup.members[index];
+
+
+        if (visual == null)
+        {
+            return '';
+        }
+
+
+       
+
+        try
+        {
+            var curValue =
+                visual.currentValue;
+
+
+            if (
+                Std.isOfType(
+                    curValue,
+                    Bool
+                )
+            )
+            {
+                return curValue
+                    ? 'On'
+                    : 'Off';
+            }
+        }
+        catch (e:Dynamic)
+        {
+        }
+
+
+       
+
+        try
+        {
+            if (
+                visual.text != null
+            )
+            {
+                return Std.string(
+                    visual.text
+                );
+            }
+        }
+        catch (e:Dynamic)
+        {
+        }
+    }
+    catch (e:Dynamic)
+    {
+    }
+
+
+    return '';
+}
+
+
+function getSelectedItem():Dynamic
+{
+    if (currentItems == null)
+    {
+        return null;
+    }
+
+
+    var members =
+        currentItems.members;
+
+
+    if (
+        members == null ||
+        members.length == 0
+    )
+    {
+        return null;
+    }
+
+
+    var selectedIndex:Int =
+        currentItems.selectedIndex;
+
+
+    if (
+        selectedIndex < 0 ||
+        selectedIndex >=
+        members.length
+    )
+    {
+        return null;
+    }
+
+
+    return members[
+        selectedIndex
+    ];
+}
+
+   
+
+    function getItemDescription(
+        item:Dynamic
+    ):String
+    {
+        if (item == null)
+        {
+            return '';
+        }
+
+
+       
+
+        var fields:Array<String> =
+        [
+            'description',
+            'desc',
+            'descriptionText'
+        ];
+
+
+        for (fieldName in fields)
+        {
+            if (
+                !Reflect.hasField(
+                    item,
+                    fieldName
+                )
+            )
+            {
+                continue;
+            }
+
+
+            var value =
+                Reflect.field(
+                    item,
+                    fieldName
+                );
+
+
+            if (value == null)
+            {
+                continue;
+            }
+
+
+           
+            if (
+                Std.isOfType(
+                    value,
+                    String
+                )
+            )
+            {
+                return Std.string(
+                    value
+                );
+            }
+
+
+           
+            var text =
+                getAtlasTextString(
+                    value
+                );
+
+
+            if (text != '')
+            {
+                return text;
+            }
+        }
+
+
+       
+        if (
+            currentPage != null
+        )
+        {
+            var pageFields:Array<String> =
+            [
+                'currentDescription',
+                'description'
+            ];
+
+
+            for (fieldName in pageFields)
+            {
+                if (
+                    Reflect.hasField(
+                        currentPage,
+                        fieldName
+                    )
+                )
+                {
+                    var value =
+                        Reflect.field(
+                            currentPage,
+                            fieldName
+                        );
+
+
+                    if (value != null)
+                    {
+                        return Std.string(
+                            value
+                        );
+                    }
+                }
+            }
+        }
+
+
+        return '';
+    }
+
+
+   
+
+    function getItemValueOnly(
+        item:Dynamic
+    ):String
+    {
+        if (item == null)
+        {
+            return '';
+        }
+
+
+       
+        if (
+            Reflect.hasField(
+                item,
+                'currentKey'
+            )
+        )
+        {
+            var value =
+                Reflect.field(
+                    item,
+                    'currentKey'
+                );
+
+
+            if (value != null)
+            {
+                return Std.string(
+                    value
+                );
+            }
+        }
+
+
+        if (
+            Reflect.hasField(
+                item,
+                'lefthandText'
+            )
+        )
+        {
+            var text =
+                getAtlasTextString(
+                    Reflect.field(
+                        item,
+                        'lefthandText'
+                    )
+                );
+
+
+            if (text != '')
+            {
+                return text;
+            }
+        }
+
+
+       
+        if (
+            Reflect.hasField(
+                item,
+                'checked'
+            )
+        )
+        {
+            return Reflect.field(
+                item,
+                'checked'
+            )
+                ? 'On'
+                : 'Off';
+        }
+
+
+       
+        if (
+            Reflect.hasField(
+                item,
+                'currentValue'
+            )
+        )
+        {
+            var value =
+                Reflect.field(
+                    item,
+                    'currentValue'
+                );
+
+
+            if (value != null)
+            {
+                return Std.string(
+                    value
+                );
+            }
+        }
+
+
+        return '';
+    }
+
+
+   
+
+    function getCurrentPageName():String
+    {
+        if (
+            optionsState == null ||
+            optionsState.optionsCodex == null
+        )
+        {
+            return '';
+        }
+
+
+        var name =
+            optionsState
+                .optionsCodex
+                .currentName;
+
+
+        if (name == null)
+        {
+            return '';
+        }
+
+
+        return Std.string(
+            name
+        ).toUpperCase();
+    }
+
+
+   
+
+    function hideDisplayTexts():Void
+    {
+        for (text in displayTexts)
+        {
+            if (text == null)
+            {
+                continue;
+            }
+
+
+            text.text =
+                '';
+
+
+            text.visible =
+                false;
+        }
+    }
+
+
+   
+
+    function updateMenuBeat():Void
+    {
+        if (
+            FlxG.sound.music == null ||
+            logoBump == null
+        )
+        {
+            return;
+        }
+
+
+        var crochet:Float =
+            60000 /
+            menuBPM;
+
+
+        var currentBeat:Int =
+            Math.floor(
+                FlxG.sound.music.time /
+                crochet
+            );
+
+
+        if (
+            currentBeat ==
+            lastMenuBeat
+        )
+        {
+            return;
+        }
+
+
+        lastMenuBeat =
+            currentBeat;
+
+
+        logoBump.animation.play(
+            'bump',
+            true
+        );
+    }
+
+
+   
+
+    function cleanupReferences():Void
+    {
+        optionsState =
+            null;
+
+
+        currentPage =
+            null;
+
+
+        currentItems =
+            null;
+
+
+        backdrop =
+            null;
+
+
+        logo =
+            null;
+
+
+        logoBump =
+            null;
+
+
+        descriptionBG =
+            null;
+
+
+        descriptionText =
+            null;
+
+
+        displayTexts =
+            [];
+
+
+        lastSelectedIndex =
+            -1;
+
+
+        lastPageName =
+            '';
+
+
+        lastMenuBeat =
+            -1;
+    }
+}

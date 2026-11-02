@@ -1,0 +1,82 @@
+import funkin.play.character.SparrowCharacter;
+import funkin.play.character.CharacterType;
+import funkin.play.PlayState;
+import funkin.modding.module.ModuleHandler;
+
+class KaityPixelCharacter extends SparrowCharacter
+{
+  function new()
+  {
+    super('pixelkaity-new');
+  }
+
+
+    override public function playSingAnimation(
+        dir:NoteDirection,
+        miss:Bool = false,
+        ?suffix:String = ''
+    ):Void
+    {
+
+        var missRecolor =
+            ModuleHandler.getModule(
+                'MissRecolor'
+            );
+			
+
+        if (missRecolor != null)
+        {
+            miss =
+                missRecolor.scriptCall(
+                    'prepareSingAnimation',
+                    [
+                        this,
+                        dir,
+                        miss,
+                        suffix
+                    ]
+                );
+        }
+
+        super.playSingAnimation(
+            dir,
+            miss,
+            suffix
+        );
+    }
+
+
+   
+
+    override public function playAnimation(
+        name:String,
+        restart:Bool = false,
+        ignoreOther:Bool = false,
+        reversed:Bool = false
+    ):Void
+    {
+        var missRecolor =
+            ModuleHandler.getModule(
+                'MissRecolor'
+            );
+
+        if (missRecolor != null)
+        {
+            missRecolor.scriptCall(
+                'onPlayAnimation',
+                [
+                    this,
+                    name
+                ]
+            );
+        }
+
+        super.playAnimation(
+            name,
+            restart,
+            ignoreOther,
+            reversed
+        );
+    }
+}
+

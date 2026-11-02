@@ -1,0 +1,287 @@
+import funkin.modding.module.Module;
+import funkin.play.PlayState;
+import funkin.play.PlayStatePlaylist;
+import flixel.FlxG;
+import funkin.save.Save;
+import funkin.util.Constants;
+import funkin.Conductor;
+import funkin.data.song.SongMetadata;
+import funkin.play.Countdown;
+import flixel.FlxSprite;
+
+class modifiers extends Module
+{
+	public function new()
+	{
+		super('practiceBotplay', 0);
+	}
+
+	public override function onCreate(event):Void
+	{
+		super.onCreate(event);
+	}
+
+    function getPositiveSpeed(key:String):Float
+    {
+        var savedValue = Save.instance.modOptions.get(key);
+        if (savedValue == null) return 1.0;
+        var speed:Float = Std.parseFloat(Std.string(savedValue));
+        if (Math.isNaN(speed) || !Math.isFinite(speed) || speed <= 0)
+            return 1.0;
+        return speed;
+    }
+
+	var playerPrevNote;
+	var opponentPrevNote;
+
+	function onSongEvent(event)
+	{
+        if (PlayStatePlaylist.isStoryMode) return;
+		if (
+			getPositiveSpeed('scrollSpeed') != 1 &&
+			event.eventData.eventKind == 'ScrollSpeed'
+		)
+		{
+			event.cancel();
+		}
+	}
+
+	override function onDestroy(event) {
+        super.onDestroy(event);
+		if (hueh231 != null) hueh231 = null;
+	}
+	
+	public function onCountdownStart(event):Void
+	{
+        if (PlayStatePlaylist.isStoryMode) return;
+		super.onCountdownStart(event);
+    
+		if (
+			PlayState.instance == null ||
+			PlayState.instance.currentStage == null
+		)
+			return;
+
+		if (PlayState.instance.isMinimalMode)
+			return;
+
+				if (Save.instance.modOptions.get('coolGameplay') == true)
+	coolGameplay();
+
+var allowMiddleScroll = Save.instance.modOptions.get('middleScroll');
+#if FEATURE_TOUCH_CONTROLS
+if (Preferences.controlsScheme == "Arrows" && !ControlsHandler.usingExternalInputDevice) allowMiddleScroll = false;
+#end
+if (allowMiddleScroll)
+{
+	var playerStrumline = PlayState.instance.playerStrumline;
+	var opponentStrumline = PlayState.instance.opponentStrumline;
+
+	if (opponentStrumline != null)
+	{
+		for (arrow in opponentStrumline.members)
+		{
+			if (arrow != null)
+				arrow.visible = false;
+		}
+	}
+
+	if (playerStrumline != null)
+	{
+		playerStrumline.x =
+			FlxG.width / 2 -
+			playerStrumline.width / 2;
+	}
+}
+		if (getPositiveSpeed('scrollSpeed') != 1)
+		{
+			PlayState.instance.playerStrumline.scrollSpeed =
+				getPositiveSpeed('scrollSpeed');
+
+			PlayState.instance.opponentStrumline.scrollSpeed =
+				getPositiveSpeed('scrollSpeed');
+		}
+
+		PlayState.instance.isBotPlayMode =
+			Save.instance.modOptions.get('botplay') == true;
+
+		if (Save.instance.modOptions.get('unfairMode') == true)
+			PlayState.instance.health = 2.0;
+
+		PlayState.instance.playbackRate =
+			getPositiveSpeed('songSpeed');
+
+		if (Save.instance.modOptions.get('randomMode') != true)
+			return;
+
+		playerPrevNote = null;
+		opponentPrevNote = null;
+
+		var ogPlayerNotes:Array<SongNoteData> =
+			PlayState.instance.playerStrumline.noteData;
+
+		var ogOpponentNotes:Array<SongNoteData> =
+			PlayState.instance.opponentStrumline.noteData;
+
+		for (notes in ogPlayerNotes)
+		{
+			notes.data = FlxG.random.int(0, 3);
+
+			if (
+				playerPrevNote != null &&
+				playerPrevNote.time == notes.time &&
+				playerPrevNote.data == notes.data
+			)
+			{
+				notes.data =
+					FlxG.random.int(0, 3, notes.data);
+			}
+
+			if (
+				playerPrevNote != null &&
+				playerPrevNote.data == notes.data
+			)
+			{
+				notes.data =
+					FlxG.random.int(0, 3, notes.data);
+			}
+
+			playerPrevNote = notes;
+		}
+
+		for (notes in ogOpponentNotes)
+		{
+			notes.data = FlxG.random.int(4, 7);
+
+			if (
+				opponentPrevNote != null &&
+				opponentPrevNote.time == notes.time &&
+				opponentPrevNote.data == notes.data
+			)
+			{
+				notes.data =
+					FlxG.random.int(4, 7, notes.data);
+			}
+
+			if (
+				opponentPrevNote != null &&
+				opponentPrevNote.data == notes.data
+			)
+			{
+				notes.data =
+					FlxG.random.int(4, 7, notes.data);
+			}
+
+			opponentPrevNote = notes;
+		}
+
+		PlayState.instance.playerStrumline.applyNoteData(
+			ogPlayerNotes
+		);
+
+		PlayState.instance.opponentStrumline.applyNoteData(
+			ogOpponentNotes
+		);
+	}
+
+	public function onNoteHit(event)
+	{
+        if (PlayStatePlaylist.isStoryMode) return;
+		if (PlayState.instance == null)
+			return;
+
+		if (!event.note.noteData.getMustHitNote())
+			return;
+
+		if (Save.instance.modOptions.get('unfairMode') == true)
+		{
+			event.healthChange = 0;
+		}
+
+		var missModeType:Int =
+			Std.int(Save.instance.modOptions.get('missModeType'));
+
+		if (missModeType == 0)
+			return;
+
+		if (
+			missModeType == 2 &&
+			event.judgement != 'sick'
+		)
+		{
+			perfectOnlyDeath();
+		}
+	}
+
+	public function onNoteMiss(event)
+	{
+        if (PlayStatePlaylist.isStoryMode) return;
+		var missModeType:Int =
+			Std.int(Save.instance.modOptions.get('missModeType'));
+
+		if (missModeType >= 1)
+		{
+			perfectOnlyDeath();
+		}
+	}
+
+	function perfectOnlyDeath():Void
+	{
+		if (PlayState.instance != null)
+			PlayState.instance.health = -1;
+	}
+
+	public function onUpdate(event)
+	{
+        if (PlayStatePlaylist.isStoryMode) return;
+		if (Save.instance.modOptions.get('unfairMode') != true)
+			return;
+
+		if (PlayState.instance == null)
+			return;
+
+		for (holdNote in PlayState.instance.playerStrumline.holdNotes.members)
+		{
+			if (holdNote == null || !holdNote.alive)
+				continue;
+
+			if (
+				holdNote.hitNote &&
+				!holdNote.missedNote &&
+				holdNote.sustainLength > 0
+			)
+			{
+				PlayState.instance.health -=
+					Constants.HEALTH_HOLD_BONUS_PER_SECOND *
+					event.elapsed;
+			}
+		}
+	}
+
+		var hueh231:FlxSprite;
+
+	function coolGameplay()
+	{
+		    if (hueh231 != null)
+        return;
+		hueh231 = new FlxSprite();
+		hueh231.frames = Paths.getSparrowAtlas('coolGameplay/coolgameplay');
+		hueh231.animation.addByPrefix('idle', 'Symbol', 24, true);
+		hueh231.animation.play('idle');
+		hueh231.scrollFactor.set();
+		hueh231.updateHitbox();
+		hueh231.screenCenter();
+		hueh231.alpha = 1;
+		hueh231.cameras = [PlayState.instance.camHUD];
+		PlayState.instance.add(hueh231);
+	}
+
+	public function onNoteGhostMiss(event)
+	{
+        if (PlayStatePlaylist.isStoryMode) return;
+		if (Save.instance.modOptions.get('ghostTapping'))
+			return;
+
+		event.cancel();
+	}
+}

@@ -1,0 +1,53 @@
+{
+ "version": "2.2.8",
+ "songName": "Piece By Piece (Switcheroo Mix) (With Lyrics)",
+ "artist": "Aquaknight11, Majin Sonic Official, Shaduwu, Kitcaato",
+ "charter": "Xandvier",
+ "pause": "manuel",
+ "offsets": { },
+ "playData": {
+  "stickerPack": "switcheroo-prologue",
+  "difficulties": [
+   "lyrics"
+  ],
+  "characters": {
+   "player": "playable-seira",
+   "girlfriend": "speakers-pixel",
+   "opponent": "manuel-pixel",
+   "opponentVocals": [
+    "manuel"
+   ],
+   "playerVocals": [
+    "seira"
+   ]
+  },
+  "stage": "schoolErect-switcheroo",
+  "noteStyle": "ddtspixel",
+  "ratings": {
+   "hard": 5
+  },
+  "album": "switcheroo",
+  "previewEnd": 0
+ },
+ "generatedBy": "Friday Night Funkin' - v0.8.5",
+ "timeChanges": [
+  {
+   "t": 0,
+   "b": 0,
+   "bpm": 61,
+   "bt": [4, 4, 4, 4]
+  },
+  {
+   "t": 31475.4098360656,
+   "b": 32,
+   "bpm": 105,
+   "bt": [4, 4, 4, 4]
+  },
+  {
+   "t": 159475.409836066,
+   "b": 256,
+   "bpm": 61,
+   "bt": [4, 4, 4, 4]
+  }
+ ]
+}

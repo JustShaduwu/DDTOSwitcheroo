@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+Created with Funkin Packer v0.1.3 https://neeeoo.github.io/funkin-packer/
+-->
+<TextureAtlas imagePath="ManuelPotraits.png" width="211" height="179">
+	<SubTexture name="ManuelPortraitA" x="1" y="1" width="50" height="57" frameX="-3" frameY="-9" frameWidth="60" frameHeight="66"/>
+	<SubTexture name="ManuelPortraitB" x="54" y="1" width="50" height="57" frameX="-3" frameY="-9" frameWidth="60" frameHeight="66"/>
+	<SubTexture name="ManuelPortraitC" x="1" y="61" width="50" height="57" frameX="-3" frameY="-9" frameWidth="60" frameHeight="66"/>
+	<SubTexture name="ManuelPortraitD" x="54" y="61" width="50" height="57" frameX="-3" frameY="-9" frameWidth="60" frameHeight="66"/>
+	<SubTexture name="ManuelPortraitE" x="107" y="1" width="50" height="57" frameX="-3" frameY="-9" frameWidth="60" frameHeight="66"/>
+	<SubTexture name="ManuelPortraitF" x="107" y="61" width="50" height="57" frameX="-3" frameY="-9" frameWidth="60" frameHeight="66"/>
+	<SubTexture name="ManuelPortraitG" x="1" y="121" width="50" height="57" frameX="-3" frameY="-9" frameWidth="60" frameHeight="66"/>
+	<SubTexture name="ManuelPortraitI" x="54" y="121" width="50" height="57" frameX="-3" frameY="-9" frameWidth="60" frameHeight="66"/>
+	<SubTexture name="ManuelPortraitJ" x="107" y="121" width="50" height="57" frameX="-3" frameY="-9" frameWidth="60" frameHeight="66"/>
+	<SubTexture name="ManuelPortraitK" x="160" y="1" width="50" height="57" frameX="-3" frameY="-9" frameWidth="60" frameHeight="66"/>
+	<SubTexture name="ManuelPortraitL" x="160" y="61" width="50" height="57" frameX="-3" frameY="-9" frameWidth="60" frameHeight="66"/>
+	<SubTexture name="ManuelPortraitM" x="160" y="121" width="50" height="57" frameX="-3" frameY="-9" frameWidth="60" frameHeight="66"/>
+</TextureAtlas>

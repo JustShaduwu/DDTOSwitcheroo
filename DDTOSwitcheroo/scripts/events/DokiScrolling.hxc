@@ -1,0 +1,1011 @@
+import funkin.play.PlayState;
+import funkin.play.event.ScriptedSongEvent;
+
+import flixel.addons.display.FlxBackdrop;
+
+import flixel.tweens.FlxTween;
+import flixel.tweens.FlxEase;
+import flixel.addons.display.FlxRuntimeShader;
+import flixel.util.FlxColor;
+import lime.utils.Assets;
+
+
+
+using StringTools;
+
+class ScrollingBackdropEvent extends ScriptedSongEvent
+{
+    var backdrop:FlxBackdrop = null;
+
+   
+    var backdropStage:Dynamic = null;
+var backdropShader:FlxRuntimeShader = null;
+
+    public function new()
+    {
+        super(
+            'ScrollingBackdropEvent'
+        );
+    }
+
+
+   
+
+    public override function handleEvent(
+        data
+    ):Void
+    {
+        if (
+            PlayState.instance == null ||
+            PlayState.instance.currentStage == null ||
+            PlayState.instance.isMinimalMode
+        )
+        {
+            return;
+        }
+
+
+       
+        checkStage();
+
+
+        var action:Int =
+            Std.int(
+                data.value.action ?? 0
+            );
+
+
+        switch (action)
+        {
+           
+
+            case 0:
+
+var color1:String =
+    Std.string(
+        data.value.color1 ??
+        '#FDFFFF'
+    );
+
+
+var color2:String =
+    Std.string(
+        data.value.color2 ??
+        '#7FEDF0'
+    );
+
+                var velocityX:Float =
+                    parseFloatSafe(
+                        data.value.velocityX,
+                        -40
+                    );
+
+
+                var velocityY:Float =
+                    parseFloatSafe(
+                        data.value.velocityY,
+                        -40
+                    );
+
+
+                var zIndex:Int =
+                    Std.int(
+                        data.value.zIndex ?? 10
+                    );
+
+
+createBackdrop(
+    color1,
+    color2,
+    velocityX,
+    velocityY,
+    zIndex
+);
+
+
+           
+
+            case 1:
+
+                var targetAlpha:Float =
+                    parseFloatSafe(
+                        data.value.alpha,
+                        1
+                    );
+
+
+                var duration:Float =
+                    parseFloatSafe(
+                        data.value.duration,
+                        1
+                    );
+
+
+                fadeBackdrop(
+                    targetAlpha,
+                    Math.max(
+                        duration,
+                        0
+                    )
+                );
+
+
+           
+
+            case 2:
+
+                var velocityX:Float =
+                    parseFloatSafe(
+                        data.value.velocityX,
+                        backdrop == null
+                            ? 0
+                            : backdrop.velocity.x
+                    );
+
+
+                var velocityY:Float =
+                    parseFloatSafe(
+                        data.value.velocityY,
+                        backdrop == null
+                            ? 0
+                            : backdrop.velocity.y
+                    );
+
+
+                setBackdropVelocity(
+                    velocityX,
+                    velocityY
+                );
+
+
+           
+
+            case 3:
+
+                if (backdrop != null)
+                {
+                    FlxTween.cancelTweensOf(
+                        backdrop
+                    );
+
+
+                    backdrop.visible =
+                        true;
+
+
+                    backdrop.alpha =
+                        1;
+                }
+
+
+           
+
+            case 4:
+
+                if (backdrop != null)
+                {
+                    FlxTween.cancelTweensOf(
+                        backdrop
+                    );
+
+
+                    backdrop.alpha =
+                        0;
+
+
+                    backdrop.visible =
+                        false;
+                }
+
+
+           
+
+            case 5:
+
+                removeBackdrop();
+
+case 6:
+
+    setBackdropColors(
+        Std.string(
+            data.value.color1 ??
+            '#FDFFFF'
+        ),
+
+        Std.string(
+            data.value.color2 ??
+            '#7FEDF0'
+        )
+    );
+        }
+    }
+
+
+   
+
+    function parseFloatSafe(
+        value:Dynamic,
+        fallback:Float
+    ):Float
+    {
+        var parsed:Float =
+            Std.parseFloat(
+                Std.string(
+                    value ?? fallback
+                )
+            );
+
+
+        if (Math.isNaN(parsed))
+        {
+            return fallback;
+        }
+
+
+        return parsed;
+    }
+
+
+   
+
+    function checkStage():Void
+    {
+        if (PlayState.instance == null)
+            return;
+
+
+        var currentStage =
+            PlayState.instance.currentStage;
+
+
+        if (
+            backdrop != null &&
+            backdropStage != currentStage
+        )
+        {
+            FlxTween.cancelTweensOf(
+                backdrop
+            );
+
+
+            backdrop =
+                null;
+
+
+            backdropStage =
+                null;
+        }
+    }
+
+
+   
+function createBackdrop(
+    color1:String,
+    color2:String,
+    velocityX:Float,
+    velocityY:Float,
+    zIndex:Int
+):Void
+{
+    if (
+        PlayState.instance == null ||
+        PlayState.instance.currentStage == null
+    )
+    {
+        return;
+    }
+
+
+    removeBackdrop();
+
+
+   
+    backdrop =
+        new FlxBackdrop(
+            Paths.image(
+                'scrollingBG'
+            )
+        );
+
+
+    backdrop.updateHitbox();
+
+
+    backdrop.velocity.set(
+        velocityX,
+        velocityY
+    );
+
+
+    backdrop.zIndex =
+        zIndex;
+
+
+    backdrop.alpha =
+        0;
+
+
+    backdrop.visible =
+        true;
+
+
+    backdrop.screenCenter();
+
+
+    backdrop.cameras =
+    [
+        PlayState.instance.camGame
+    ];
+
+
+   
+
+    createBackdropShader(
+        color1,
+        color2
+    );
+
+
+    backdropStage =
+        PlayState.instance.currentStage;
+
+
+    addBackdropToStage();
+}
+
+function createBackdropShader(
+    color1:String,
+    color2:String
+):Void
+{
+    if (backdrop == null)
+        return;
+
+
+    var fragPath:String =
+        Paths.frag(
+            'ColorMaskShader'
+        );
+
+
+    if (!Assets.exists(fragPath))
+    {
+        trace(
+            'ScrollingBackdropEvent: ColorMaskShader no encontrado.'
+        );
+
+        return;
+    }
+
+
+    backdropShader =
+        new FlxRuntimeShader(
+            Assets.getText(
+                fragPath
+            )
+        );
+
+
+    var parsedColor1:FlxColor =
+        parseColor(
+            color1,
+            0xFFFDFFFF
+        );
+
+
+    var parsedColor2:FlxColor =
+        parseColor(
+            color2,
+            0xFF7FEDF0
+        );
+
+
+    setShaderColor(
+        backdropShader,
+        'color1',
+        parsedColor1
+    );
+
+
+    setShaderColor(
+        backdropShader,
+        'color2',
+        parsedColor2
+    );
+
+
+    backdrop.shader =
+        backdropShader;
+}
+
+function setShaderColor(
+    shader:FlxRuntimeShader,
+    uniformName:String,
+    color:FlxColor
+):Void
+{
+    if (shader == null)
+        return;
+
+
+    var colorInt:Int =
+        color;
+
+
+    var red:Float =
+        (
+            (colorInt >> 16) &
+            0xFF
+        ) / 255;
+
+
+    var green:Float =
+        (
+            (colorInt >> 8) &
+            0xFF
+        ) / 255;
+
+
+    var blue:Float =
+        (
+            colorInt &
+            0xFF
+        ) / 255;
+
+
+    switch (uniformName)
+    {
+        case 'color1':
+
+            shader.data.color1.value =
+            [
+                red,
+                green,
+                blue
+            ];
+
+
+        case 'color2':
+
+            shader.data.color2.value =
+            [
+                red,
+                green,
+                blue
+            ];
+    }
+}
+
+function parseColor(
+    value:String,
+    fallback:Int
+):FlxColor
+{
+    if (
+        value == null ||
+        value.trim() == ''
+    )
+    {
+        return fallback;
+    }
+
+
+    var clean:String =
+        value
+            .trim()
+            .replace(
+                '#',
+                ''
+            );
+
+
+    if (clean.length == 6)
+    {
+        clean =
+            'FF' +
+            clean;
+    }
+
+
+    var parsed =
+        Std.parseInt(
+            '0x' +
+            clean
+        );
+
+
+    if (parsed == null)
+    {
+        return fallback;
+    }
+
+
+    return parsed;
+}
+
+
+   
+
+    function addBackdropToStage():Void
+    {
+        if (
+            PlayState.instance == null ||
+            backdrop == null
+        )
+        {
+            return;
+        }
+
+
+        var stage =
+            PlayState.instance.currentStage;
+
+
+       
+        if (stage == null)
+        {
+            PlayState.instance.add(
+                backdrop
+            );
+
+            return;
+        }
+
+
+       
+
+        var gf =
+            stage.getGirlfriend();
+
+
+        if (gf != null)
+        {
+            var gfIndex:Int =
+                stage.members.indexOf(
+                    gf
+                );
+
+
+            if (gfIndex >= 0)
+            {
+                stage.insert(
+                    gfIndex,
+                    backdrop
+                );
+
+                return;
+            }
+        }
+
+
+       
+
+        var insertIndex:Int =
+            stage.members.length;
+
+
+        var characters:Array<Dynamic> =
+        [
+            stage.getBoyfriend(),
+            stage.getDad(),
+            stage.getGirlfriend()
+        ];
+
+
+        for (character in characters)
+        {
+            if (character == null)
+                continue;
+
+
+            var index:Int =
+                stage.members.indexOf(
+                    character
+                );
+
+
+            if (
+                index >= 0 &&
+                index < insertIndex
+            )
+            {
+                insertIndex =
+                    index;
+            }
+        }
+
+
+        if (
+            insertIndex >= 0 &&
+            insertIndex <
+            stage.members.length
+        )
+        {
+            stage.insert(
+                insertIndex,
+                backdrop
+            );
+        }
+        else
+        {
+           
+            stage.insert(
+                0,
+                backdrop
+            );
+        }
+    }
+
+
+   
+
+    function fadeBackdrop(
+        targetAlpha:Float,
+        duration:Float
+    ):Void
+    {
+        if (backdrop == null)
+            return;
+
+
+        FlxTween.cancelTweensOf(
+            backdrop
+        );
+
+
+       
+        if (targetAlpha > 0)
+        {
+            backdrop.visible =
+                true;
+        }
+
+
+        if (duration <= 0)
+        {
+            backdrop.alpha =
+                targetAlpha;
+
+
+            if (targetAlpha <= 0)
+            {
+                backdrop.visible =
+                    false;
+            }
+
+
+            return;
+        }
+
+
+        FlxTween.tween(
+            backdrop,
+            {
+                alpha: targetAlpha
+            },
+            duration,
+            {
+                ease:
+                    FlxEase.sineIn,
+
+                onComplete:
+                    function(tween:FlxTween)
+                    {
+                        if (
+                            backdrop != null &&
+                            targetAlpha <= 0
+                        )
+                        {
+                            backdrop.visible =
+                                false;
+                        }
+                    }
+            }
+        );
+    }
+
+
+   
+
+    function setBackdropVelocity(
+        velocityX:Float,
+        velocityY:Float
+    ):Void
+    {
+        if (backdrop == null)
+            return;
+
+
+        backdrop.velocity.set(
+            velocityX,
+            velocityY
+        );
+    }
+
+
+   
+
+    function removeBackdrop():Void
+    {
+        if (backdrop == null)
+            return;
+
+
+        FlxTween.cancelTweensOf(
+            backdrop
+        );
+
+
+        if (
+            backdropStage != null
+        )
+        {
+            backdropStage.remove(
+                backdrop,
+                true
+            );
+        }
+
+
+        backdrop.destroy();
+
+
+        backdrop =
+            null;
+
+
+        backdropStage =
+            null;
+    }
+
+
+   
+
+    function resetBackdrop():Void
+    {
+        if (backdrop != null)
+        {
+            FlxTween.cancelTweensOf(
+                backdrop
+            );
+                                backdrop.alpha =
+                        0;
+
+
+                    backdrop.visible =
+                        false;
+        }
+
+
+        backdrop =
+            null;
+
+
+        backdropStage =
+            null;
+            
+    }
+
+
+   
+
+    public function onCountdownStart(
+        event
+    ):Void
+    {
+        super.onCountdownStart(
+            event
+        );
+
+
+        resetBackdrop();
+    }
+
+
+    public function onSongRetry(
+        event
+    ):Void
+    {
+        resetBackdrop();
+    }
+
+
+    public function onStateChangeBegin(
+        event
+    ):Void
+    {
+        resetBackdrop();
+    }
+
+
+   
+
+    public function getEventSchema()
+    {
+        return [
+            {
+                name:
+                    'action',
+
+                title:
+                    'Action',
+
+                defaultValue:
+                    0,
+
+                type:
+                    'enum',
+
+                keys:
+                [
+                    'Create' => 0,
+                    'Fade' => 1,
+                    'Velocity' => 2,
+                    'Show' => 3,
+                    'Hide' => 4,
+                    'Remove' => 5,
+                    'Set Colors' => 6
+                ]
+            },
+
+{
+    name:
+        'color1',
+
+    title:
+        'Color 1',
+
+    defaultValue:
+        '#FDFFFF',
+
+    type:
+        'string'
+},
+
+{
+    name:
+        'color2',
+
+    title:
+        'Color 2',
+
+    defaultValue:
+        '#7FEDF0',
+
+    type:
+        'string'
+},
+
+            {
+                name:
+                    'velocityX',
+
+                title:
+                    'Velocity X',
+
+                defaultValue:
+                    -40,
+
+                type:
+                    'float',
+
+                step:
+                    1
+            },
+
+            {
+                name:
+                    'velocityY',
+
+                title:
+                    'Velocity Y',
+
+                defaultValue:
+                    -40,
+
+                type:
+                    'float',
+
+                step:
+                    1
+            },
+
+            {
+                name:
+                    'alpha',
+
+                title:
+                    'Target Alpha',
+
+                defaultValue:
+                    1,
+
+                type:
+                    'float',
+
+                step:
+                    0.1,
+
+                min:
+                    0,
+
+                max:
+                    1
+            },
+
+            {
+                name:
+                    'duration',
+
+                title:
+                    'Duration',
+
+                defaultValue:
+                    1,
+
+                type:
+                    'float',
+
+                step:
+                    0.1,
+
+                min:
+                    0
+            },
+
+            {
+                name:
+                    'zIndex',
+
+                title:
+                    'Z Index',
+
+                defaultValue:
+                    10,
+
+                type:
+                    'integer'
+            }
+        ];
+    }
+
+
+function setBackdropColors(
+    color1:String,
+    color2:String
+):Void
+{
+    if (
+        backdrop == null ||
+        backdropShader == null
+    )
+    {
+        return;
+    }
+
+
+    setShaderColor(
+        backdropShader,
+        'color1',
+        parseColor(
+            color1,
+            0xFFFDFFFF
+        )
+    );
+
+
+    setShaderColor(
+        backdropShader,
+        'color2',
+        parseColor(
+            color2,
+            0xFF7FEDF0
+        )
+    );
+}
+
+    public function getTitle():String
+    {
+        return 'Scrolling Backdrop';
+    }
+}

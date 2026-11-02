@@ -1,0 +1,41 @@
+{
+ "version": "2.2.8",
+ "songName": "Test (Manu Mix)",
+ "artist": "Shaduwu / Agami_San",
+ "charter": "The DDTS Charting Team",
+ "offsets": { },
+ "pause": "manu",
+ "playData": {
+  "stickerPack": "switcheroo-bean",
+  "difficulties": [
+   "easy", "normal", "hard"
+  ],
+  "characters": {
+   "player": "pixel-kity",
+   "girlfriend": "pixel-chis",
+   "opponent": "manu-pixel",
+   "opponentVocals": [
+    "manu-pixel"
+   ],
+   "playerVocals": [
+    "pixel-kity"
+   ]
+  },
+  "stage": "schoolErect-switcheroo",
+  "noteStyle": "beanpixel",
+  "ratings": {
+   "hard": 4
+  },
+  "album": "switcheroo",
+  "previewEnd": 0
+ },
+ "generatedBy": "Friday Night Funkin' - v0.8.5",
+ "timeChanges": [
+  {
+   "t": 0,
+   "b": 0,
+   "bpm": 170,
+   "bt": [4, 4, 4, 4]
+  }
+ ]
+}

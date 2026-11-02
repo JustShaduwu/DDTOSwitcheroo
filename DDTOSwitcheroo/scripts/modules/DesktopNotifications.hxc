@@ -1,0 +1,54 @@
+import funkin.modding.module.Module;
+import funkin.save.Save;
+import funkin.Paths;
+import lime.utils.Assets;
+import haxe.Json;
+import SwitcherooProgress;
+
+class DesktopNotifications extends Module
+{
+    static var entries:Array<Dynamic> = null;
+    function new() { super('DesktopNotifications'); }
+
+    static function list():Array<Dynamic>
+    {
+        if (entries == null)
+        {
+            entries = [];
+            try
+            {
+                var config = Json.parse(Assets.getText(Paths.json('desktopNotifications')));
+                if (config != null && Std.isOfType(config.notifications, Array)) entries = config.notifications;
+            }
+            catch (error:Dynamic) { trace('[DesktopNotifications] ' + error); }
+        }
+        return entries;
+    }
+
+    static function available(entry:Dynamic, section:String):Bool
+    {
+        return entry != null && entry.key != null && entry.section == section
+            && entry.enabled != false
+            && (entry.requiresPrologue != true || SwitcherooProgress.hasCompletedPrologue());
+    }
+
+    public static function hasNew(section:String):Bool
+    {
+        for (entry in list())
+            if (available(entry, section) && Save.instance.modOptions.get('switcherooDesktopSeen:' + entry.key) != true)
+                return true;
+        return false;
+    }
+
+    public static function markSeen(section:String):Void
+    {
+        var changed = false;
+        for (entry in list())
+            if (available(entry, section) && Save.instance.modOptions.get('switcherooDesktopSeen:' + entry.key) != true)
+            {
+                Save.instance.modOptions.set('switcherooDesktopSeen:' + entry.key, true);
+                changed = true;
+            }
+        if (changed) Save.instance.flush();
+    }
+}

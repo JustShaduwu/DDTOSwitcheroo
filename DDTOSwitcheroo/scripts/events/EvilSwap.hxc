@@ -1,0 +1,70 @@
+
+
+import funkin.play.PlayState;
+import funkin.play.event.SongEvent;
+import funkin.data.event.SongEventSchema;
+import funkin.data.event.SongEventFieldType;
+
+class EvilSwap extends SongEvent
+{
+    function new()
+    {
+        super('EvilSwap');
+    }
+
+	public override function handleEvent(data) {
+		if (PlayState.instance == null || PlayState.instance.currentStage == null) return;
+		if (PlayState.instance.isMinimalMode) return;
+        
+		switch(data.value.state) {
+        case 2:
+            PlayState.instance.currentStage.evilSchool();
+        case 3: 
+            PlayState.instance.currentStage.JustManuel();  
+        case 1:
+            PlayState.instance.currentStage.normalSchool();  
+        }
+
+		switch(data.value.transition) {
+        case 1:
+        PlayState.instance.currentStage.glitchEffect('default');
+        case 2:
+        PlayState.instance.currentStage.glitchEffect('stagnant');   
+        }
+        
+	}
+
+
+    public override function getTitle()
+    {
+        return 'Evil Swap';
+    }
+
+  public function getEventSchema()
+  {
+    return [
+      {
+        name: 'state',
+        title: 'Set School Property',
+        defaultValue: 0,
+        type: 'enum',
+        keys: [
+          'Normal School' => 1,
+          'Evil School' => 2,
+          'Just Manuel' => 3
+        ]
+      },
+      {
+        name: 'transition',
+        title: 'Transition Type',
+        defaultValue: 1,
+        type: 'enum',
+        keys: [
+          'Glitch' => 1,
+          'Stagnant' => 2,
+          'No Effect' => 3
+        ]
+      }
+    ];
+  }
+}

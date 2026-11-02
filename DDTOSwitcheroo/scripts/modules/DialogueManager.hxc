@@ -1,0 +1,3208 @@
+import funkin.modding.module.Module;
+import funkin.play.PlayState;
+
+import flixel.FlxG;
+import flixel.FlxSprite;
+
+import flixel.addons.text.FlxTypeText;
+
+import flixel.text.FlxText;
+import flixel.text.FlxTextAlign;
+import flixel.text.FlxTextBorderStyle;
+
+import flixel.util.FlxColor;
+import funkin.PlayerSettings;
+import funkin.Preferences;
+import funkin.input.Controls;
+
+import flixel.tweens.FlxTween;
+import flixel.tweens.FlxEase;
+
+import lime.utils.Assets;
+
+import haxe.Json;
+
+import flixel.addons.display.FlxRuntimeShader;
+import openfl.filters.ShaderFilter;
+import funkin.modding.module.ModuleHandler;
+
+using StringTools;
+
+typedef DialogueSpeakerAnimationData =
+{
+    var name:String;
+
+    var prefix:String;
+
+    @:optional
+    var offsets:Array<Float>;
+
+    @:optional
+    var frameRate:Float;
+
+    @:optional
+    var looped:Bool;
+}
+
+
+typedef DialogueSpeakerData =
+{
+    var version:String;
+
+    var name:String;
+
+    var assetPath:String;
+
+    @:optional
+    var box:String;
+    @:optional
+    var textSound:String;
+
+    var flipX:Bool;
+
+    var isPixel:Bool;
+
+    var scale:Float;
+
+    var offsets:Array<Float>;
+
+    var animations:Array<DialogueSpeakerAnimationData>;
+}
+
+typedef DialogueBoxAnimationData =
+{
+    var name:String;
+    var prefix:String;
+
+    var offsets:Array<Float>;
+
+    var frameRate:Float;
+
+    @:optional
+    var looped:Bool;
+}
+
+
+typedef DialogueBoxTextData =
+{
+    var offsets:Array<Float>;
+
+    var width:Float;
+
+    var color:String;
+    @:optional
+    var fontSize:Int;
+    
+    var fontFamily:String;
+
+    var shadowColor:String;
+
+    var shadowWidth:Float;
+}
+
+
+typedef DialogueBoxData =
+{
+    var version:String;
+
+    var name:String;
+
+    var assetPath:String;
+
+    var isPixel:Bool;
+
+    var flipX:Bool;
+
+    var flipY:Bool;
+
+    var offsets:Array<Float>;
+
+    var scale:Float;
+
+    var text:DialogueBoxTextData;
+
+    var animations:Array<DialogueBoxAnimationData>;
+}
+
+class DialogueManager extends Module
+{
+    var dialogueData:Dynamic;
+    var dialogueMusic:Dynamic = null;
+    var dialogueTranslations:Dynamic = null;
+
+    var dialogue:Array<Dynamic> = [];
+
+    var currentDialogue:Int = 0;
+
+var currentBoxId:String = '';
+
+var currentBoxData:DialogueBoxData = null;
+
+var pendingIntroDialogue:String = null;
+var pendingIntroCallback:Dynamic = null;
+var dialogueBlackScreen:FlxSprite;
+var introDialogueStarted:Bool = false;
+
+var currentLeftSpeakerId:String = '';
+var currentRightSpeakerId:String = '';
+
+var currentLeftSpeakerData:DialogueSpeakerData = null;
+var currentRightSpeakerData:DialogueSpeakerData = null;
+
+var previousDialogueSpeakerId:String = '';
+var previousDialogueSide:String = '';
+
+
+var dialogueInputLocked:Bool = false;
+
+var dialoguePauseInputLock:Bool = false;
+
+var dialogueGlitchShader:FlxRuntimeShader = null;
+var dialogueGlitchTime:Float = 0;
+var dialogueGlitchActive:Bool = false;
+
+    var dialogueActive:Bool = false;
+
+    var dialogueOpened:Bool = false;
+
+    var dialogueStarted:Bool = false;
+
+    var dialogueEnded:Bool = false;
+
+    var endingDialogue:Bool = false;
+
+    var canFullSkip:Bool = true;
+
+    var finishCallback:Dynamic = null;
+
+
+    var bgFade:FlxSprite;
+
+    var box:FlxSprite;
+
+    var portraitLeft:FlxSprite;
+
+    var portraitRight:FlxSprite;
+
+    var swagDialogue:FlxTypeText;
+
+    var skipText:FlxText;
+
+    var backgroundImage:FlxSprite;
+
+
+    var curCharacter:String = '';
+
+    var curExpression:String = '';
+
+    var curSide:String = 'left';
+
+    function new()
+    {
+        super(
+            'DialogueManager',
+            0
+        );
+    }
+
+var pendingIntroAutoCountdown:Bool = true;
+
+function startDialogueBeforeCountdown(
+    dialoguePath:String,
+    ?onFinish:Dynamic = null,
+    autoStartCountdown:Bool = true
+):Void
+{
+    pendingIntroDialogue =
+        dialoguePath;
+
+    pendingIntroCallback =
+        onFinish;
+
+    pendingIntroAutoCountdown =
+        autoStartCountdown;
+
+    introDialogueStarted =
+        false;
+}
+
+override function onCountdownStart(event)
+{
+    super.onCountdownStart(event);
+
+    if (
+        pendingIntroDialogue == null ||
+        pendingIntroDialogue == '' ||
+        introDialogueStarted
+    )
+    {
+        return;
+    }
+
+
+    event.cancelEvent();
+
+
+    introDialogueStarted =
+        true;
+
+
+    if (PlayState.instance != null)
+    {
+        PlayState.instance.isInCutscene =
+            true;
+    }
+
+    PlayState.instance.camHUD.alpha = 0;
+
+    PlayState.instance.disableKeys = true;
+
+
+    var dialoguePath:String =
+        pendingIntroDialogue;
+
+    var originalCallback =
+        pendingIntroCallback;
+
+var shouldAutoCountdown:Bool =
+    pendingIntroAutoCountdown;
+
+
+pendingIntroDialogue =
+    null;
+
+pendingIntroCallback =
+    null;
+
+pendingIntroAutoCountdown =
+    true;
+
+startDialogue(
+    dialoguePath,
+
+    function()
+    {
+        if (originalCallback != null)
+        {
+            originalCallback();
+        }
+
+
+        if (
+            shouldAutoCountdown &&
+            PlayState.instance != null
+        )
+        {
+            PlayState.instance.isInCutscene =
+                false;
+            FlxTween.tween(PlayState.instance.camHUD, {alpha: 1}, 0.5, {ease: FlxEase.linear});
+            PlayState.instance.startCountdown();
+        }
+        PlayState.instance.disableKeys = false;
+
+        introDialogueStarted =
+            false;
+    }
+);
+}
+
+    function startDialogue(
+        dialoguePath:String,
+        ?onFinish:Dynamic = null
+    ):Bool
+    {
+        if (
+            PlayState.instance == null ||
+            dialoguePath == null ||
+            dialoguePath == ''
+        )
+        {
+            return false;
+        }
+
+
+        if (dialogueActive)
+        {
+            cleanupDialogue();
+        }
+
+
+        var jsonPath:String =
+            Paths.json(
+                dialoguePath
+            );
+
+
+        if (!Assets.exists(jsonPath))
+        {
+            trace(
+                '[DialogueManager] JSON no encontrado: ' +
+                jsonPath
+            );
+
+            return false;
+        }
+
+
+        var rawJson:String =
+            Assets.getText(
+                jsonPath
+            );
+
+
+        if (
+            rawJson == null ||
+            rawJson == ''
+        )
+        {
+            trace(
+                '[DialogueManager] JSON vacío: ' +
+                jsonPath
+            );
+
+            return false;
+        }
+
+
+        return startDialogueFromJson(
+            rawJson,
+            onFinish,
+            dialoguePath
+        );
+    }
+
+
+    function startDialogueFromJson(
+        rawJson:String,
+        ?onFinish:Dynamic = null,
+        ?translationPath:String = null
+    ):Bool
+    {
+        if (
+            PlayState.instance == null ||
+            rawJson == null ||
+            rawJson == ''
+        )
+        {
+            return false;
+        }
+
+
+        try
+        {
+            dialogueData =
+                Json.parse(
+                    rawJson
+                );
+        }
+        catch (error:Dynamic)
+        {
+            trace(
+                '[DialogueManager] Error leyendo JSON: ' +
+                error
+            );
+
+            return false;
+        }
+
+
+        if (
+            dialogueData == null ||
+            dialogueData.dialogue == null
+        )
+        {
+            trace(
+                '[DialogueManager] El JSON no contiene "dialogue".'
+            );
+
+            return false;
+        }
+
+
+        dialogue =
+            cast dialogueData.dialogue;
+
+
+        if (
+            dialogue == null ||
+            dialogue.length == 0
+        )
+        {
+            trace(
+                '[DialogueManager] El diálogo está vacío.'
+            );
+
+            return false;
+        }
+
+
+        if (dialogueData.startingMusic != null && Std.string(dialogueData.startingMusic) != '')
+            commandStartMusic(Std.string(dialogueData.startingMusic));
+
+        dialogueTranslations = null;
+        var languageManager = ModuleHandler.getModule('LanguageManager');
+        if (languageManager != null && translationPath != null)
+        {
+            try
+            {
+                dialogueTranslations = languageManager.scriptCall(
+                    'loadDialogueTranslations', [translationPath]);
+            }
+            catch (error:Dynamic)
+            {
+                trace('[DialogueManager] Translation fallback: ' + error);
+            }
+        }
+
+canFullSkip =
+    dialogueData.canSkip == null
+        ? true
+        : dialogueData.canSkip;
+
+currentDialogue = 0;
+
+dialogueActive = true;
+
+dialogueOpened = false;
+
+dialogueStarted = false;
+
+dialogueEnded = false;
+
+endingDialogue = false;
+
+finishCallback =
+    onFinish;
+
+
+
+createDialogueUI();
+
+return true;
+    }
+
+
+function createDialogueUI():Void
+{
+    if (PlayState.instance == null)
+        return;
+
+
+backgroundImage =
+    new FlxSprite(
+        0,
+        0
+    );
+
+
+backgroundImage.scrollFactor.set(
+    0,
+    0
+);
+
+
+backgroundImage.alpha =
+    0;
+
+
+backgroundImage.cameras =
+[
+    PlayState.instance.camCutscene
+];
+
+
+PlayState.instance.add(
+    backgroundImage
+);
+
+    bgFade = new FlxSprite(
+        -200,
+        -200
+    );
+
+    bgFade.makeGraphic(
+        Std.int(FlxG.width * 1.3),
+        Std.int(FlxG.height * 1.3),
+        0xFFB3DFD8
+    );
+
+    bgFade.scrollFactor.set(0, 0);
+    bgFade.alpha = 0;
+
+    bgFade.cameras =
+    [
+        PlayState.instance.camCutscene
+    ];
+
+    PlayState.instance.add(bgFade);
+
+
+    var disableBGFade:Bool =
+        dialogueData.disableBGFade == null
+            ? false
+            : dialogueData.disableBGFade;
+
+    if (!disableBGFade)
+    {
+        FlxTween.tween(
+            bgFade,
+            {
+                alpha: 0.7
+            },
+            0.5,
+            {
+                ease: FlxEase.linear
+            }
+        );
+    }
+
+
+    portraitLeft =
+        new FlxSprite(
+            110,
+            -4
+        );
+
+    portraitLeft.scrollFactor.set(0, 0);
+    portraitLeft.alpha = 0;
+
+    portraitLeft.cameras =
+    [
+        PlayState.instance.camCutscene
+    ];
+
+    PlayState.instance.add(
+        portraitLeft
+    );
+
+    portraitRight =
+        new FlxSprite(
+            647,
+            -4
+        );
+
+    portraitRight.scrollFactor.set(0, 0);
+    portraitRight.alpha = 0;
+
+    portraitRight.cameras =
+    [
+        PlayState.instance.camCutscene
+    ];
+
+    PlayState.instance.add(
+        portraitRight
+    );
+
+    box =
+        new FlxSprite(
+            0,
+            0
+        );
+
+    box.scrollFactor.set(0, 0);
+
+    box.cameras =
+    [
+        PlayState.instance.camCutscene
+    ];
+
+    PlayState.instance.add(
+        box
+    );
+
+    swagDialogue =
+        new FlxTypeText(
+            0,
+            0,
+            FlxG.width,
+            '',
+            42
+        );
+
+    swagDialogue.scrollFactor.set(
+        0,
+        0
+    );
+
+    swagDialogue.cameras =
+    [
+        PlayState.instance.camCutscene
+    ];
+
+var textSound:String =
+    Paths.sound(
+        'dialogue/pixelText'
+    );
+
+
+if (Assets.exists(textSound))
+{
+    swagDialogue.sounds =
+    [
+        FlxG.sound.load(
+            textSound,
+            0.8
+        )
+    ];
+}
+
+    PlayState.instance.add(
+        swagDialogue
+    );
+
+dialogueBlackScreen =
+    new FlxSprite(
+        0,
+        0
+    );
+
+
+dialogueBlackScreen.makeGraphic(
+    FlxG.width,
+    FlxG.height,
+    FlxColor.BLACK
+);
+
+
+dialogueBlackScreen.scrollFactor.set(
+    0,
+    0
+);
+
+
+dialogueBlackScreen.alpha =
+    0;
+
+
+dialogueBlackScreen.cameras =
+[
+    PlayState.instance.camCutscene
+];
+
+
+PlayState.instance.add(
+    dialogueBlackScreen
+);
+
+
+    skipText =
+        new FlxText(
+            5,
+            FlxG.height - 30,
+            500,
+            'BACK - Skip Dialogue',
+            18
+        );
+        skipText.alpha = 0;
+
+    skipText.scrollFactor.set(
+        0,
+        0
+    );
+
+    skipText.visible =
+        false;
+
+    skipText.cameras =
+    [
+        PlayState.instance.camCutscene
+    ];
+
+    PlayState.instance.add(
+        skipText
+    );
+}
+
+    function isDialogueActive():Bool
+    {
+        return dialogueActive;
+    }
+
+
+    function stopDialogue():Void
+    {
+        if (!dialogueActive)
+            return;
+
+        finishDialogue();
+    }
+
+
+
+function loadDialogueSpeakerData(
+    speakerId:String
+):DialogueSpeakerData
+{
+    if (
+        speakerId == null ||
+        speakerId == ''
+    )
+    {
+        return null;
+    }
+
+
+    var jsonPath:String =
+        Paths.file(
+            'gameplay/dialogue/speakers/' +
+            speakerId +
+            '/' +
+            speakerId +
+            '.json'
+        );
+
+
+    if (!Assets.exists(jsonPath))
+    {
+        trace(
+            '[DialogueManager] Speaker JSON no encontrado: ' +
+            jsonPath
+        );
+
+        return null;
+    }
+
+
+    try
+    {
+        var raw:String =
+            Assets.getText(
+                jsonPath
+            );
+
+
+        return cast Json.parse(
+            raw
+        );
+    }
+    catch (error:Dynamic)
+    {
+        trace(
+            '[DialogueManager] Error leyendo speaker "' +
+            speakerId +
+            '": ' +
+            error
+        );
+
+        return null;
+    }
+}
+
+function updateDialogueGlitchShader():Void
+{
+    if (dialogueGlitchShader == null)
+        return;
+
+
+    dialogueGlitchShader.data.iTime.value =
+    [
+        dialogueGlitchTime
+    ];
+}
+
+function loadDialogueBoxData(
+    boxId:String
+):DialogueBoxData
+{
+    if (
+        boxId == null ||
+        boxId == ''
+    )
+    {
+        return null;
+    }
+
+
+    var jsonPath:String =
+        Paths.file(
+            'gameplay/dialogue/boxes/' +
+            boxId + '/' + boxId +
+            '.json'
+        );
+
+
+    if (!Assets.exists(jsonPath))
+    {
+        trace(
+            '[DialogueManager] Box JSON no encontrado: ' +
+            jsonPath
+        );
+
+        return null;
+    }
+
+
+    try
+    {
+        var raw:String =
+            Assets.getText(
+                jsonPath
+            );
+
+
+        return cast Json.parse(
+            raw
+        );
+    }
+    catch (error:Dynamic)
+    {
+        trace(
+            '[DialogueManager] Error leyendo box "' +
+            boxId +
+            '": ' +
+            error
+        );
+
+        return null;
+    }
+}
+
+    override function onUpdate(event)
+    {
+
+        super.onUpdate(event);
+
+if (dialoguePauseInputLock)
+{
+    if (
+        PlayState.instance != null &&
+        PlayState.instance.subState != null
+    )
+    {
+        return;
+    }
+
+
+    var controls =
+        PlayerSettings.player1.controls;
+
+    if (
+        controls.CUTSCENE_ADVANCE ||
+        controls.BACK
+    )
+    {
+        return;
+    }
+
+
+    dialoguePauseInputLock =
+        false;
+
+    return;
+}
+
+if (
+    dialogueGlitchActive &&
+    dialogueGlitchShader != null
+)
+{
+    dialogueGlitchTime +=
+        event.elapsed;
+
+    updateDialogueGlitchShader();
+}
+
+if (
+    dialogueInputLocked
+)
+{
+    return;
+}
+
+        if (
+            !dialogueActive ||
+            PlayState.instance == null
+        )
+        {
+            return;
+        }
+
+
+        if (!dialogueOpened)
+        {
+            if (
+                box == null ||
+                box.animation == null ||
+                box.animation.curAnim == null ||
+                box.animation.curAnim.finished
+            )
+            {
+                dialogueOpened =
+                    true;
+
+
+                if (
+                    box != null &&
+                    box.animation != null &&
+                    box.animation.getByName(
+                        'normal'
+                    ) != null
+                )
+                {
+                    box.animation.play(
+                        'normal',
+                        true
+                    );
+                }
+
+
+                if (!dialogueStarted)
+                {
+                    dialogueStarted =
+                        true;
+
+                    startNextLine();
+                }
+            }
+
+
+            return;
+        }
+
+
+        if (
+            canFullSkip &&
+            PlayerSettings.player1.controls.BACK
+        )
+        {
+               openDialoguePause();
+
+            return;
+        }
+
+
+
+        if (
+            PlayerSettings.player1.controls.CUTSCENE_ADVANCE
+        )
+        {
+            FlxG.sound.play(Paths.sound('dialogue/click-advance'), 0.8);
+            if (!dialogueEnded)
+            {
+                if (swagDialogue != null)
+                {
+                    swagDialogue.skip();
+                }
+
+                return;
+            }
+            startNextLine();
+        }
+    }
+
+    function startNextLine():Void
+    {
+        if (
+            !dialogueActive ||
+            endingDialogue
+        )
+        {
+            return;
+        }
+
+        while (
+            currentDialogue <
+            dialogue.length
+        )
+        {
+            var line:Dynamic =
+                dialogue[
+                    currentDialogue
+                ];
+
+
+            currentDialogue++;
+
+
+            if (line == null)
+            {
+                continue;
+            }
+
+
+            var isCommand:Bool =
+                line.isCommand == null
+                    ? false
+                    : line.isCommand;
+
+
+if (isCommand)
+{
+    var shouldWait:Bool =
+        executeDialogueCommand(
+            line
+        );
+
+    if (shouldWait)
+    {
+        return;
+    }
+    continue;
+}
+
+
+            showDialogueLine(
+                line
+            );
+
+
+            return;
+        }
+
+
+        finishDialogue();
+    }
+
+function restoreDialogueForLine():Void
+{
+    if (box != null)
+    {
+        box.visible =
+            true;
+    }
+
+
+    if (swagDialogue != null)
+    {
+        swagDialogue.visible =
+            true;
+    }
+
+
+    if (bgFade != null)
+    {
+        bgFade.visible =
+            true;
+    }
+
+
+    if (skipText != null)
+    {
+        skipText.visible =
+            canFullSkip;
+    }
+
+    if (portraitLeft != null)
+    {
+        portraitLeft.visible =
+            true;
+    }
+
+
+    if (portraitRight != null)
+    {
+        portraitRight.visible =
+            true;
+    }
+}
+
+    function showDialogueLine(
+        line:Dynamic
+    ):Void
+    {
+        if (line == null)
+            return;
+
+            restoreDialogueForLine();
+
+        curCharacter =
+            line.name == null
+                ? ''
+                : Std.string(
+                    line.name
+                );
+
+
+        curExpression =
+            line.expression == null ||
+            Std.string(
+                line.expression
+            ) == ''
+                ? 'neutral'
+                : Std.string(
+                    line.expression
+                );
+
+
+        curSide =
+            line.side == null
+                ? 'left'
+                : Std.string(
+                    line.side
+                ).toLowerCase();
+
+
+        var dialogueText:String =
+            line.string == null
+                ? (line.text == null ? '' : Std.string(line.text))
+                : Std.string(
+                    line.string
+                );
+
+        var translationKey = line.key;
+        if (!Preferences.naughtyness)
+        {
+            if (line.stringCensored != null)
+            {
+                dialogueText = Std.string(line.stringCensored);
+                
+                translationKey = line.keyCensored;
+            }
+            else if (line.keyCensored != null)
+            {
+                translationKey = line.keyCensored;
+            }
+        }
+
+        if (dialogueTranslations != null && translationKey != null)
+        {
+            var translated = dialogueTranslations.get(Std.string(translationKey));
+            if (translated != null && translated != '') dialogueText = translated;
+        }
+
+        updatePortrait(
+            curCharacter,
+            curExpression,
+            curSide
+        );
+
+
+        dialogueEnded =
+            false;
+
+
+        swagDialogue.resetText(
+            dialogueText
+        );
+
+
+        swagDialogue.completeCallback =
+            function()
+            {
+                dialogueEnded =
+                    true;
+            };
+
+        swagDialogue.start(
+            0.04
+        );
+
+        if (dialogueText == '')
+        {
+            dialogueEnded =
+                true;
+        }
+    }
+
+
+ function updatePortrait(
+    characterName:String,
+    expression:String,
+    side:String
+):Void
+{
+    var narrator:Bool = characterName == null || characterName == ''
+        || characterName.toLowerCase() == 'null'
+        || characterName.toLowerCase() == 'no_one';
+    if (narrator)
+    {
+        
+        if (currentBoxId != 'manuel') applyDialogueBoxData('manuel', true);
+        if (portraitLeft != null)
+        {
+            FlxTween.cancelTweensOf(portraitLeft);
+            portraitLeft.alpha = 0;
+            portraitLeft.visible = false;
+        }
+        if (portraitRight != null)
+        {
+            FlxTween.cancelTweensOf(portraitRight);
+            portraitRight.alpha = 0;
+            portraitRight.visible = false;
+        }
+        return;
+    }
+
+    if (
+        portraitLeft == null ||
+        portraitRight == null
+    )
+    {
+        return;
+    }
+
+
+    if (side == 'hideleft')
+    {
+        portraitLeft.alpha = 0;
+
+        return;
+    }
+
+
+    if (side == 'hideright')
+    {
+        portraitRight.alpha = 0;
+
+        return;
+    }
+
+
+    var portrait:FlxSprite =
+        side == 'right'
+            ? portraitRight
+            : portraitLeft;
+
+
+    if (portrait == null)
+        return;
+
+
+    FlxTween.cancelTweensOf(
+        portrait
+    );
+
+
+    if (
+        expression != null &&
+        expression.toLowerCase() ==
+        'gone'
+    )
+    {
+        portrait.alpha =
+            0;
+
+        return;
+    }
+
+
+
+    if (
+        applyDialogueSpeaker(
+            characterName.toLowerCase(),
+            expression,
+            side
+        )
+    )
+    {
+        return;
+    }
+
+
+    portrait.alpha =
+        0;
+}
+
+function setupDialogueBoxFinishCallback():Void
+{
+    if (
+        box == null ||
+        box.animation == null
+    )
+    {
+        return;
+    }
+
+
+    box.animation.finishCallback =
+        function(animName:String)
+        {
+            if (
+                box == null ||
+                currentBoxData == null
+            )
+            {
+                return;
+            }
+
+
+            if (
+                animName == 'enter' &&
+                box.animation.getByName(
+                    'idle'
+                ) != null
+            )
+            {
+                playDialogueBoxAnimation(
+                    'idle'
+                );
+            }
+        };
+}
+
+function applyDialogueSpeaker(
+    speakerId:String,
+    expression:String,
+    side:String
+):Bool
+{
+    if (
+        speakerId == null ||
+        speakerId == ''
+    )
+    {
+        return false;
+    }
+
+
+    var portrait:FlxSprite =
+        side == 'right'
+            ? portraitRight
+            : portraitLeft;
+
+
+    if (portrait == null)
+        return false;
+
+
+var data:DialogueSpeakerData =
+    loadDialogueSpeakerData(
+        speakerId
+    );
+
+
+if (data == null)
+{
+    portrait.alpha =
+        0;
+
+    return false;
+}
+
+if (
+    swagDialogue != null &&
+    data.textSound != null &&
+    data.textSound != ''
+)
+{
+    var speakerSound:String =
+        Paths.sound(
+            data.textSound
+        );
+
+
+    if (Assets.exists(speakerSound))
+    {
+        swagDialogue.sounds =
+        [
+            FlxG.sound.load(
+                speakerSound,
+                0.8
+            )
+        ];
+    }
+}
+
+if (
+    data.box != null &&
+    data.box != '' &&
+    data.box != currentBoxId
+)
+{
+    applyDialogueBoxData(
+        data.box,
+        true
+    );
+}
+
+
+    if (side == 'right')
+    {
+        currentRightSpeakerId =
+            speakerId;
+
+        currentRightSpeakerData =
+            data;
+    }
+    else
+    {
+        currentLeftSpeakerId =
+            speakerId;
+
+        currentLeftSpeakerData =
+            data;
+    }
+
+
+
+    portrait.animation.destroyAnimations();
+
+
+    portrait.frames =
+        Paths.getSparrowAtlas(
+            data.assetPath
+        );
+
+
+    portrait.antialiasing =
+        !data.isPixel;
+
+
+
+    var portraitScale:Float =
+        data.scale == null
+            ? 1
+            : data.scale;
+
+
+    portrait.scale.set(
+        portraitScale,
+        portraitScale
+    );
+
+
+ var baseX:Float =
+    side == 'right'
+        ? 647
+        : 110;
+
+var baseY:Float =
+    -4;
+
+
+if (
+    data.offsets != null &&
+    data.offsets.length >= 2
+)
+{
+    baseX +=
+        data.offsets[0];
+
+    baseY +=
+        data.offsets[1];
+}
+
+
+portrait.x =
+    baseX;
+
+portrait.y =
+    baseY;
+
+
+portrait.offset.set(
+    0,
+    0
+);
+
+    if (side == 'right')
+    {
+        portrait.flipX =
+            !data.flipX;
+    }
+    else
+    {
+        portrait.flipX =
+            data.flipX;
+    }
+
+
+
+
+    if (data.animations != null)
+    {
+        for (animData in data.animations)
+        {
+            if (
+                animData == null ||
+                animData.name == null ||
+                animData.prefix == null
+            )
+            {
+                continue;
+            }
+
+
+            var frameRate:Float =
+                animData.frameRate == null
+                    ? 24
+                    : animData.frameRate;
+
+
+            var looped:Bool =
+                animData.looped == null
+                    ? false
+                    : animData.looped;
+
+
+            portrait.animation.addByPrefix(
+                animData.name,
+                animData.prefix,
+                frameRate,
+                looped
+            );
+        }
+    }
+
+
+
+
+    var wantedAnimation:String =
+        expression;
+
+
+    if (
+        wantedAnimation == null ||
+        wantedAnimation == ''
+    )
+    {
+        wantedAnimation =
+            'talk';
+    }
+
+
+    if (
+        portrait.animation.getByName(
+            wantedAnimation
+        ) != null
+    )
+    {
+        playDialogueSpeakerAnimation(
+            portrait,
+            data,
+            wantedAnimation
+        );
+    }
+    else if (
+        portrait.animation.getByName(
+            'talk'
+        ) != null
+    )
+    {
+        playDialogueSpeakerAnimation(
+            portrait,
+            data,
+            'talk'
+        );
+    }
+    else if (
+        data.animations != null &&
+        data.animations.length > 0
+    )
+    {
+        playDialogueSpeakerAnimation(
+            portrait,
+            data,
+            data.animations[0].name
+        );
+    }
+
+
+    portrait.updateHitbox();
+
+    portrait.alpha =
+        1;
+
+
+    return true;
+}
+
+function getDialogueSpeakerAnimationData(
+    data:DialogueSpeakerData,
+    animationName:String
+):DialogueSpeakerAnimationData
+{
+    if (
+        data == null ||
+        data.animations == null
+    )
+    {
+        return null;
+    }
+
+
+    for (animData in data.animations)
+    {
+        if (
+            animData != null &&
+            animData.name ==
+            animationName
+        )
+        {
+            return animData;
+        }
+    }
+
+
+    return null;
+}
+function playDialogueSpeakerAnimation(
+    portrait:FlxSprite,
+    data:DialogueSpeakerData,
+    animationName:String
+):Void
+{
+    if (
+        portrait == null ||
+        data == null
+    )
+    {
+        return;
+    }
+
+
+    var animData =
+        getDialogueSpeakerAnimationData(
+            data,
+            animationName
+        );
+
+
+    if (animData == null)
+        return;
+
+
+    var animX:Float =
+        0;
+
+    var animY:Float =
+        0;
+
+
+    if (
+        animData.offsets != null &&
+        animData.offsets.length >= 2
+    )
+    {
+        animX =
+            animData.offsets[0];
+
+        animY =
+            animData.offsets[1];
+    }
+
+
+portrait.offset.set(
+    animX,
+    animY
+);
+
+
+    portrait.animation.play(
+        animationName,
+        true
+    );
+}
+
+function applyDialogueBoxData(
+    boxId:String,
+    playEnter:Bool = true
+):Bool
+{
+    if (
+        box == null ||
+        swagDialogue == null
+    )
+    {
+        return false;
+    }
+
+
+    var data:DialogueBoxData =
+        loadDialogueBoxData(
+            boxId
+        );
+
+
+    if (data == null)
+    {
+        return false;
+    }
+
+
+    currentBoxId =
+        boxId;
+
+    currentBoxData =
+        data;
+
+
+    box.animation.destroyAnimations();
+
+
+    box.frames =
+        Paths.getSparrowAtlas(
+            data.assetPath
+        );
+
+
+    box.flipX =
+        data.flipX;
+
+    box.flipY =
+        data.flipY;
+
+
+    box.antialiasing =
+        !data.isPixel;
+
+
+    var boxScale:Float =
+        data.scale == null
+            ? 1
+            : data.scale;
+
+
+    box.scale.set(
+        boxScale,
+        boxScale
+    );
+
+
+    if (
+        data.offsets != null &&
+        data.offsets.length >= 2
+    )
+    {
+        box.offset.set(
+            data.offsets[0],
+            data.offsets[1]
+        );
+    }
+    else
+    {
+        box.offset.set(
+            0,
+            0
+        );
+    }
+
+    box.x =
+        (
+            FlxG.width -
+            box.width
+        ) / 2;
+
+
+    box.y =
+        0;
+
+
+    if (data.animations != null)
+    {
+        for (animData in data.animations)
+        {
+            if (
+                animData == null ||
+                animData.name == null ||
+                animData.prefix == null
+            )
+            {
+                continue;
+            }
+
+
+            var looped:Bool =
+                animData.looped == null
+                    ? animData.name == 'idle'
+                    : animData.looped;
+
+
+            box.animation.addByPrefix(
+                animData.name,
+                animData.prefix,
+                animData.frameRate,
+                looped
+            );
+        }
+    }
+
+    applyDialogueBoxTextData(
+        data.text,
+        data.isPixel
+    );
+
+
+setupDialogueBoxFinishCallback();
+
+    if (
+        playEnter &&
+        box.animation.getByName(
+            'enter'
+        ) != null
+    )
+    {
+        playDialogueBoxAnimation(
+            'enter'
+        );
+    }
+    else if (
+        box.animation.getByName(
+            'idle'
+        ) != null
+    )
+    {
+        playDialogueBoxAnimation(
+            'idle'
+        );
+    }
+
+
+    return true;
+}
+
+function openDialoguePause():Void
+{
+    if (PlayState.instance == null)
+        return;
+
+    dialoguePauseInputLock =
+        true;
+
+
+    var menuHandler =
+        ModuleHandler.getModule(
+            'SwitcherooMenuHandler'
+        );
+
+
+    if (menuHandler == null)
+    {
+        dialoguePauseInputLock =
+            false;
+
+        trace(
+            '[DialogueManager] SwitcherooMenuHandler no encontrado.'
+        );
+
+        return;
+    }
+
+
+    menuHandler.scriptCall(
+        'openCustomPause',
+        ['conversation']
+    );
+}
+
+public function restartDialogueFromPause():Void
+{
+    if (
+        !dialogueActive ||
+        dialogue == null ||
+        dialogue.length == 0
+    )
+    {
+        return;
+    }
+
+    stopDialogueGlitchShader();
+
+    dialogueInputLocked =
+        false;
+
+    currentDialogue =
+        0;
+
+    dialogueEnded =
+        true;
+
+    endingDialogue =
+        false;
+
+    startNextLine();
+}
+
+function applyDialogueBoxTextData(
+    textData:DialogueBoxTextData,
+    pixel:Bool
+):Void
+{
+    if (
+        textData == null ||
+        swagDialogue == null
+    )
+    {
+        return;
+    }
+
+if (textData.fontSize != null)
+{
+    swagDialogue.size =
+        textData.fontSize;
+}
+
+    if (
+        textData.offsets != null &&
+        textData.offsets.length >= 2
+    )
+    {
+        swagDialogue.x =
+            textData.offsets[0];
+
+        swagDialogue.y =
+            textData.offsets[1];
+    }
+
+
+    if (textData.width != null)
+    {
+        swagDialogue.fieldWidth =
+            textData.width;
+    }
+
+    if (
+        textData.color != null &&
+        textData.color != ''
+    )
+    {
+        swagDialogue.color =
+            parseDialogueColor(
+                textData.color
+            );
+    }
+
+
+    if (
+        textData.shadowColor != null &&
+        textData.shadowColor != ''
+    )
+    {
+        swagDialogue.borderColor =
+            parseDialogueColor(
+                textData.shadowColor
+            );
+    }
+
+
+    swagDialogue.borderStyle =
+        FlxTextBorderStyle.SHADOW;
+
+
+    swagDialogue.borderSize =
+        textData.shadowWidth == null
+            ? 0
+            : textData.shadowWidth;
+
+
+    swagDialogue.shadowOffset.set(
+        swagDialogue.borderSize,
+        swagDialogue.borderSize
+    );
+
+
+    applyDialogueFont(
+        textData.fontFamily
+    );
+
+
+    swagDialogue.antialiasing =
+        !pixel;
+}
+
+function parseDialogueColor(
+    value:String
+):Int
+{
+    if (
+        value == null ||
+        value == ''
+    )
+    {
+        return FlxColor.WHITE;
+    }
+
+
+    var clean:String =
+        value.replace(
+            '#',
+            ''
+        );
+
+    if (clean.length == 6)
+    {
+        clean =
+            'FF' +
+            clean;
+    }
+
+
+    return Std.parseInt(
+        '0x' +
+        clean
+    );
+}
+
+function applyDialogueFont(
+    fontFamily:String
+):Void
+{
+    if (
+        swagDialogue == null ||
+        fontFamily == null ||
+        fontFamily == ''
+    )
+    {
+        return;
+    }
+
+
+    switch (fontFamily)
+    {
+        case 'Pixel Arial 11 Bold':
+
+            swagDialogue.font =
+                Paths.font(
+                    'LanaPixel.ttf'
+                );
+
+
+        case 'VCR OSD Mono':
+
+            swagDialogue.font =
+                Paths.font(
+                    'vcr.ttf'
+                );
+
+        case 'aller':
+            swagDialogue.font =
+                Paths.font(
+                    'Aller_Rg.ttf'
+                );
+        default:
+            if (
+                fontFamily.toLowerCase().endsWith(
+                    '.ttf'
+                ) ||
+                fontFamily.toLowerCase().endsWith(
+                    '.otf'
+                )
+            )
+            {
+                swagDialogue.font =
+                    Paths.font(
+                        fontFamily
+                    );
+            }
+    }
+}
+
+function getDialogueBoxAnimationData(
+    animationName:String
+):DialogueBoxAnimationData
+{
+    if (
+        currentBoxData == null ||
+        currentBoxData.animations == null
+    )
+    {
+        return null;
+    }
+
+
+    for (animData in currentBoxData.animations)
+    {
+        if (
+            animData != null &&
+            animData.name ==
+            animationName
+        )
+        {
+            return animData;
+        }
+    }
+
+
+    return null;
+}
+
+function playDialogueBoxAnimation(
+    animationName:String
+):Void
+{
+    if (
+        box == null ||
+        box.animation == null
+    )
+    {
+        return;
+    }
+
+
+    var animData =
+        getDialogueBoxAnimationData(
+            animationName
+        );
+
+
+    if (animData == null)
+        return;
+
+    var baseX:Float =
+        0;
+
+    var baseY:Float =
+        0;
+
+
+    if (
+        currentBoxData != null &&
+        currentBoxData.offsets != null &&
+        currentBoxData.offsets.length >= 2
+    )
+    {
+        baseX =
+            currentBoxData.offsets[0];
+
+        baseY =
+            currentBoxData.offsets[1];
+    }
+
+    var animX:Float =
+        0;
+
+    var animY:Float =
+        0;
+
+
+    if (
+        animData.offsets != null &&
+        animData.offsets.length >= 2
+    )
+    {
+        animX =
+            animData.offsets[0];
+
+        animY =
+            animData.offsets[1];
+    }
+
+
+    box.offset.set(
+        baseX + animX,
+        baseY + animY
+    );
+
+
+    box.animation.play(
+        animationName,
+        true
+    );
+}
+
+function executeDialogueCommand(
+    line:Dynamic
+):Bool
+{
+    if (line == null)
+    {
+        return false;
+    }
+
+
+    var command:String =
+        line.name == null
+            ? ''
+            : Std.string(
+                line.name
+            ).toLowerCase();
+
+
+    var value:String =
+        line.string == null
+            ? ''
+            : Std.string(
+                line.string
+            );
+
+
+    var duration:Float =
+        line.duration == null
+            ? 0
+            : line.duration;
+
+
+    switch (command)
+    {
+        case 'playsound':
+            commandPlaySound(
+                value
+            );
+
+            return false;
+case 'showbackgroundimage':
+
+    commandShowBackgroundImage(
+        value,
+        duration
+    );
+
+    return duration > 0;
+
+
+case 'glitch':
+
+    commandGlitch(
+        value
+    );
+
+    return true;
+
+        case 'startmusic':
+            commandStartMusic(
+                value
+            );
+
+            return false;
+
+
+        case 'endmusic':
+            commandEndMusic(
+                duration
+            );
+
+            return false;
+
+
+        case 'hideright':
+            if (portraitRight != null)
+            {
+                portraitRight.alpha =
+                    0;
+            }
+
+            return false;
+
+
+        case 'hideleft':
+            if (portraitLeft != null)
+            {
+                portraitLeft.alpha =
+                    0;
+            }
+
+            return false;
+
+
+case 'hidedialogue':
+
+    commandHideDialogue();
+
+    return true;
+
+
+        case 'hidebgfade':
+            if (bgFade != null)
+            {
+                bgFade.alpha =
+                    0;
+            }
+
+            return false;
+
+
+        case 'showbgfade':
+            if (bgFade != null)
+            {
+                bgFade.alpha =
+                    0.7;
+            }
+
+            return false;
+
+
+        case 'fadeout':
+            commandFadeOut(
+                value,
+                duration
+            );
+
+            return true;
+
+
+        case 'fadein':
+            commandFadeIn(
+                value,
+                duration
+            );
+
+            return true;
+
+
+        case 'flash':
+            commandFlash(
+                duration
+            );
+
+            return false;
+
+
+case 'shake':
+
+    commandShake(
+        duration
+    );
+
+    return false;
+
+
+        case 'autoskip':
+            commandAutoSkip(
+                duration
+            );
+
+            return true;
+
+
+        default:
+            trace(
+                '[DialogueManager] Comando desconocido: ' +
+                command
+            );
+
+            return false;
+    }
+}
+
+function commandStartMusic(
+    musicId:String
+):Void
+{
+    if (
+        musicId == null ||
+        musicId == ''
+    )
+    {
+        return;
+    }
+
+
+    var path = Paths.music(musicId);
+    if (!Assets.exists(path)) path = Paths.music(musicId + '/' + musicId);
+    if (!Assets.exists(path))
+    {
+        trace('[DialogueManager] Music not found: ' + musicId);
+        return;
+    }
+    FlxG.sound.playMusic(path, 1);
+    dialogueMusic = FlxG.sound.music;
+}
+
+function commandEndMusic(
+    duration:Float
+):Void
+{
+    if (FlxG.sound.music == null)
+    {
+        return;
+    }
+
+
+    var fadeDuration:Float =
+        duration > 0
+            ? duration
+            : 0.5;
+
+
+    FlxG.sound.music.fadeOut(
+        fadeDuration,
+        0
+    );
+}
+
+function commandPlaySound(
+    soundId:String
+):Void
+{
+    if (
+        soundId == null ||
+        soundId == ''
+    )
+    {
+        return;
+    }
+
+
+    var soundPath:String =
+        Paths.sound(
+            soundId
+        );
+
+
+    if (!Assets.exists(soundPath))
+    {
+        trace(
+            '[DialogueManager] Sonido no encontrado: ' +
+            soundPath
+        );
+
+        return;
+    }
+
+
+    FlxG.sound.play(
+        soundPath
+    );
+}
+
+function commandFlash(
+    duration:Float
+):Void
+{
+    var flashDuration:Float =
+        duration > 0
+            ? duration
+            : 0.5;
+
+
+    PlayState.instance.camCutscene.flash(
+        0xFFFDC1FF,
+        flashDuration
+    );
+}
+
+function commandAutoSkip(
+    duration:Float
+):Void
+{
+    var wait:Float =
+        duration > 0
+            ? duration
+            : 0.01;
+
+
+    new flixel.util.FlxTimer().start(
+        wait,
+
+        function(timer)
+        {
+            startNextLine();
+        }
+    );
+}
+
+function startDialogueGlitchShader():Void
+{
+    if (
+        PlayState.instance == null ||
+        dialogueGlitchActive
+    )
+    {
+        return;
+    }
+
+
+    var fragPath:String =
+        Paths.frag(
+            'StaticShader'
+        );
+
+
+    if (!Assets.exists(fragPath))
+    {
+        trace(
+            '[DialogueManager] Static shader no encontrado: ' +
+            fragPath
+        );
+
+        return;
+    }
+
+
+    dialogueGlitchTime =
+        0;
+
+
+    dialogueGlitchShader =
+        new FlxRuntimeShader(
+            Assets.getText(
+                fragPath
+            )
+        );
+
+
+    dialogueGlitchShader.data.iTime.value =
+    [
+        0.0
+    ];
+
+
+    dialogueGlitchShader.data.glitchModifier.value =
+    [
+        1.0
+    ];
+
+
+    dialogueGlitchShader.data.alpha.value =
+    [
+        0.0
+    ];
+
+
+    dialogueGlitchShader.data.vignetteOn.value =
+    [
+        false
+    ];
+
+    dialogueGlitchShader.data.perspectiveOn.value =
+    [
+        false
+    ];
+
+    dialogueGlitchShader.data.distortionOn.value =
+    [
+        false
+    ];
+
+    dialogueGlitchShader.data.scanlinesOn.value =
+    [
+        true
+    ];
+
+    dialogueGlitchShader.data.vignetteMoving.value =
+    [
+        false
+    ];
+
+
+    dialogueGlitchActive =
+        true;
+
+
+    PlayState.instance.camCutscene.filters =
+    [
+        new ShaderFilter(
+            dialogueGlitchShader
+        )
+    ];
+}
+
+function stopDialogueGlitchShader():Void
+{
+    if (
+        PlayState.instance != null &&
+        PlayState.instance.camCutscene != null
+    )
+    {
+        PlayState.instance.camCutscene.filters =
+            [];
+    }
+
+
+    dialogueGlitchShader =
+        null;
+
+    dialogueGlitchTime =
+        0;
+
+    dialogueGlitchActive =
+        false;
+}
+
+function commandGlitch(
+    value:String
+):Void
+{
+    dialogueInputLocked =
+        true;
+
+
+    if (
+        value != null &&
+        value.toLowerCase() ==
+        'hidedialogue'
+    )
+    {
+        commandSetDialogueVisible(
+            false
+        );
+    }
+
+
+    startDialogueGlitchShader();
+    
+
+
+    var glitchSound:String =
+        Paths.sound(
+            'glitchin'
+        );
+
+
+    if (Assets.exists(glitchSound))
+    {
+        FlxG.sound.play(
+            glitchSound
+        );
+    }
+
+
+    new flixel.util.FlxTimer().start(
+        0.5,
+
+        function(timer)
+        {
+            stopDialogueGlitchShader();
+
+
+            dialogueInputLocked =
+                false;
+
+
+            startNextLine();
+        }
+    );
+}
+
+function commandShowBackgroundImage(
+    imageId:String,
+    duration:Float
+):Void
+{
+    if (
+        backgroundImage == null ||
+        imageId == null ||
+        imageId == ''
+    )
+    {
+        if (duration > 0)
+        {
+            startNextLine();
+        }
+
+        return;
+    }
+
+
+    var imagePath:String =
+        Paths.image(
+            'dialogue/bgs/' +
+            imageId
+        );
+
+
+    if (!Assets.exists(imagePath))
+    {
+        trace(
+            '[DialogueManager] Background no encontrado: ' +
+            imagePath
+        );
+
+
+        if (duration > 0)
+        {
+            startNextLine();
+        }
+
+        return;
+    }
+
+    FlxTween.cancelTweensOf(
+        backgroundImage
+    );
+
+
+    backgroundImage.loadGraphic(
+        imagePath
+    );
+
+
+    backgroundImage.scrollFactor.set(
+        0,
+        0
+    );
+
+    backgroundImage.antialiasing =
+        currentBoxData == null
+            ? true
+            : !currentBoxData.isPixel;
+
+    if (duration <= 0)
+    {
+        backgroundImage.alpha =
+            1;
+
+        return;
+    }
+
+
+    backgroundImage.alpha =
+        0;
+
+
+    FlxTween.tween(
+        backgroundImage,
+        {
+            alpha: 1
+        },
+        duration,
+        {
+            ease:
+                FlxEase.linear,
+
+            onComplete:
+                function(tween)
+                {
+                    startNextLine();
+                }
+        }
+    );
+}
+
+function commandHideDialogue():Void
+{
+    if (bgFade != null)
+    {
+        bgFade.visible =
+            false;
+    }
+
+
+    if (box != null)
+    {
+        box.visible =
+            false;
+    }
+
+
+    if (portraitLeft != null)
+    {
+        portraitLeft.visible =
+            false;
+    }
+
+
+    if (portraitRight != null)
+    {
+        portraitRight.visible =
+            false;
+    }
+
+
+    if (swagDialogue != null)
+    {
+        swagDialogue.visible =
+            false;
+    }
+
+
+    if (skipText != null)
+    {
+        skipText.visible =
+            false;
+    }
+
+    dialogueEnded =
+        true;
+}
+
+function commandFadeOut(
+    value:String,
+    duration:Float
+):Void
+{
+    if (dialogueBlackScreen == null)
+    {
+        startNextLine();
+
+        return;
+    }
+
+
+    var fadeDuration:Float =
+        duration > 0
+            ? duration
+            : 1;
+
+
+    if (
+        value != null &&
+        value.toLowerCase() ==
+        'hidedialogue'
+    )
+    {
+        commandSetDialogueVisible(
+            false
+        );
+    }
+
+
+    dialogueBlackScreen.alpha =
+        0;
+
+
+    FlxTween.tween(
+        dialogueBlackScreen,
+        {
+            alpha: 1
+        },
+        fadeDuration,
+        {
+            ease:
+                FlxEase.linear,
+
+            onComplete:
+                function(tween)
+                {
+                    startNextLine();
+                }
+        }
+    );
+}
+
+function commandFadeIn(
+    value:String,
+    duration:Float
+):Void
+{
+    if (dialogueBlackScreen == null)
+    {
+        startNextLine();
+        return;
+    }
+
+
+    var fadeDuration:Float =
+        duration > 0
+            ? duration
+            : 1;
+
+
+    dialogueInputLocked =
+        true;
+
+
+    dialogueBlackScreen.alpha =
+        1;
+
+
+    if (
+        value != null &&
+        value.toLowerCase() ==
+        'hidedialogue'
+    )
+    {
+        commandSetDialogueVisible(
+            false
+        );
+    }
+
+
+    FlxTween.tween(
+        dialogueBlackScreen,
+        {
+            alpha: 0
+        },
+        fadeDuration,
+        {
+            ease:
+                FlxEase.linear,
+
+            onComplete:
+                function(tween)
+                {
+                    dialogueInputLocked =
+                        false;
+
+                    startNextLine();
+                }
+        }
+    );
+}
+
+function commandShake(
+    duration:Float
+):Void
+{
+    var shakeDuration:Float =
+        duration > 0
+            ? duration
+            : 0.5;
+
+
+    PlayState.instance.camCutscene.shake(
+        0.004,
+        shakeDuration
+    );
+}
+
+function commandSetDialogueVisible(
+    visible:Bool
+):Void
+{
+    if (bgFade != null)
+    {
+        bgFade.visible =
+            visible;
+    }
+
+
+    if (box != null)
+    {
+        box.visible =
+            visible;
+    }
+
+
+    if (portraitLeft != null)
+    {
+        portraitLeft.visible =
+            visible;
+    }
+
+
+    if (portraitRight != null)
+    {
+        portraitRight.visible =
+            visible;
+    }
+
+
+    if (swagDialogue != null)
+    {
+        swagDialogue.visible =
+            visible;
+    }
+
+
+    if (skipText != null)
+    {
+        skipText.visible =
+            visible &&
+            canFullSkip;
+    }
+}
+
+public function finishDialogue():Void
+    {
+        if (
+            !dialogueActive ||
+            endingDialogue
+        )
+        {
+            return;
+        }
+
+
+        endingDialogue =
+            true;
+
+        fadeOutObject(
+            bgFade
+        );
+
+        fadeOutObject(
+            box
+        );
+
+        fadeOutObject(
+            portraitLeft
+        );
+
+        fadeOutObject(
+            portraitRight
+        );
+
+        fadeOutObject(
+            swagDialogue
+        );
+
+        fadeOutObject(
+            skipText
+        );
+
+
+        new flixel.util.FlxTimer().start(
+            0.25,
+            function(timer)
+            {
+                var callback =
+                    finishCallback;
+
+
+                cleanupDialogue();
+
+                if (callback != null)
+                {
+                    callback();
+                }
+            }
+        );
+    }
+
+
+    function fadeOutObject(
+        object:Dynamic
+    ):Void
+    {
+        if (object == null)
+            return;
+
+
+        FlxTween.cancelTweensOf(
+            object
+        );
+
+
+        FlxTween.tween(
+            object,
+            {
+                alpha: 0
+            },
+            0.25,
+            {
+                ease:
+                    FlxEase.linear
+            }
+        );
+    }
+
+
+    function cleanupDialogue():Void
+    {
+    if (dialogueMusic != null)
+    {
+        if (FlxG.sound.music == dialogueMusic) dialogueMusic.stop();
+        dialogueMusic = null;
+    }
+
+        removeDialogueObject(
+            skipText
+        );
+
+removeDialogueObject(
+    backgroundImage
+);
+
+        removeDialogueObject(
+            swagDialogue
+        );
+
+        removeDialogueObject(
+            box
+        );
+
+        removeDialogueObject(
+            portraitLeft
+        );
+
+        removeDialogueObject(
+            portraitRight
+        );
+
+        removeDialogueObject(
+            bgFade
+        );
+
+removeDialogueObject(
+    dialogueBlackScreen
+);
+
+        skipText = null;
+
+        swagDialogue = null;
+
+        box = null;
+
+        portraitLeft = null;
+
+        portraitRight = null;
+
+        bgFade = null;
+
+        backgroundImage =
+    null;
+
+dialogueBlackScreen =
+    null;
+
+currentBoxId = '';
+currentBoxData = null;
+
+currentLeftSpeakerId = '';
+currentRightSpeakerId = '';
+
+currentLeftSpeakerData = null;
+currentRightSpeakerData = null;
+
+previousDialogueSpeakerId = '';
+previousDialogueSide = '';
+
+
+dialogueData = null;
+dialogue = [];
+
+
+        currentDialogue =
+            0;
+
+
+        dialogueActive =
+            false;
+
+        dialogueOpened =
+            false;
+
+        dialogueStarted =
+            false;
+
+        dialogueEnded =
+            false;
+
+        endingDialogue =
+            false;
+
+
+        finishCallback =
+            null;
+    }
+
+
+    function removeDialogueObject(
+        object:Dynamic
+    ):Void
+    {
+        if (object == null)
+            return;
+
+
+        FlxTween.cancelTweensOf(
+            object
+        );
+
+
+        if (PlayState.instance != null)
+        {
+            PlayState.instance.remove(
+                object,
+                true
+            );
+        }
+
+
+        object.destroy();
+    }
+
+
+    override function onSongRetry(event)
+    {
+        super.onSongRetry(event);
+
+        if (dialogueActive)
+        {
+            cleanupDialogue();
+        }
+    }
+
+
+    override function onStateChangeBegin(event)
+    {
+        super.onStateChangeBegin(event);
+
+        if (dialogueActive)
+        {
+            cleanupDialogue();
+        }
+    }
+
+
+    override function onDestroy(event)
+    {
+        if (dialogueActive)
+        {
+            cleanupDialogue();
+        }
+
+        super.onDestroy(event);
+    }
+}

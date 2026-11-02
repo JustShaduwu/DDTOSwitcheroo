@@ -1,0 +1,327 @@
+import funkin.play.PlayState;
+import flixel.addons.display.FlxBackdrop;
+import funkin.play.song.Song;
+import funkin.play.Countdown;
+import flixel.util.FlxTimer;
+import funkin.modding.module.ModuleHandler;
+import flixel.tweens.FlxEase;
+import flixel.tweens.FlxTween;
+import flixel.FlxG;
+import funkin.ui.options.PreferencesMenu;
+import funkin.play.cutscene.VideoCutscene;
+import funkin.play.cutscene.CutsceneType;
+import funkin.audio.FunkinSound;
+import funkin.graphics.FunkinSprite;
+import funkin.play.PlayStatePlaylist;
+
+class StoriesOfVioletsSong extends Song
+{
+    var hasPlayedIntroCutscene:Bool;
+    var hasPlayedOutroCutscene:Bool;
+
+
+    function new()
+    {
+        super('stories-of-violets');
+    }
+
+    override function onCreate(event)
+    {
+        super.onCreate(event);
+
+        hasPlayedIntroCutscene =
+            false;
+
+        hasPlayedOutroCutscene =
+            false;
+
+        if (
+            PlayState.instance == null ||
+            PlayState.instance.currentStage == null
+        )
+        {
+            return;
+        }
+
+        if (PlayState.instance.isMinimalMode)
+            return;
+
+
+        if (
+            PlayState.instance.currentStage.freaksSprite != null
+        )
+        {
+            PlayState.instance.currentStage.freaksSprite.alpha =
+                1;
+        }
+    }
+
+    public override function onCountdownStart(event):Void
+    {
+        super.onCountdownStart(event);
+
+        
+        if (!PlayStatePlaylist.isStoryMode)
+           hasPlayedIntroCutscene = true;
+
+        if (hasPlayedIntroCutscene)
+        {
+            return;
+        }
+
+        if (
+            PlayState.instance == null ||
+            PlayState.instance.currentStage == null ||
+            PlayState.instance.isMinimalMode
+        )
+        {
+            hasPlayedIntroCutscene =
+                true;
+
+            return;
+        }
+
+        trace(
+            'Pausing countdown to play Stories of Violets intro.'
+        );
+
+        hasPlayedIntroCutscene =
+            true;
+
+        event.cancel();
+
+        PlayState.instance.isInCutscene =
+            true;
+
+        startIntroDialogue();
+    }
+
+    function startIntroDialogue():Void
+    {
+        var dad =
+            PlayState.instance.currentStage.getDad();
+
+        var dialogueManager =
+            ModuleHandler.getModule(
+                'DialogueManager'
+            );
+
+        dad.playAnimation(
+            'intro-idle',
+            true,
+            true
+        );
+
+        if (dialogueManager == null)
+        {
+            finishIntroDialogue();
+
+            return;
+        }
+		var targetDialogue = 'dialogue/conversations/stories of violets/IntroDialogue';
+			
+        dialogueManager.scriptCall(
+            'startDialogue',
+            [
+               targetDialogue,
+                function()
+                {
+                    finishIntroDialogue();
+                }
+            ]
+        );
+    }
+
+    function finishIntroDialogue():Void
+    {
+        var dad =
+            PlayState.instance.currentStage.getDad();
+
+        new FlxTimer().start(
+            1,
+
+            function(timer:FlxTimer)
+            {
+				FunkinSound.playOnce(Paths.sound('mic_pull'), 0.9);
+
+
+                dad.animation.finishCallback =
+                    function(animName:String)
+                    {
+                        if (
+                            animName != 'intro'
+                        )
+                        {
+                            return;
+                        }
+
+                        dad.animation.finishCallback =
+                            null;
+
+
+                        dad.dance();
+
+
+                        finishIntroCutscene();
+                    };
+
+
+                dad.playAnimation(
+                    'intro',
+                    true,
+                    true
+                );
+            }
+        );
+    }
+
+    function finishIntroCutscene():Void
+    {
+        PlayState.instance.isInCutscene =
+            false;
+
+        PlayState.instance.startCountdown();
+
+        FlxTween.tween(
+            PlayState.instance.camHUD,
+            {
+                alpha: 1
+            },
+            0.5,
+            {
+                ease:
+                    FlxEase.linear
+            }
+        );
+    }
+
+    public override function onSongEnd(event):Void
+    {
+        super.onSongEnd(event);
+        var missing = ModuleHandler.getModule('MissingMode');
+        if (missing != null && missing.scriptCall('interceptSongEnd', [event]) == true) return;
+
+        
+     if (!PlayStatePlaylist.isStoryMode)
+            hasPlayedOutroCutscene = true;
+
+        if (hasPlayedOutroCutscene)
+        {
+            return;
+        }
+
+
+        trace(
+            'Pausing Stories of Violets ending for dialogue.'
+        );
+
+        hasPlayedOutroCutscene =
+            true;
+
+
+        event.cancel();
+
+
+        PlayState.instance.isInCutscene =
+            true;
+
+
+        startEndDialogue();
+    }
+
+    function startEndDialogue():Void
+    {
+        var dialogueManager =
+            ModuleHandler.getModule(
+                'DialogueManager'
+            );
+
+        if (dialogueManager == null)
+        {
+            finishOutroCutscene();
+
+            return;
+        }
+
+		var targetDialogue = 'dialogue/conversations/stories of violets/EndDialogue';
+        dialogueManager.scriptCall(
+            'startDialogue',
+            [
+                targetDialogue,
+
+                function()
+                {
+                    finishOutroCutscene();
+                }
+            ]
+        );
+    }
+
+    function finishOutroCutscene():Void
+    {
+        PlayState.instance.isInCutscene =
+            false;
+
+		endingCutscene();
+    }
+
+	function endingCutscene(){
+		PlayState.instance.onConversationComplete();
+		if (FlxG.onMobile) {
+    		PlayState.instance.pauseButton.visible = false;
+    		PlayState.instance.pauseCircle.visible = false;
+		}
+		PlayState.instance.mayPauseGame = false;
+		FunkinSound.playOnce(Paths.sound('awhellnaw'), 1.0);
+		PlayState.instance.tweenCameraZoom(0.9, 0, false);
+		PlayState.instance.camHUD.alpha = 0;
+		PlayState.instance.currentStage.evilSchool();
+		PlayState.instance.currentStage.getBoyfriend().alpha = 0;
+		PlayState.instance.currentStage.getGirlfriend().alpha = 0;
+		PlayState.instance.currentStage.getDad().alpha = 0;
+		new FlxTimer().start(1.46, function(e:FlxTimer){
+			if (FlxG.onMobile) {
+    			PlayState.instance.pauseButton.visible = true;
+    			PlayState.instance.pauseCircle.visible = true;
+			}
+			PlayState.instance.mayPauseGame = true;
+			startVideo();
+		});
+	}
+
+	function startVideo() {
+		VideoCutscene.play(Paths.videos('manuel'), CutsceneType.ENDING);
+		// This will call onSongEnd() again so make sure the flag is set!
+		var bgSprite = new FunkinSprite(-100, -100);
+		bgSprite.makeSolidColor(2000, 2500, 0xFF000000);
+		PlayState.instance.camHUD.alpha = 1;
+		bgSprite.cameras = [PlayState.instance.camHUD]; // Show over the HUD.
+		bgSprite.zIndex = 1000000;
+		PlayState.instance.add(bgSprite);
+		PlayState.instance.refresh();
+	}
+
+    function onSongRetry(event):Void
+    {
+        super.onSongRetry(event);
+
+        hasPlayedIntroCutscene =
+            true;
+
+        hasPlayedOutroCutscene =
+            false;
+    }
+
+    function onStepHit(event:SongTimeScriptEvent):Void
+    {
+        switch (event.step)
+        {
+            case 140:
+                ModuleHandler
+                    .getModule('Credits')
+                    .scriptCall(
+                        'manualCreditsSummon'
+                    );
+        }
+    }
+}

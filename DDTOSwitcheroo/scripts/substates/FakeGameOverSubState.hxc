@@ -1,0 +1,524 @@
+package switcheroo.substates;
+
+import funkin.play.PlayState;
+import funkin.play.GameOverSubState;
+import funkin.data.character.CharacterData.CharacterDataParser;
+import funkin.play.PlayStatePlaylist;
+import funkin.ui.ScriptedMusicBeatState;
+import funkin.play.character.BaseCharacter;
+import funkin.play.character.CharacterType;
+
+import funkin.ui.MusicBeatSubState;
+import funkin.audio.FunkinSound;
+
+import flixel.FlxG;
+import flixel.FlxObject;
+import flixel.FlxSprite;
+
+import flixel.util.FlxColor;
+import flixel.util.FlxTimer;
+
+import openfl.utils.Assets;
+
+import flixel.FlxCameraFollowStyle;
+
+import flixel.FlxCamera;
+
+using StringTools;
+
+
+class FakeGameOverSubState extends MusicBeatSubState
+{
+    var parentPlayState:PlayState = null;
+
+    var boyfriend:BaseCharacter = null;
+
+    var cameraFollowPoint:FlxObject = null;
+
+    var gameOverMusic:FunkinSound = null;
+
+
+    var isEnding:Bool = false;
+
+    var canInput:Bool = false;
+var isFadingOut:Bool = false;
+var fakeCam:FlxCamera = null;
+
+
+
+var onCloseCallback:Void->Void = null;
+
+var realDeath:Bool = false;
+
+public function new(?onClose:Void->Void, realDeath:Bool = false)
+{
+    super();
+
+    onCloseCallback = onClose;
+    this.realDeath = realDeath;
+}
+
+override public function close():Void
+{
+    super.close();
+
+    if (onCloseCallback != null)
+    {
+        onCloseCallback();
+    }
+}
+
+
+override function create():Void
+{
+    super.create();
+
+
+   
+
+    parentPlayState =
+        cast _parentState;
+
+
+    if (parentPlayState == null)
+    {
+        close();
+        return;
+    }
+
+
+   
+
+    fakeCam =
+        new FlxCamera();
+
+
+    fakeCam.bgColor =
+        FlxColor.TRANSPARENT;
+
+
+    fakeCam.zoom =
+       1;
+
+
+    FlxG.cameras.add(
+        fakeCam,
+        false
+    );
+
+
+   
+    this.cameras =
+    [
+        fakeCam
+    ];
+
+
+   
+
+    var bg:FlxSprite =
+        new FlxSprite();
+
+
+    bg.makeGraphic(
+        FlxG.width * 2,
+        FlxG.height * 2,
+        FlxColor.BLACK
+    );
+
+
+    bg.scrollFactor.set();
+    bg.screenCenter();
+
+
+    add(
+        bg
+    );
+
+
+
+       
+
+        GameOverSubState.animationSuffix = '';
+        boyfriend = CharacterDataParser.fetchCharacter('switcheroo-gameover');
+
+        if (boyfriend != null)
+        {
+            boyfriend.canPlayOtherAnims =
+                true;
+
+
+            boyfriend.isDead =
+                true;
+
+
+           
+            add(
+                boyfriend
+            );
+
+
+            boyfriend.resetCharacter(false);
+            boyfriend.screenCenter();
+
+
+           
+
+            cameraFollowPoint =
+                new FlxObject(
+                    FlxG.width / 2,
+                    FlxG.height / 2,
+                    1,
+                    1
+                );
+
+
+            var offsets:Array<Float> =
+                boyfriend.getDeathCameraOffsets();
+
+
+            cameraFollowPoint.x +=
+                offsets[0];
+
+            cameraFollowPoint.y +=
+                offsets[1];
+
+
+            add(
+                cameraFollowPoint
+            );
+
+
+fakeCam.target =
+    null;
+
+
+fakeCam.follow(
+    cameraFollowPoint,
+    FlxCameraFollowStyle.LOCKON,
+    0.01
+);
+
+
+           
+ boyfriend.playAnimation(
+    'firstDeath' + GameOverSubState.animationSuffix,
+    true,
+    false
+);
+           playBlueBalledSFX();
+        }
+
+
+       
+        new FlxTimer().start(
+            0.75,
+            function(tmr:FlxTimer)
+            {
+                canInput =
+                    true;
+            }
+        );
+    }
+
+function playBlueBalledSFX():Void
+{
+    var soundPath:String =
+        Paths.sound(
+            'gameplay/gameover/fnf_loss_sfx' +
+            GameOverSubState.blueBallSuffix
+        );
+
+
+    if (Assets.exists(soundPath))
+    {
+        FunkinSound.playOnce(
+            soundPath
+        );
+    }
+}
+
+    override function update(
+        elapsed:Float
+    ):Void
+    {
+        super.update(
+            elapsed
+        );
+
+
+       
+
+        if (
+            boyfriend != null &&
+            !isEnding
+        )
+        {
+            var currentAnim:String =
+                boyfriend.getCurrentAnimation();
+
+
+            if (
+                currentAnim != null &&
+                currentAnim.startsWith(
+                    'firstDeath'
+                ) &&
+                boyfriend.isAnimationFinished()
+            )
+            {
+               
+boyfriend.playAnimation(
+    'deathLoop' + GameOverSubState.animationSuffix,
+    true,
+    false
+);
+
+
+                startGameOverMusic();
+            }
+        }
+
+
+       
+
+        if (realDeath && canInput && !isEnding && controls.BACK_P)
+        {
+            isEnding = true;
+            onCloseCallback = null;
+            var story = PlayStatePlaylist.isStoryMode;
+            PlayStatePlaylist.reset();
+            FlxG.switchState(ScriptedMusicBeatState.init(story
+                ? 'switcheroo.states.SwitcherooStoryModeState'
+                : 'switcheroo.states.SwitcherooFreeplayState'));
+            return;
+        }
+
+        if (
+            canInput &&
+            !isEnding &&
+            controls.ACCEPT_P
+        )
+        {
+            confirmFakeDeath();
+        }
+
+
+       
+
+if (
+    isEnding &&
+    !isFadingOut &&
+    boyfriend != null
+)
+{
+    var currentAnim:String =
+        boyfriend.getCurrentAnimation();
+
+
+    if (
+        currentAnim != null &&
+        currentAnim.startsWith(
+            'deathConfirm'
+        ) &&
+        boyfriend.isAnimationFinished()
+    )
+    {
+        startExitFade();
+    }
+}
+    }
+
+
+function startExitFade():Void
+{
+    if (isFadingOut)
+        return;
+
+
+    isFadingOut =
+        true;
+
+
+   
+fakeCam.fade(
+    FlxColor.BLACK,
+    2,
+    false,
+    function()
+    {
+        finishFakeDeath();
+    },
+    true
+);
+}
+
+function startGameOverMusic():Void
+{
+    if (
+        gameOverMusic != null &&
+        gameOverMusic.playing
+    )
+    {
+        return;
+    }
+
+
+    var musicPath:Null<String> =
+        resolveGameOverMusicPath(
+            false,
+            false
+        );
+
+
+    if (musicPath == null)
+    {
+        return;
+    }
+
+
+    gameOverMusic =
+        FunkinSound.load(
+            musicPath
+        );
+
+
+    if (gameOverMusic == null)
+    {
+        return;
+    }
+
+
+    gameOverMusic.volume =
+        1;
+
+
+    gameOverMusic.looped =
+        true;
+
+
+    gameOverMusic.play();
+}
+
+
+   
+
+   function confirmFakeDeath():Void
+{
+    if (isEnding)
+        return;
+
+
+    isEnding =
+        true;
+
+    canInput =
+        false;
+
+
+    if (gameOverMusic != null)
+    {
+        gameOverMusic.stop();
+        gameOverMusic = null;
+    }
+
+
+    if (boyfriend != null)
+    {
+        boyfriend.playAnimation(
+            'deathConfirm' +
+            GameOverSubState.animationSuffix,
+            true,
+            false
+        );
+    }
+
+
+    var endingPath:Null<String> =
+        resolveGameOverMusicPath(
+            false,
+            true
+        );
+
+
+    if (endingPath != null)
+    {
+        FunkinSound.playOnce(
+            endingPath
+        );
+    }
+
+
+    if (
+        boyfriend == null ||
+        !boyfriend.hasAnimation(
+            'deathConfirm' +
+            GameOverSubState.animationSuffix
+        )
+    )
+    {
+        startExitFade();
+    }
+}
+
+
+   
+
+function resolveGameOverMusicPath(
+    starting:Bool = false,
+    ending:Bool = false
+):Null<String>
+{
+    if (starting) return null;
+    var path = Paths.file('gameplay/playable-characters/kaity/game-over/game-over-switcheroo/game-over-switcheroo'
+        + (ending ? '-end' : '') + '.ogg');
+    return Assets.exists(path) ? path : null;
+}
+
+
+function finishFakeDeath():Void
+{
+    if (gameOverMusic != null)
+    {
+        gameOverMusic.stop();
+        gameOverMusic = null;
+    }
+
+
+   
+
+    // El personaje de muerte es independiente; nunca sustituye al jugador del escenario.
+    close();
+
+
+FlxG.camera.fade(
+    FlxColor.BLACK,
+    0.5,
+    true
+);
+}
+
+
+override function destroy():Void
+{
+    if (gameOverMusic != null)
+    {
+        gameOverMusic.stop();
+        gameOverMusic = null;
+    }
+
+
+    if (fakeCam != null)
+    {
+        FlxG.cameras.remove(
+            fakeCam,
+            true
+        );
+
+        fakeCam =
+            null;
+    }
+
+
+    super.destroy();
+}
+}

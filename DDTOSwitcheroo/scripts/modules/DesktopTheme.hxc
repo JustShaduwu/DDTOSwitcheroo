@@ -1,0 +1,311 @@
+import funkin.modding.module.Module;
+import funkin.Paths;
+import funkin.save.Save;
+import haxe.Json;
+import Reflect;
+import StringTools;
+import haxe.ds.StringMap;
+import flixel.FlxSprite;
+import flixel.text.FlxText;
+import lime.utils.Assets;
+
+
+class DesktopTheme extends Module
+{
+    static var state:Dynamic = null;
+    public function new() { super('DesktopTheme'); }
+
+    public static function getState():Dynamic
+    {
+        if (state == null)
+        {
+            state = {colors: new StringMap(), images: new StringMap(), owners: [], themes: null, selected: 'classic', restored: false, defaults: null};
+            state.colors.set('desktop_color1', 0xFF872179);
+            state.colors.set('desktop_color2', 0xFFEB0D91);
+            state.colors.set('selected_text', 0xFFFFFFFF);
+            state.colors.set('close_hover', 0xFFE5E5E5);
+            state.colors.set('scroll_background', 0xFFD1D1D1);
+            state.colors.set('separator', 0xFFD98ABD);
+            state.colors.set('files_background', 0xFFF0EDE8);
+            state.colors.set('breadcrumb_current', 0xFFFAF8F5);
+            state.colors.set('settings_hover', 0xFFF1D0E4);
+            state.colors.set('album_placeholder', 0xFFF2D8E8);
+            state.colors.set('body_text', 0xFF444444);
+            state.colors.set('file_text', 0xFF292929);
+            state.images.set('enterprise/background', 'enterprise/background');
+            state.images.set('enterprise/ddlc icon', 'enterprise/ddlc icon');
+            state.images.set('enterprise/deskbar', 'enterprise/deskbar');
+            state.images.set('enterprise/desktopbg1', 'enterprise/desktopbg1');
+            state.images.set('enterprise/files icon_0', 'enterprise/files icon_0');
+            state.images.set('enterprise/mail icon_0', 'enterprise/mail icon_0');
+            state.images.set('enterprise/MES Logo button color', 'enterprise/MES Logo button color');
+            state.images.set('enterprise/music icon_0', 'enterprise/music icon_0');
+            state.images.set('enterprise/overlay', 'enterprise/overlay');
+            state.images.set('enterprise/photos icon', 'enterprise/photos icon');
+            state.images.set('enterprise/popup', 'enterprise/popup');
+            state.images.set('enterprise/quit icon_0', 'enterprise/quit icon_0');
+            state.images.set('enterprise/selection', 'enterprise/selection');
+            state.images.set('enterprise/settings icon_0', 'enterprise/settings icon_0');
+            state.images.set('enterprise/side stories icon', 'enterprise/side stories icon');
+            state.images.set('enterprise/start menu background', 'enterprise/start menu background');
+            state.images.set('jukebox/add icon', 'jukebox/add icon');
+            state.images.set('jukebox/add_icon_disabled', 'jukebox/add_icon_disabled');
+            state.images.set('jukebox/add_icon_highlighted', 'jukebox/add_icon_highlighted');
+            state.images.set('jukebox/button', 'jukebox/button');
+            state.images.set('jukebox/button_active', 'jukebox/button_active');
+            state.images.set('jukebox/button_selected', 'jukebox/button_selected');
+            state.images.set('jukebox/change song', 'jukebox/change song');
+            state.images.set('jukebox/music - active selected tab', 'jukebox/music - active selected tab');
+            state.images.set('jukebox/Play', 'jukebox/Play');
+            state.images.set('jukebox/remove button icon', 'jukebox/remove button icon');
+            state.images.set('jukebox/remove_icon_disabled', 'jukebox/remove_icon_disabled');
+            state.images.set('jukebox/remove_icon_highlighted', 'jukebox/remove_icon_highlighted');
+            state.images.set('jukebox/restartsong', 'jukebox/restartsong');
+            state.images.set('jukebox/song icon', 'jukebox/song icon');
+            state.images.set('jukebox/Stop', 'jukebox/Stop');
+            state.images.set('files/audio', 'files/audio');
+            state.images.set('files/folder', 'files/folder');
+            state.images.set('files/generic', 'files/generic');
+            state.images.set('files/image', 'files/image');
+            state.images.set('files/text', 'files/text');
+            state.images.set('mail/bg', 'mail/bg');
+        }
+        return state;
+    }
+
+    public static function listThemes():Array<Dynamic>
+    {
+        var data = getState();
+        if (data.themes != null) return data.themes;
+        data.defaults = {colors: snapshot(), images: new StringMap()};
+        for (key in data.images.keys()) data.defaults.images.set(key, data.images.get(key));
+        data.themes = [];
+        try
+        {
+            var parsed = Json.parse(Assets.getText(Paths.json('desktopThemes')));
+            if (parsed != null && Std.isOfType(parsed.themes, Array))
+                for (theme in parsed.themes)
+                {
+                    if (theme == null || !Std.isOfType(theme.id, String) || theme.id == '') continue;
+                    var duplicate = false;
+                    for (existing in data.themes) if (existing.id == theme.id) duplicate = true;
+                    if (!duplicate) data.themes.push(theme);
+                }
+        }
+        catch (error:Dynamic) { trace('[DesktopTheme] Catalog: ' + error); }
+        if (data.themes.length == 0)
+            data.themes.push({id: 'classic', name: 'Classic Pink', translationKey: 'desktop_theme_classic'});
+        return data.themes;
+    }
+
+    public static function currentTheme():Dynamic
+    {
+        var themes = listThemes();
+        for (theme in themes) if (theme.id == getState().selected) return theme;
+        return themes[0];
+    }
+
+    public static function applyTheme(id:String, persist:Bool = true):Bool
+    {
+        var themes = listThemes();
+        var theme:Dynamic = null;
+        for (candidate in themes) if (candidate.id == id) theme = candidate;
+        if (theme == null) return false;
+        var data = getState();
+        
+        for (key in data.defaults.colors.keys()) data.colors.set(key, data.defaults.colors.get(key));
+        for (key in data.images.keys()) data.images.set(key, key);
+        for (key in data.defaults.images.keys()) data.images.set(key, data.defaults.images.get(key));
+        if (theme.colors != null)
+            for (key in Reflect.fields(theme.colors))
+            {
+                if (!data.colors.exists(key)) continue;
+                var value = Std.string(Reflect.field(theme.colors, key));
+                if (StringTools.startsWith(value, '#')) value = '0x' + value.substr(1);
+                var color = Std.parseInt(value);
+                if (color != null) data.colors.set(key, color);
+            }
+        if (theme.images != null)
+            for (key in Reflect.fields(theme.images))
+            {
+                var path = Reflect.field(theme.images, key);
+                if (Std.isOfType(path, String) && path != '' && Assets.exists(Paths.image(path)))
+                    data.images.set(key, path);
+            }
+        data.selected = id;
+        refresh();
+        if (persist)
+        {
+            Save.instance.modOptions.set('switcherooDesktopTheme', id);
+            Save.instance.flush();
+        }
+        return true;
+    }
+
+    public static function restore():Void
+    {
+        var data = getState();
+        if (data.restored) return;
+        data.restored = true;
+        var themes = listThemes();
+        var saved = Save.instance.modOptions.get('switcherooDesktopTheme');
+        if (saved == null || !applyTheme(Std.string(saved), false))
+        {
+            if (!applyTheme('blue', false)) applyTheme(themes[0].id, false);
+        }
+    }
+
+    public static function cycleTheme(direction:Int):Void
+    {
+        var themes = listThemes();
+        var index = 0;
+        for (i in 0...themes.length) if (themes[i].id == getState().selected) index = i;
+        applyTheme(themes[(index + direction + themes.length) % themes.length].id);
+    }
+
+    public static function getColor(key:String):Int { return getState().colors.get(key); }
+    public static function getImage(key:String):String
+    {
+        var images = getState().images;
+        return images.exists(key) ? images.get(key) : key;
+    }
+
+    static function snapshot():Dynamic
+    {
+        var copy = new StringMap();
+        var colors = getState().colors;
+        for (key in colors.keys()) copy.set(key, colors.get(key));
+        return copy;
+    }
+
+    static function binding(owner:Dynamic):Dynamic
+    {
+        var data = getState();
+        for (existingBinding in data.owners)
+            if (existingBinding.owner == owner) return existingBinding;
+        var entry = {owner: owner, colors: snapshot(), images: [], tints: []};
+        data.owners.push(entry);
+        return entry;
+    }
+
+    public static function attach(owner:Dynamic):Void { binding(owner); }
+    public static function release(owner:Dynamic):Void
+    {
+        var owners = getState().owners;
+        for (entry in owners.copy()) if (entry.owner == owner) owners.remove(entry);
+    }
+
+    
+    public static function solid(sprite:FlxSprite, w:Int, h:Int, color:Int, unique:Bool = false):FlxSprite
+    {
+        sprite.makeGraphic(w, h, (color & 0xFF000000) | 0x00FFFFFF, unique);
+        sprite.color = color;
+        return sprite;
+    }
+
+    public static function load(owner:Dynamic, sprite:FlxSprite, key:String):FlxSprite
+    {
+        var entry = binding(owner);
+        var path = getImage(key);
+        if (!Assets.exists(Paths.image(path))) path = key;
+        sprite.loadGraphic(Paths.image(path));
+        sprite.color = 0xFFFFFFFF;
+        for (item in entry.images.copy())
+            if (item.sprite == sprite || item.sprite == null || !item.sprite.exists) entry.images.remove(item);
+        entry.images.push({sprite: sprite, key: key, path: path});
+        return sprite;
+    }
+
+    public static function tint(owner:Dynamic, sprite:FlxSprite, color:Int):Void
+    {
+        sprite.setColorTransform(0, 0, 0, 1, (color >> 16) & 255, (color >> 8) & 255, color & 255, 0);
+        var entry = binding(owner);
+        for (item in entry.tints)
+        {
+            if (item.sprite == sprite) { item.color = color; return; }
+        }
+        for (item in entry.tints.copy())
+            if (item.sprite == null || !item.sprite.exists) entry.tints.remove(item);
+        entry.tints.push({sprite: sprite, color: color});
+    }
+
+    static function remap(color:Int, previous:Dynamic):Int
+    {
+        for (key in previous.keys()) if (previous.get(key) == color) return getColor(key);
+        return color;
+    }
+
+    public static function setColor(key:String, color:Int):Void
+    {
+        if (!getState().colors.exists(key)) return;
+        getState().colors.set(key, color);
+        refresh();
+    }
+
+    public static function setImage(key:String, path:String):Bool
+    {
+        if (!Assets.exists(Paths.image(path))) return false;
+        getState().images.set(key, path);
+        refresh();
+        return true;
+    }
+
+    
+    public static function refresh():Void
+    {
+        var refreshOwners = getState().owners.copy();
+        for (refreshOwner in refreshOwners) refreshOwnerTheme(refreshOwner);
+    }
+
+    static function refreshOwnerTheme(themeBinding:Dynamic):Void
+    {
+        if (themeBinding == null || themeBinding.owner == null) return;
+        var themeOwner = themeBinding.owner;
+        if (themeOwner.members == null) return;
+        for (themeSprite in themeOwner.members)
+        {
+            if (themeSprite == null || !Std.isOfType(themeSprite, FlxSprite) || !themeSprite.exists) continue;
+            var isThemeImage = false;
+            for (imageBinding in themeBinding.images)
+                if (imageBinding.sprite == themeSprite) isThemeImage = true;
+            if (!isThemeImage) themeSprite.color = remap(themeSprite.color, themeBinding.colors);
+            if (Std.isOfType(themeSprite, FlxText))
+                themeSprite.borderColor = remap(themeSprite.borderColor, themeBinding.colors);
+        }
+        for (textureBinding in themeBinding.images.copy())
+        {
+            var textureSprite = textureBinding.sprite;
+            if (textureSprite == null || !textureSprite.exists)
+            {
+                themeBinding.images.remove(textureBinding);
+                continue;
+            }
+            var texturePath = getImage(textureBinding.key);
+            if (texturePath == textureBinding.path || !Assets.exists(Paths.image(texturePath))) continue;
+            var textureX = textureSprite.x; var textureY = textureSprite.y;
+            var textureWidth = textureSprite.width; var textureHeight = textureSprite.height;
+            var textureClip = textureSprite.clipRect;
+            textureSprite.loadGraphic(Paths.image(texturePath));
+            textureSprite.setGraphicSize(Std.int(textureWidth), Std.int(textureHeight));
+            textureSprite.updateHitbox();
+            textureSprite.setPosition(textureX, textureY);
+            textureSprite.clipRect = textureClip;
+            textureBinding.path = texturePath;
+        }
+        
+        
+        for (tintBinding in themeBinding.tints.copy())
+        {
+            if (tintBinding.sprite == null || !tintBinding.sprite.exists)
+            {
+                themeBinding.tints.remove(tintBinding);
+                continue;
+            }
+            var tintColor = remap(tintBinding.color, themeBinding.colors);
+            tintBinding.sprite.setColorTransform(0, 0, 0, 1,
+                (tintColor >> 16) & 255, (tintColor >> 8) & 255, tintColor & 255, 0);
+            tintBinding.color = tintColor;
+        }
+        themeBinding.colors = snapshot();
+    }
+}

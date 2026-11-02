@@ -1,0 +1,59 @@
+import funkin.play.character.SparrowCharacter;
+import funkin.play.character.CharacterType;
+import funkin.play.PlayState;
+import funkin.play.PlayStatePlaylist;
+import funkin.modding.module.ModuleHandler;
+import funkin.save.Save;
+
+class Duet_OriginalCharacter extends SparrowCharacter
+{
+  function new()
+  {
+    super('Duet_Original');
+  }
+
+function onNoteHit(event:HitNoteScriptEvent)
+{
+	var isMyNote =
+		(!event.note.noteData.getMustHitNote() && characterType == CharacterType.DAD && (PlayStatePlaylist.isStoryMode || Save.instance.modOptions.get('mirrorMode') != true))
+		|| (event.note.noteData.getMustHitNote() && characterType == CharacterType.BF && (!PlayStatePlaylist.isStoryMode && Save.instance.modOptions.get('mirrorMode') == true));
+
+	if (isMyNote && event.note.kind == "mom")
+	{
+		holdTimer = 0;
+		this.playSingAnimation(event.note.noteData.getDirection(), false, 'alt');
+		return;
+	}
+
+	super.onNoteHit(event);
+}
+
+function onSongLoaded(event:ScriptEvent)
+{
+    super.onSongLoaded(event);
+
+    final mirrorMode:Bool =
+        (!PlayStatePlaylist.isStoryMode && Save.instance.modOptions.get('mirrorMode') == true);
+
+    if (mirrorMode)
+    {
+        if (PlayState.instance.playerStrumline.noteStyle.id.toLowerCase() != 'ddtopixel')
+        {
+            ModuleHandler.getModule('SwappingNotestyles')
+                .scriptCall('swapPlayerStrumlines', ['ddtopixel']);
+
+            PlayState.instance.playerStrumline.fadeInArrows();
+        }
+    }
+    else
+    {
+        if (PlayState.instance.opponentStrumline.noteStyle.id.toLowerCase() != 'ddtopixel')
+        {
+            ModuleHandler.getModule('SwappingNotestyles')
+                .scriptCall('swapOpponentStrumlines', ['ddtopixel']);
+
+            PlayState.instance.opponentStrumline.fadeInArrows();
+        }
+    }
+}
+}

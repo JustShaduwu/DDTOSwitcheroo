@@ -1,0 +1,1241 @@
+import funkin.modding.module.ModuleHandler;
+package mod.playstate;
+
+import funkin.modding.module.Module;
+import funkin.modding.events.NoteScriptEvent;
+import funkin.modding.events.ScriptEvent;
+
+import funkin.play.PlayState;
+
+import funkin.Highscore;
+import funkin.Preferences;
+import LanguageManager;
+import funkin.Paths;
+import funkin.save.Save;
+
+import funkin.util.Constants;
+
+import flixel.FlxG;
+import flixel.FlxSprite;
+
+import flixel.ui.FlxBar;
+
+import flixel.text.FlxText;
+import flixel.text.FlxTextBorderStyle;
+
+import flixel.math.FlxMath;
+
+import flixel.tweens.FlxTween;
+import flixel.tweens.FlxEase;
+
+import flixel.util.FlxTimer;
+import flixel.util.FlxStringUtil;
+
+
+using StringTools;
+
+class SwitcherooHud extends Module
+{
+
+    var game:PlayState;
+
+    var isReloading:Bool = false;
+
+
+    var timebarReady:Bool = false;
+    var timebarShown:Bool = false;
+    var timeTxt:FlxText;
+
+    function resetTimebar():Void
+    {
+        timebarReady = false;
+        timebarShown = false;
+        for (obj in [grad, timeBarBG, timeTxt])
+            if (obj != null) { FlxTween.cancelTweensOf(obj); obj.alpha = 0; }
+    }
+
+    function syncTimebar():Void
+    {
+        var saved = Save.instance.modOptions.get('timeTxt_type');
+        var mode = saved == null ? 'time left' : Std.string(saved).toLowerCase();
+        var credits = ModuleHandler.getModule('Credits');
+        var show = timebarReady && mode != 'no timebar'
+            && (mode != 'song name' || credits == null || credits.scriptCall('isSongNameRevealed', []) == true);
+        if (show == timebarShown) return;
+        timebarShown = show;
+        for (obj in [grad, timeBarBG, timeTxt])
+        {
+            if (obj == null) continue;
+            FlxTween.cancelTweensOf(obj);
+            if (!show) obj.alpha = 0;
+            else FlxTween.tween(obj, {alpha: 1}, 0.4, {ease: FlxEase.quartInOut, startDelay: 0.3});
+        }
+    }
+
+
+    var grad:FlxBar;
+
+    var reverseGrad:Bool = false;
+
+    var timeBarBG:FlxSprite;
+
+
+    var scoreTxt:FlxText;
+
+    var scoreTxtTween:FlxTween;
+
+
+    var ratingPercent:Float = 0;
+
+    var ratingName:String = '?';
+
+    var ratingFC:String = 'Clear';
+
+
+    var dokiNpsMax:Int = 0;
+
+    var dokiNps:Int = 0;
+
+
+    var totalNotesHit:Float = 0.0;
+
+    public static var ratingStuff:Array<Dynamic> =
+    [
+        ['D',     0.6],
+        ['C',     0.7],
+        ['B',     0.8],
+        ['A',     0.81],
+        ['AA.',   0.82],
+        ['AA:',   0.83],
+        ['AA',    0.85],
+        ['AA.',   0.87],
+        ['AA:',   0.88],
+        ['AAA',   0.9],
+        ['AAA.',  0.93],
+        ['AAA:',  0.955],
+        ['AAAA',  0.970],
+        ['AAAA.', 0.980],
+        ['AAAA:', 0.9935],
+        ['AAAAA', 1]
+    ];
+
+    function new():Void
+    {
+        super(
+            'SwitcherooHud',
+            100
+        );
+
+    }
+
+    var thisactivated = Save.instance.modOptions.get('switcherooHUD');
+    public function initGame():Void
+    {
+        resetTimebar();
+        game =
+            PlayState.instance;
+
+
+        if (game == null)
+        {
+            return;
+        }
+
+        if (!thisactivated) return;
+        initHud();
+
+        initScore();
+
+
+        game.refresh();
+    }
+
+    function isPixelStyle():Bool
+    {
+        if (
+            PlayState.instance == null ||
+            PlayState.instance.playerStrumline == null ||
+            PlayState.instance.playerStrumline.noteStyle == null
+        )
+        {
+            return false;
+        }
+
+
+        return
+            PlayState.instance
+                .playerStrumline
+                .noteStyle
+                .id
+                .endsWith(
+                    'pixel'
+                );
+    }
+
+
+    function getGameFont():String
+    {
+        return isPixelStyle()
+            ? Paths.font('vcr.ttf')
+            : Paths.font('Aller_Rg.ttf');
+    }
+
+    function initHud():Void
+    {
+        var pixel:Bool =
+            isPixelStyle();
+
+
+        var gameFont:String =
+            getGameFont();
+
+
+        var timeBarZIndex:Int =
+            1302;
+
+        timeTxt =
+            new FlxText(
+                0,
+                30,
+                1000,
+                '',
+                18
+            );
+
+
+        timeTxt.setFormat(
+            gameFont,
+            18,
+            0xFFFFFFFF,
+            'center',
+            FlxTextBorderStyle.OUTLINE,
+            0xFF000000
+        );
+
+
+        timeTxt.scrollFactor.set();
+
+        timeTxt.screenCenter(
+            0x01
+        );
+
+
+        timeTxt.borderSize =
+            1;
+
+        timeTxt.antialiasing =
+            !pixel;
+
+        timeTxt.alpha =
+            0;
+
+        timeTxt.visible =
+            true;
+
+        timeTxt.zIndex =
+            timeBarZIndex + 2;
+
+        timeTxt.cameras =
+        [
+            game.camHUD
+        ];
+
+
+        if (Preferences.downscroll)
+        {
+            timeTxt.y =
+                FlxG.height - 24;
+        }
+        else
+        {
+            timeTxt.y -=
+                17;
+        }
+
+        timeBarBG =
+            new FlxSprite(
+                0,
+                timeTxt.y +
+                (timeTxt.height / 4) -
+                5
+            );
+
+
+        timeBarBG.loadGraphic(
+            Paths.image(
+                'gameplay/general/timeBar'
+            )
+        );
+
+
+        timeBarBG.screenCenter(
+            0x01
+        );
+
+
+        timeBarBG.cameras =
+        [
+            game.camHUD
+        ];
+
+
+        timeBarBG.alpha =
+            0;
+
+        timeBarBG.zIndex =
+            timeBarZIndex;
+
+        grad =
+            new FlxBar(
+                timeBarBG.x + 4,
+                timeBarBG.y + 4,
+                null,
+                Std.int(
+                    timeBarBG.width - 8
+                ),
+                Std.int(
+                    timeBarBG.height - 8
+                )
+            );
+
+
+        grad.scrollFactor.set();
+
+        grad.numDivisions =
+            800;
+
+        grad.alpha =
+            0;
+
+        grad.visible =
+            true;
+
+        grad.cameras =
+        [
+            game.camHUD
+        ];
+
+        grad.zIndex =
+            timeBarZIndex + 1;
+
+
+        if (game.scoreText != null)
+        {
+            game.scoreText.alpha =
+                0;
+        }
+
+
+        game.healthBarBG.loadGraphic(
+            Paths.image(
+                'gameplay/general/health-bar-switcheroo'
+            )
+        );
+
+
+        game.healthBar.y =
+            FlxG.height *
+            (
+                !Preferences.downscroll
+                    ? 0.89
+                    : 0.11
+            );
+
+
+        game.healthBar.screenCenter(
+            0x01
+        );
+
+
+        game.healthBar.zIndex =
+            1200;
+
+
+        game.healthBarBG.setPosition(
+            game.healthBar.x - 4,
+            game.healthBar.y - 4
+        );
+
+
+        game.healthBarBG.zIndex =
+            1201;
+
+
+        if (game.iconP1 != null)
+        game.iconP1.zIndex =
+            1202;
+
+        if (game.iconP2 != null)
+        game.iconP2.zIndex =
+            1203;
+
+
+        game.healthBar.scale.set(
+            1,
+            1.7
+        );
+
+        updateColors();
+
+
+        game.add(
+            timeBarBG
+        );
+
+        game.add(
+            grad
+        );
+
+        game.add(
+            timeTxt
+        );
+    }
+
+
+    function initScore():Void
+    {
+        var pixel:Bool =
+            isPixelStyle();
+
+
+        var gameFont:String =
+            getGameFont();
+
+
+        scoreTxt =
+            new FlxText(
+                0,
+                game.healthBar.y + 40,
+                FlxG.width,
+                '',
+                20
+            );
+
+
+        scoreTxt.setFormat(
+            gameFont,
+            20,
+            0xFFFFFFFF,
+            'center',
+            FlxTextBorderStyle.OUTLINE,
+            0xFF000000
+        );
+
+
+        scoreTxt.scrollFactor.set();
+
+        scoreTxt.borderSize =
+            1.25;
+
+        scoreTxt.zIndex =
+            1300;
+
+        scoreTxt.antialiasing =
+            !pixel;
+
+        scoreTxt.cameras =
+        [
+            game.camHUD
+        ];
+
+
+        setUpScore();
+
+
+        game.add(
+            scoreTxt
+        );
+    }
+
+    public function setUpScore():Void
+    {
+        ratingPercent =
+            0;
+
+        ratingName =
+            '?';
+
+        ratingFC =
+            'Clear';
+
+        totalNotesHit =
+            0;
+
+        dokiNpsMax =
+            0;
+
+        dokiNps =
+            0;
+
+
+        if (scoreTxt != null)
+        {
+            scoreTxt.text =
+                LanguageManager.getTranslation('hud.score', 'Score') + ': 0 | ' +
+                LanguageManager.getTranslation('hud.breaks', 'Breaks') + ': 0 | ' +
+                LanguageManager.getTranslation('hud.rating', 'Rating') + ': ?';
+        }
+    }
+
+    override function onCountdownEnd(ev):Void
+    {
+        super.onCountdownEnd(
+            ev
+        );
+
+
+        timebarReady = true;
+        syncTimebar();
+    }
+
+
+    public function fadeInTween(
+        obj:Dynamic
+    ):FlxTween
+    {
+        if (obj == null)
+        {
+            return null;
+        }
+
+
+        return FlxTween.tween(
+            obj,
+            {
+                alpha: 1
+            },
+            0.5,
+            {
+                ease:
+                    FlxEase.circOut,
+
+                type:
+                    8
+            }
+        );
+    }
+
+
+    override function onUpdate(event):Void
+    {
+        super.onUpdate(
+            event
+        );
+
+
+        if (
+            PlayState.instance == null ||
+            !PlayState.instance.active || !thisactivated
+        )
+        {
+            return;
+        }
+
+        updateScore();
+
+        if (grad != null)
+        {
+            if (
+                game.currentSongLengthMs > 0
+            )
+            {
+                grad.value =
+                    (
+                        game.conductorInUse.songPosition /
+                        game.currentSongLengthMs
+                    ) * 100;
+            }
+            else
+            {
+                grad.value =
+                    0;
+            }
+
+
+            grad.updateBar();
+
+
+            updateTimeTxt();
+        }
+    }
+
+    function updateTimeTxt():Void
+    {
+        syncTimebar();
+        if (
+            timeTxt == null ||
+            game == null
+        )
+        {
+            return;
+        }
+
+
+        var time:String =
+            '';
+
+
+        var timeType = Save.instance.modOptions.get(
+            'timeTxt_type'
+        );
+
+
+        switch (timeType == null ? 'song name' : Std.string(timeType).toLowerCase())
+        {
+            case 'time left':
+
+                var tmpTime:Float =
+                    FlxMath.bound(
+                        game.currentSongLengthMs -
+                        game.conductorInUse.songPosition,
+                        0,
+                        game.currentSongLengthMs
+                    );
+
+
+                time =
+                    FlxStringUtil.formatTime(
+                        tmpTime / 1000,
+                        false
+                    );
+
+
+            case 'time elapsed':
+
+                time =
+                    FlxStringUtil.formatTime(
+                        Math.max(
+                            game.conductorInUse.songPosition,
+                            0
+                        ) / 1000,
+                        false
+                    );
+
+
+            case 'song progress':
+
+                var songElapsed:String =
+                    FlxStringUtil.formatTime(
+                        Math.max(
+                            game.conductorInUse.songPosition,
+                            0
+                        ) / 1000,
+                        false
+                    );
+
+
+                var songTotal:String =
+                    FlxStringUtil.formatTime(
+                        game.currentSongLengthMs /
+                        1000,
+                        false
+                    );
+
+
+                time =
+                    songElapsed +
+                    ' / ' +
+                    songTotal;
+            case 'no timebar': time = '';
+            default:
+                var credits = ModuleHandler.getModule('Credits');
+                time = credits == null || credits.scriptCall('isSongNameRevealed', []) == true
+                    ? game.currentSong.songName : '';
+        }
+
+        timeTxt.text = time;
+    }
+
+
+    function updateColors():Void
+    {
+        if (
+            game == null ||
+            game.iconP1 == null ||
+            game.iconP2 == null ||
+            game.healthBar == null ||
+            grad == null
+        )
+        {
+            return;
+        }
+
+
+        var bfColor:Int =
+            dominantColor(
+                game.iconP1
+            );
+
+
+        var dadColor:Int =
+            dominantColor(
+                game.iconP2
+            );
+
+
+        if (bfColor == 0)
+        {
+            bfColor =
+                Constants.COLOR_HEALTH_BAR_GREEN;
+        }
+
+
+        if (dadColor == 0)
+        {
+            dadColor =
+                Constants.COLOR_HEALTH_BAR_RED;
+        }
+
+
+        game.healthBar.createFilledBar(
+            dadColor,
+            bfColor
+        );
+
+
+        var colorArray:Array<Int> =
+            reverseGrad
+                ? [
+                    dadColor,
+                    bfColor
+                ]
+                : [
+                    bfColor,
+                    dadColor
+                ];
+
+
+        grad.createGradientBar(
+            [0x0],
+            colorArray
+        );
+    }
+
+
+    public function reverseBar(
+        value:Bool
+    ):Void
+    {
+        reverseGrad =
+            value;
+
+
+        updateColors();
+    }
+
+
+
+    function dominantColor(
+        sprite:FlxSprite
+    ):Int
+    {
+        if (
+            sprite == null ||
+            PlayState.instance == null ||
+            !PlayState.instance.active ||
+            sprite.pixels == null
+        )
+        {
+            return 0;
+        }
+
+
+        var countByColor:Array<Int> =
+            [];
+
+
+        var colorById:Array<Int> =
+            [];
+
+
+        for (col in 0...sprite.frameWidth)
+        {
+            for (row in 0...sprite.frameHeight)
+            {
+                var colorOfThisPixel:Int =
+                    sprite.pixels.getPixel32(
+                        col,
+                        row
+                    );
+
+
+                if (colorOfThisPixel == 0)
+                {
+                    continue;
+                }
+
+
+                var colorId:Int =
+                    colorById.indexOf(
+                        colorOfThisPixel
+                    );
+
+
+                if (colorId != -1)
+                {
+                    countByColor[colorId] =
+                        countByColor[colorId] + 1;
+                }
+                else
+                {
+                    var id:Int =
+                        colorById.length;
+
+
+                    colorById[id] =
+                        colorOfThisPixel;
+
+
+                    countByColor[id] =
+                        1;
+                }
+            }
+        }
+
+
+        var maxCount:Int =
+            0;
+
+
+        var maxKey:Int =
+            0;
+
+
+        for (color in colorById)
+        {
+            var id:Int =
+                colorById.indexOf(
+                    color
+                );
+
+
+            var count:Int =
+                countByColor[id] != null
+                    ? countByColor[id]
+                    : 0;
+
+
+            if (
+                id != -1 &&
+                count > maxCount &&
+                color != 0xFF000000 &&
+                color != 0x00FFFFFF
+            )
+            {
+                maxCount =
+                    count;
+
+
+                maxKey =
+                    color;
+            }
+        }
+
+
+        return maxKey;
+    }
+
+
+    function updateScore():Void
+    {
+        if (
+            scoreTxt == null ||
+            game == null
+        )
+        {
+            return;
+        }
+
+
+        var ratingString:String =
+            ratingName;
+
+
+        if (
+            (
+                Highscore.tallies.totalNotesHit +
+                Highscore.tallies.missed
+            ) != 0
+        )
+        {
+            var percent:Float =
+                Math.floor(
+                    ratingPercent *
+                    100
+                );
+
+
+            ratingString +=
+                ' (' +
+                percent +
+                '%) - ' +
+                ratingFC;
+        }
+
+
+        var songScore:Int =
+            Std.int(
+                game.songScore
+            );
+
+
+        var tempScore:String =
+            LanguageManager.getTranslation('hud.score', 'Score') + ': ' +
+            songScore +
+            ' | ' + LanguageManager.getTranslation('hud.breaks', 'Breaks') + ': ' +
+            getMisses() +
+            ' | ' + LanguageManager.getTranslation('hud.rating', 'Rating') + ': ' +
+            ratingString;
+
+
+        scoreTxt.text =
+            tempScore +
+            '\n';
+    }
+
+
+    function calculateRating(
+        noteHit:Bool
+    ):Void
+    {
+        var totalNotesPlayed:Int =
+            Highscore.tallies.totalNotesHit +
+            Highscore.tallies.missed;
+
+
+        if (noteHit)
+        {
+            totalNotesPlayed++;
+        }
+
+
+        if (totalNotesPlayed != 0)
+        {
+            ratingPercent =
+                Math.min(
+                    1,
+                    Math.max(
+                        0,
+                        totalNotesHit /
+                        totalNotesPlayed
+                    )
+                );
+
+
+            ratingName =
+                ratingStuff[
+                    ratingStuff.length - 1
+                ][0];
+
+
+            if (ratingPercent < 1)
+            {
+                for (
+                    i in
+                    0...ratingStuff.length - 1
+                )
+                {
+                    if (
+                        ratingPercent <
+                        ratingStuff[i][1]
+                    )
+                    {
+                        ratingName =
+                            ratingStuff[i][0];
+
+                        break;
+                    }
+                }
+            }
+        }
+
+
+        ratingFC =
+            '';
+
+
+        if (getMisses() == 0)
+        {
+            var tallies =
+                Highscore.tallies;
+
+
+            var sicks:Int =
+                tallies.sick;
+
+            var goods:Int =
+                tallies.good;
+
+            var bads:Int =
+                tallies.bad;
+
+            var shits:Int =
+                tallies.shit;
+
+
+            if (
+                bads > 0 ||
+                shits > 0
+            )
+            {
+                ratingFC =
+                    'FC';
+            }
+            else if (goods > 0)
+            {
+                ratingFC =
+                    'GFC';
+            }
+            else if (sicks > 0)
+            {
+                ratingFC =
+                    'SFC';
+            }
+        }
+        else
+        {
+            if (getMisses() < 10)
+            {
+                ratingFC =
+                    'SDCB';
+            }
+            else
+            {
+                ratingFC =
+                    'Clear';
+            }
+        }
+    }
+
+    function doScoreBop():Void
+    {
+        if (scoreTxt == null)
+        {
+            return;
+        }
+
+
+        if (scoreTxtTween != null)
+        {
+            scoreTxtTween.cancel();
+        }
+
+
+        scoreTxt.scale.set(
+            1.075,
+            1.075
+        );
+
+
+        scoreTxtTween =
+            FlxTween.tween(
+                scoreTxt.scale,
+                {
+                    x: 1,
+                    y: 1
+                },
+                0.2,
+                {
+                    onComplete:
+                        function(tween:FlxTween)
+                        {
+                            scoreTxtTween =
+                                null;
+                        }
+                }
+            );
+    }
+
+    function getMisses():Int
+    {
+        var tallies =
+            Highscore.tallies;
+
+
+        var value:Int =
+            tallies.missed;
+
+
+        value +=
+            tallies.shit;
+
+
+        if (
+            Constants.JUDGEMENT_BAD_COMBO_BREAK
+        )
+        {
+            value +=
+                tallies.bad;
+        }
+
+
+        return value;
+    }
+
+    override function onNoteHit(ev):Void
+    {
+        super.onNoteHit(
+            ev
+        );
+
+
+        if (ev.healthChange == 0)
+        {
+            return;
+        }
+
+
+        var ratingMod:Float =
+            switch (ev.judgement)
+            {
+                case 'good':
+                    0.67;
+
+                case 'bad':
+                    0.34;
+
+                case 'shit':
+                    0;
+
+                default:
+                    1;
+            };
+
+
+        totalNotesHit +=
+            ratingMod;
+
+
+        calculateRating(
+            true
+        );
+
+
+        doScoreBop();
+    }
+
+
+    override function onNoteMiss(
+        ev:NoteScriptEvent
+    ):Void
+    {
+        super.onNoteMiss(
+            ev
+        );
+
+
+        if (
+            ev.healthChange == 0 ||
+            ev.note.kind == 'markov'
+        )
+        {
+            return;
+        }
+
+
+        calculateRating(
+            true
+        );
+    }
+
+
+    override function onNoteGhostMiss(
+        ev:ScriptEvent
+    ):Void
+    {
+        super.onNoteGhostMiss(
+            ev
+        );
+
+
+        if (ev.healthChange == 0)
+        {
+            return;
+        }
+
+
+        calculateRating(
+            false
+        );
+    }
+
+    override function onSongEvent(
+        event
+    ):Void
+    {
+        super.onSongEvent(
+            event
+        );
+
+
+        if (
+            event.eventData.eventKind ==
+            'ChangeCharacter'
+        )
+        {
+            new FlxTimer().start(
+                0.01,
+                function(timer:FlxTimer)
+                {
+                    updateColors();
+                }
+            );
+        }
+    }
+
+    override function onSongLoaded(
+        ev
+    ):Void
+    {
+        super.onSongLoaded(
+            ev
+        );
+
+
+        if (!isReloading)
+        {
+            initGame();
+        }
+
+
+        isReloading =
+            false;
+    }
+
+
+    override function onSongRetry(
+        ev
+    ):Void
+    {
+        resetTimebar();
+        setUpScore();
+
+
+        super.onSongRetry(
+            ev
+        );
+
+
+        isReloading =
+            true;
+    }
+
+
+    override function onDestroy(
+        ev
+    ):Void
+    {
+        if (scoreTxtTween != null)
+        {
+            scoreTxtTween.cancel();
+
+            scoreTxtTween =
+                null;
+        }
+
+
+        super.onDestroy(
+            ev
+        );
+    }
+}

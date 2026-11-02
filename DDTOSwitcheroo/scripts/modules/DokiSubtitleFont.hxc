@@ -1,0 +1,252 @@
+import funkin.modding.module.Module;
+import funkin.play.PlayState;
+
+import flixel.FlxG;
+import flixel.FlxBasic;
+import flixel.group.FlxGroup;
+import flixel.text.FlxText;
+import Reflect;
+
+import funkin.play.components.Subtitles;
+import LanguageManager;
+
+class DokiSubtitleFont extends Module
+{
+    var modifiedSubtitles:Array<Dynamic> = [];
+    var translatedCues:Dynamic = null;
+    var subtitleTranslationLoaded:Bool = false;
+    var subtitleTranslationReported:Bool = false;
+    var localizedCueLists:Array<Dynamic> = [];
+
+    public function new()
+    {
+        super(
+            'CustomSubtitleFont',
+            0
+        );
+    }
+
+    override function onUpdate(event):Void
+    {
+        super.onUpdate(event);
+
+
+        if (PlayState.instance == null)
+            return;
+
+        updateSongSubtitles();
+
+        findSubtitles(
+            PlayState.instance
+        );
+    }
+
+function findSubtitles(
+    object:Dynamic
+):Void
+{
+    if (object == null)
+        return;
+
+    if (
+        Std.isOfType(
+            object,
+            Subtitles
+        )
+    )
+    {
+        applySubtitleFont(
+            object
+        );
+        applySubtitleTranslation(object);
+
+        return;
+    }
+
+
+    /*
+     * No todos los FlxBasic tienen members.
+     *
+     * En HScript hacer directamente:
+     *
+     * object.members
+     *
+     * sobre un objeto que no tiene ese campo
+     * genera "Invalid access to field members".
+     */
+    if (
+        !Reflect.hasField(
+            object,
+            'members'
+        )
+    )
+    {
+        return;
+    }
+
+
+    var members:Dynamic =
+        Reflect.field(
+            object,
+            'members'
+        );
+
+
+    if (members == null)
+        return;
+
+
+    for (member in members)
+    {
+        if (member == null)
+            continue;
+
+
+        findSubtitles(
+            member
+        );
+    }
+}
+
+    function applySubtitleTranslation(subtitles:Dynamic):Void
+    {
+        var game = PlayState.instance;
+        if (game == null || game.currentSong == null || game.currentSong.id != 'piece-by-piece') return;
+        // Use script field access: native inherited fields are not reliably
+        // discovered by the generic Reflect-based group traversal.
+        var original = subtitles.subtitlesData;
+        if (original == null || original.length == 0) return;
+        if (!subtitleTranslationLoaded)
+        {
+            translatedCues = LanguageManager.loadSubtitleTranslation(
+                'piece-by-piece', 'song-lyrics-lyrics.srt');
+            subtitleTranslationLoaded = true;
+            if (translatedCues == null)
+                trace('[Switcheroo subtitles] No translated SRT loaded; using original.');
+        }
+        if (translatedCues == null || localizedCueLists.indexOf(original) != -1) return;
+        localizedCueLists.push(original);
+        if (original.length != translatedCues.length)
+        {
+            trace('[Switcheroo subtitles] Cue count differs; keeping original subtitles.');
+            return;
+        }
+        // Retain the engine's native cue objects and time representation.
+        // HScript-created anonymous objects are not a replacement for native SRT entries.
+        for (i in 0...original.length)
+        {
+            if (original[i] == null || translatedCues[i] == null
+                || translatedCues[i].text == null || translatedCues[i].text == '')
+            {
+                trace('[Switcheroo subtitles] Incomplete translation; keeping original subtitles.');
+                return;
+            }
+        }
+        var originalTexts:Array<String> = [];
+        for (i in 0...original.length) originalTexts.push(original[i].text);
+        try
+        {
+            for (i in 0...original.length) original[i].text = translatedCues[i].text;
+        }
+        catch (error:Dynamic)
+        {
+            for (i in 0...original.length) original[i].text = originalTexts[i];
+            trace('[Switcheroo subtitles] Could not translate captions; restored original: ' + error);
+            return;
+        }
+        if (!subtitleTranslationReported)
+        {
+            trace('[Switcheroo subtitles] Applied ' + translatedCues.length + ' translated cues.');
+            subtitleTranslationReported = true;
+        }
+    }
+
+    function updateSongSubtitles():Void
+    {
+        var game = PlayState.instance;
+        if (game == null || game.currentSong == null || game.currentSong.id != 'piece-by-piece') return;
+        var subtitles = game.subtitles;
+        if (subtitles == null) return;
+        applySubtitleFont(subtitles);
+        applySubtitleTranslation(subtitles);
+    }
+
+    override function onSongStart(event):Void
+    {
+        super.onSongStart(event);
+        updateSongSubtitles();
+    }
+
+    function applySubtitleFont(
+        subtitles:Dynamic
+    ):Void
+    {
+        if (
+            modifiedSubtitles.indexOf(
+                subtitles
+            ) != -1
+        )
+        {
+            return;
+        }
+
+        if (
+            subtitles.members == null ||
+            subtitles.members.length < 2
+        )
+        {
+            return;
+        }
+
+        var text =
+            subtitles.members[1];
+
+        if (
+            text == null ||
+            !Std.isOfType(
+                text,
+                FlxText
+            )
+        )
+        {
+            return;
+        }
+
+        text.font =
+            Paths.font(
+                'HKGrotesk-Bold.otf'
+            );
+
+        text.size =
+            30;
+
+
+        modifiedSubtitles.push(
+            subtitles
+        );
+    }
+
+    override function onSongRetry(event):Void
+    {
+        super.onSongRetry(event);
+        translatedCues = null;
+        subtitleTranslationLoaded = false;
+        subtitleTranslationReported = false;
+        localizedCueLists = [];
+
+        modifiedSubtitles =
+            [];
+    }
+
+    override function onStateChangeBegin(event):Void
+    {
+        super.onStateChangeBegin(event);
+        translatedCues = null;
+        subtitleTranslationLoaded = false;
+        subtitleTranslationReported = false;
+        localizedCueLists = [];
+
+        modifiedSubtitles =
+            [];
+    }
+}

@@ -1,0 +1,159 @@
+{
+    "danceEvery": 1,
+    "offsets": [
+        50,
+        50
+    ],
+    "renderType": "sparrow",
+    "version": "1.0.0",
+    "scale": 6,
+    "flipX": false,
+    "cameraOffsets": [
+        -100,
+        0
+    ],
+    "name": "Azalea",
+    "flipY": false,
+    "singTime": 2,
+    "isPixel": true,
+    "startingAnimation": "idle",
+    "assetPath": "gameplay/characters/azalea/Azalea",
+	"healthIcon": {
+		"offsets": [
+			0,
+			0
+		],
+		"isPixel": false,
+		"scale": 1,
+		"flipX": false,
+		"id": "azalea"
+	},
+    "animations": [
+        {
+            "offsets": [
+                0,
+                0
+            ],
+            "frameIndices": [],
+            "prefix": "idle",
+            "flipX": false,
+            "looped": false,
+            "name": "idle",
+            "flipY": false,
+            "assetPath": null,
+            "frameRate": 24
+        },
+        {
+            "offsets": [
+                0,
+                0
+            ],
+            "frameIndices": [],
+            "prefix": "up",
+            "flipX": false,
+            "looped": false,
+            "name": "singUP",
+            "flipY": false,
+            "assetPath": null,
+            "frameRate": 24
+        },
+        {
+            "offsets": [
+                0,
+                0
+            ],
+            "frameIndices": [],
+            "prefix": "left",
+            "flipX": false,
+            "looped": false,
+            "name": "singLEFT",
+            "flipY": false,
+            "assetPath": null,
+            "frameRate": 24
+        },
+        {
+            "offsets": [
+                0,
+                0
+            ],
+            "frameIndices": [],
+            "prefix": "down",
+            "flipX": false,
+            "looped": false,
+            "name": "singDOWN",
+            "flipY": false,
+            "assetPath": null,
+            "frameRate": 24
+        },
+        {
+            "offsets": [
+                0,
+                0
+            ],
+            "frameIndices": [],
+            "prefix": "Right",
+            "flipX": false,
+            "looped": false,
+            "name": "singRIGHT",
+            "flipY": false,
+            "assetPath": null,
+            "frameRate": 24
+        },
+        {
+            "offsets": [
+                0,
+                0
+            ],
+            "frameIndices": [],
+            "prefix": "ReturnUp",
+            "flipX": false,
+            "looped": false,
+            "name": "singUP-end",
+            "flipY": false,
+            "assetPath": null,
+            "frameRate": 24
+        },
+        {
+            "offsets": [
+                0,
+                0
+            ],
+            "frameIndices": [],
+            "prefix": "ReturnLeft",
+            "flipX": false,
+            "looped": false,
+            "name": "singLEFT-end",
+            "flipY": false,
+            "assetPath": null,
+            "frameRate": 24
+        },
+        {
+            "offsets": [
+                0,
+                0
+            ],
+            "frameIndices": [],
+            "prefix": "ReturnDown",
+            "flipX": false,
+            "looped": false,
+            "name": "singDOWN-end",
+            "flipY": false,
+            "assetPath": null,
+            "frameRate": 24
+        },
+        {
+            "offsets": [
+                0,
+                0
+            ],
+            "frameIndices": [],
+            "prefix": "ReturnRight",
+            "flipX": false,
+            "looped": false,
+            "name": "singRIGHT-end",
+            "flipY": false,
+            "assetPath": null,
+            "frameRate": 24
+        }
+    ]
+}

@@ -1,0 +1,48 @@
+{
+ "version": "2.2.4",
+ "songName": "Our Reality",
+ "artist": "Shaduwu / UnStorm",
+ "pause": "manuel",
+ "charter": "Vastor",
+ "offsets": {
+  "altInstrumentals": {
+   "DDTO": 0
+  }
+ },
+ "playData": {
+    "stickerPack": "switcheroo-prologue",
+  "difficulties": [
+   "easy", "normal", "hard"
+  ],
+  "characters": {
+   "player": "playable-seira",
+   "girlfriend": "speakers-pixel",
+   "opponent": "manuel-pixel",
+   "altInstrumentals": [
+    "DDTO"
+   ],
+   "opponentVocals": [
+    "manuel-pixel"
+   ],
+   "playerVocals": [
+    "seira"
+   ]
+  },
+  "stage": "schoolErect",
+  "noteStyle": "ddtspixel",
+  "ratings": {
+   "hard": 4
+  },
+  "album": "switcheroo",
+  "previewEnd": 0
+ },
+ "generatedBy": "Friday Night Funkin' - v0.8.4",
+ "timeChanges": [
+  {
+   "t": 0,
+   "b": 0,
+   "bpm": 105,
+   "bt": [4, 4, 4, 4]
+  }
+ ]
+}

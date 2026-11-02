@@ -1,0 +1,244 @@
+{
+	"version": "1.0.0",
+	"renderType": "sparrow",
+	"offsets": [
+		-10,
+		-10
+	],
+	"danceEvery": 1,
+	"scale": 5,
+	"name": "Pixel Kity",
+	"cameraOffsets": [
+		0,
+		0
+	],
+	"flipX": true,
+	"startingAnimation": "idle",
+	"isPixel": true,
+	"singTime": 8,
+	"flipY": false,
+	"healthIcon": {
+		"isPixel": false,
+		"offsets": [
+			0,
+			0
+		],
+		"scale": 1,
+		"id": "Kaitypixel",
+		"flipX": false
+	},
+	"assetPath": "gameplay/characters/pixel-kity/PixelKity_Assets",
+	"generatedBy": "Nova Character Editor v3.0.1",
+	"animations": [
+		{
+			"offsets": [
+				0,
+				0
+			],
+			"frameIndices": [],
+			"prefix": "PixelKity_Assets Idle",
+			"name": "idle",
+			"looped": true,
+			"flipX": false,
+			"flipY": false,
+			"frameRate": 12,
+			"assetPath": null
+		},
+		{
+			"offsets": [
+				0,
+				0
+			],
+			"frameIndices": [
+				0,
+				1
+			],
+			"prefix": "PixelKity_Assets Left",
+			"name": "singLEFT",
+			"looped": false,
+			"flipX": false,
+			"flipY": false,
+			"frameRate": 12,
+			"assetPath": null
+		},
+		{
+			"offsets": [
+				0,
+				0
+			],
+			"frameIndices": [
+				0,
+				1
+			],
+			"prefix": "PixelKity_Assets Right",
+			"name": "singRIGHT",
+			"looped": false,
+			"flipX": false,
+			"flipY": false,
+			"frameRate": 12,
+			"assetPath": null
+		},
+		{
+			"offsets": [
+				0,
+				0
+			],
+			"frameIndices": [
+				0,
+				1
+			],
+			"prefix": "PixelKity_Assets Down",
+			"name": "singDOWN",
+			"looped": false,
+			"flipX": false,
+			"flipY": false,
+			"frameRate": 12,
+			"assetPath": null
+		},
+		{
+			"offsets": [
+				0,
+				0
+			],
+			"frameIndices": [
+				0,
+				1
+			],
+			"prefix": "PixelKity_Assets Up",
+			"name": "singUP",
+			"looped": false,
+			"flipX": false,
+			"flipY": false,
+			"frameRate": 12,
+			"assetPath": null
+		},
+		{
+			"offsets": [
+				0,
+				0
+			],
+			"frameIndices": [
+				0,
+				1,
+				2
+			],
+			"prefix": "PixelKity_Assets Up",
+			"name": "singUP-end",
+			"looped": false,
+			"flipX": false,
+			"flipY": false,
+			"frameRate": 12,
+			"assetPath": null
+		},
+		{
+			"offsets": [
+				0,
+				0
+			],
+			"frameIndices": [
+				0,
+				1,
+				2
+			],
+			"prefix": "PixelKity_Assets Left",
+			"name": "singLEFT-end",
+			"looped": false,
+			"flipX": false,
+			"flipY": false,
+			"frameRate": 12,
+			"assetPath": null
+		},
+		{
+			"offsets": [
+				0,
+				0
+			],
+			"frameIndices": [
+				0,
+				1,
+				2
+			],
+			"prefix": "PixelKity_Assets Right",
+			"name": "singRIGHT-end",
+			"looped": false,
+			"flipX": false,
+			"flipY": false,
+			"frameRate": 12,
+			"assetPath": null
+		},
+		{
+			"offsets": [
+				0,
+				0
+			],
+			"frameIndices": [
+				0,
+				1,
+				2
+			],
+			"prefix": "PixelKity_Assets Down",
+			"name": "singDOWN-end",
+			"looped": false,
+			"flipX": false,
+			"flipY": false,
+			"frameRate": 12,
+			"assetPath": null
+		},
+		{
+			"offsets": [
+				0,
+				0
+			],
+			"frameIndices": [],
+			"prefix": "PixelKity_Assets Miss Down",
+			"name": "singLEFTmiss",
+			"looped": false,
+			"flipX": false,
+			"flipY": false,
+			"frameRate": 12,
+			"assetPath": null
+		},
+		{
+			"offsets": [
+				0,
+				0
+			],
+			"frameIndices": [],
+			"prefix": "PixelKity_Assets Right Miss",
+			"name": "singRIGHTmiss",
+			"looped": false,
+			"flipX": false,
+			"flipY": false,
+			"frameRate": 12,
+			"assetPath": null
+		},
+		{
+			"offsets": [
+				0,
+				0
+			],
+			"frameIndices": [],
+			"prefix": "PixelKity_Assets Down Miss",
+			"name": "singDOWNmiss",
+			"looped": false,
+			"flipX": false,
+			"flipY": false,
+			"frameRate": 12,
+			"assetPath": null
+		},
+		{
+			"offsets": [
+				0,
+				0
+			],
+			"frameIndices": [],
+			"prefix": "PixelKity_Assets Up Miss",
+			"name": "singUPmiss",
+			"looped": false,
+			"flipX": false,
+			"flipY": false,
+			"frameRate": 12,
+			"assetPath": null
+		}
+	]
+}

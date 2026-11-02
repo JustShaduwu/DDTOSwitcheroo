@@ -1,0 +1,45 @@
+import funkin.play.character.MultiSparrowCharacter;
+import funkin.modding.module.ModuleHandler;
+
+class PlayableSeiraCharacter extends MultiSparrowCharacter
+{
+    function new() { super('playable-seira'); }
+
+    function isMissingReplacement():Bool
+    {
+        var missing = ModuleHandler.getModule('MissingMode');
+        return missing != null && missing.scriptCall('isMissingSeira', [this]) == true;
+    }
+
+    function manuelSide(noteData:Dynamic):Bool
+    {
+        var missing = ModuleHandler.getModule('MissingMode');
+        return missing != null && missing.scriptCall('isManuelSide', [noteData]) == true;
+    }
+
+    function onNoteHit(event)
+    {
+        if (isMissingReplacement() && manuelSide(event.note.noteData) && event.note.kind != 'mom') return;
+        super.onNoteHit(event);
+    }
+
+    function onNoteMiss(event)
+    {
+        if (isMissingReplacement() && manuelSide(event.note.noteData)) return;
+        super.onNoteMiss(event);
+    }
+
+    function onNoteHoldDrop(event)
+    {
+        if (isMissingReplacement() && event.holdNote != null
+            && manuelSide(event.holdNote.noteData)) return;
+        super.onNoteHoldDrop(event);
+    }
+
+    override public function playSingAnimation(dir:NoteDirection, miss:Bool = false, ?suffix:String = ''):Void
+    {
+        
+        if (miss && isMissingReplacement()) return;
+        super.playSingAnimation(dir, miss, suffix);
+    }
+}

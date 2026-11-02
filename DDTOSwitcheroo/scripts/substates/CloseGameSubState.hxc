@@ -1,0 +1,361 @@
+package switcheroo.substates;
+
+import funkin.ui.MusicBeatSubState;
+
+import flixel.FlxG;
+import flixel.FlxSprite;
+
+import flixel.group.FlxGroup.FlxTypedGroup;
+
+import flixel.text.FlxText;
+import flixel.text.FlxTextAlign;
+import flixel.text.FlxTextBorderStyle;
+
+import flixel.util.FlxColor;
+import funkin.ui.ScriptedMusicBeatState;
+
+class CloseGameSubState extends MusicBeatSubState
+{
+    var curSelected:Int = 1;
+
+    var selectGrp:FlxTypedGroup<FlxText> =
+        new FlxTypedGroup();
+
+
+var onCloseCallback:Void->Void = null;
+
+public function new(?onClose:Void->Void)
+{
+    super();
+
+    onCloseCallback = onClose;
+}
+
+override public function close():Void
+{
+    super.close();
+
+    if (onCloseCallback != null)
+    {
+        onCloseCallback();
+    }
+}
+
+    override function create():Void
+    {
+        super.create();
+
+
+       
+
+        var background:FlxSprite =
+            new FlxSprite(
+                0,
+                0
+            ).makeGraphic(
+                FlxG.width,
+                FlxG.height,
+                FlxColor.WHITE
+            );
+
+
+        background.alpha =
+            0.5;
+
+
+        background.scrollFactor.set();
+
+
+        add(
+            background
+        );
+
+
+       
+
+        var box:FlxSprite =
+            new FlxSprite().loadGraphic(
+                Paths.image(
+                    'popup_blank'
+                )
+            );
+
+
+        box.antialiasing =
+            true;
+
+
+        box.updateHitbox();
+
+
+        box.screenCenter();
+
+
+        add(
+            box
+        );
+
+
+       
+
+        var text:FlxText =
+            new FlxText(
+                0,
+                box.y + 76,
+                box.frameWidth * 0.95,
+                'Exit the game?'
+            );
+
+
+        text.setFormat(
+            Paths.font('Aller_Rg.ttf'),
+            32,
+            FlxColor.BLACK,
+            FlxTextAlign.CENTER
+        );
+
+
+text.x =
+    (FlxG.width - text.width) / 2;
+
+
+        text.antialiasing =
+            true;
+
+
+        add(
+            text
+        );
+
+
+       
+
+        var textYes:FlxText =
+            new FlxText(
+                box.x + (box.width * 0.18),
+                box.y + (box.height * 0.65),
+                0,
+                'Yes'
+            );
+
+
+        textYes.setFormat(
+            Paths.font('riffic.ttf'),
+            48,
+            FlxColor.WHITE,
+            FlxTextAlign.CENTER
+        );
+
+
+        textYes.antialiasing =
+            true;
+
+
+        textYes.setBorderStyle(
+            FlxTextBorderStyle.OUTLINE,
+            0xFF1A5057,
+            3
+        );
+
+
+        textYes.ID =
+            0;
+
+
+       
+
+        var textNo:FlxText =
+            new FlxText(
+                box.x + (box.width * 0.7),
+                box.y + (box.height * 0.65),
+                0,
+                'No'
+            );
+
+
+        textNo.setFormat(
+            Paths.font('riffic.ttf'),
+            48,
+            FlxColor.WHITE,
+            FlxTextAlign.CENTER
+        );
+
+
+        textNo.antialiasing =
+            true;
+
+
+        textNo.setBorderStyle(
+            FlxTextBorderStyle.OUTLINE,
+            0xFF1A5057,
+            3
+        );
+
+
+        textNo.ID =
+            1;
+
+
+       
+
+        selectGrp.add(
+            textYes
+        );
+
+
+        selectGrp.add(
+            textNo
+        );
+
+
+        add(
+            selectGrp
+        );
+
+
+       
+        changeItem(
+            0,
+            false
+        );
+    }
+
+
+    override function update(
+        elapsed:Float
+    ):Void
+    {
+        super.update(
+            elapsed
+        );
+
+
+       
+        if (controls.BACK_P)
+        {
+            selectItem(
+                1
+            );
+
+            return;
+        }
+
+
+        if (controls.UI_LEFT_P)
+        {
+            changeItem(
+                -1
+            );
+        }
+
+
+        if (controls.UI_RIGHT_P)
+        {
+            changeItem(
+                1
+            );
+        }
+
+
+        if (controls.ACCEPT_P)
+        {
+            selectItem(
+                curSelected
+            );
+        }
+    }
+
+
+   
+
+    function changeItem(
+        change:Int = 0,
+        playSound:Bool = true
+    ):Void
+    {
+        if (playSound)
+        {
+            FlxG.sound.play(
+                Paths.sound(
+                    'scrollMenu'
+                )
+            );
+        }
+
+
+        curSelected +=
+            change;
+
+
+        if (
+            curSelected >=
+            selectGrp.length
+        )
+        {
+            curSelected =
+                0;
+        }
+
+
+        if (curSelected < 0)
+        {
+            curSelected =
+                selectGrp.length - 1;
+        }
+
+
+        selectGrp.forEach(
+            function(txt:FlxText)
+            {
+                if (
+                    txt.ID ==
+                    curSelected
+                )
+                {
+                    txt.setBorderStyle(
+                        FlxTextBorderStyle.OUTLINE,
+                        0xFF37D3D5,
+                        3
+                    );
+                }
+                else
+                {
+                    txt.setBorderStyle(
+                        FlxTextBorderStyle.OUTLINE,
+                        0xFF1A5057,
+                        3
+                    );
+                }
+            }
+        );
+    }
+
+
+   
+
+    function selectItem(
+        selection:Int = 1
+    ):Void
+    {
+       
+        if (selection == 0)
+        {
+            if (FlxG.sound.music != null)
+                FlxG.sound.music.stop();
+            FlxG.switchState(ScriptedMusicBeatState.init('switcheroo.states.EnterpriseDesktopState'));
+        }
+
+       
+        else
+        {
+            FlxG.sound.play(
+                Paths.sound(
+                    'cancelMenu'
+                )
+            );
+
+
+            close();
+        }
+    }
+}

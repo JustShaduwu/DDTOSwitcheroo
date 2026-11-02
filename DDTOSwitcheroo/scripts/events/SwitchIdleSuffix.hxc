@@ -1,0 +1,53 @@
+package skyredux.events;
+
+import funkin.play.PlayState;
+import funkin.play.event.SongEvent;
+import funkin.data.event.SongEventSchema;
+import funkin.data.event.SongEventFieldType;
+
+class SwitchIdleSuffix extends SongEvent
+{
+    function new()
+    {
+        super('SwitchIdleSuffix');
+    }
+
+    public override function handleEvent(data)
+    {
+        if (PlayState.instance == null || PlayState.instance.currentStage == null) return;
+
+        var target:Int = data.getInt('target');
+        var suffix:String = data.getString('suffix');
+
+        switch (target)
+        {
+            case 0: PlayState.instance.currentStage.getBoyfriend().idleSuffix = suffix;
+            case 1: PlayState.instance.currentStage.getDad().idleSuffix = suffix;
+            case 2: PlayState.instance.currentStage.getGirlfriend().idleSuffix = suffix;
+        }
+    }
+
+    public override function getTitle()
+    {
+        return 'Switch Idle Suffix';
+    }
+
+    public override function getEventSchema()
+    {
+        return ([
+            {
+                name: "target",
+                title: "Target",
+                defaultValue: 0,
+                type: 'enum',
+                keys: ["Boyfriend" => 0, "Sky" => 1, "Girlfriend" => 2]
+            },
+            {
+                name: "suffix",
+                title: "Suffix",
+                defaultValue: "",
+                type: 'string'
+            }
+        ]);
+    }
+}

@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<TextureAtlas imagePath="DuetSwap.png">
+	<SubTexture name="Idle0000" x="0" y="0" width="112" height="127" frameX="-13" frameY="-17" frameWidth="128" frameHeight="144" />
+	<SubTexture name="Idle0001" x="0" y="0" width="112" height="127" frameX="-13" frameY="-17" frameWidth="128" frameHeight="144" />
+	<SubTexture name="Idle0002" x="112" y="0" width="112" height="127" frameX="-13" frameY="-17" frameWidth="128" frameHeight="144" />
+	<SubTexture name="Idle0003" x="112" y="0" width="112" height="127" frameX="-13" frameY="-17" frameWidth="128" frameHeight="144" />
+	<SubTexture name="Idle0004" x="224" y="0" width="112" height="127" frameX="-13" frameY="-17" frameWidth="128" frameHeight="144" />
+	<SubTexture name="Idle0005" x="224" y="0" width="112" height="127" frameX="-13" frameY="-17" frameWidth="128" frameHeight="144" />
+	<SubTexture name="Idle0006" x="336" y="0" width="112" height="127" frameX="-13" frameY="-17" frameWidth="128" frameHeight="144" />
+	<SubTexture name="Idle0007" x="336" y="0" width="112" height="127" frameX="-13" frameY="-17" frameWidth="128" frameHeight="144" />
+	<SubTexture name="Idle0008" x="448" y="0" width="112" height="127" frameX="-13" frameY="-17" frameWidth="128" frameHeight="144" />
+	<SubTexture name="Idle0009" x="448" y="0" width="112" height="127" frameX="-13" frameY="-17" frameWidth="128" frameHeight="144" />
+	<SubTexture name="Man Down0000" x="560" y="0" width="112" height="127" frameX="-13" frameY="-17" frameWidth="128" frameHeight="144" />
+	<SubTexture name="Man Down0001" x="560" y="0" width="112" height="127" frameX="-13" frameY="-17" frameWidth="128" frameHeight="144" />
+	<SubTexture name="Man Down0002" x="0" y="127" width="112" height="127" frameX="-13" frameY="-17" frameWidth="128" frameHeight="144" />
+	<SubTexture name="Man Down0003" x="0" y="127" width="112" height="127" frameX="-13" frameY="-17" frameWidth="128" frameHeight="144" />
+	<SubTexture name="Man Down0004" x="112" y="127" width="112" height="127" frameX="-13" frameY="-17" frameWidth="128" frameHeight="144" />
+	<SubTexture name="Man Down0005" x="112" y="127" width="112" height="127" frameX="-13" frameY="-17" frameWidth="128" frameHeight="144" />
+	<SubTexture name="Man Down0006" x="224" y="127" width="112" height="127" frameX="-13" frameY="-17" frameWidth="128" frameHeight="144" />
+	<SubTexture name="Man Down0007" x="224" y="127" width="112" height="127" frameX="-13" frameY="-17" frameWidth="128" frameHeight="144" />
+	<SubTexture name="Man Left0000" x="336" y="127" width="112" height="127" frameX="-13" frameY="-17" frameWidth="128" frameHeight="144" />
+	<SubTexture name="Man Left0001" x="336" y="127" width="112" height="127" frameX="-13" frameY="-17" frameWidth="128" frameHeight="144" />
+	<SubTexture name="Man Left0002" x="448" y="127" width="112" height="127" frameX="-13" frameY="-17" frameWidth="128" frameHeight="144" />
+	<SubTexture name="Man Left0003" x="448" y="127" width="112" height="127" frameX="-13" frameY="-17" frameWidth="128" frameHeight="144" />
+	<SubTexture name="Man Left0004" x="560" y="127" width="112" height="127" frameX="-13" frameY="-17" frameWidth="128" frameHeight="144" />
+	<SubTexture name="Man Left0005" x="560" y="127" width="112" height="127" frameX="-13" frameY="-17" frameWidth="128" frameHeight="144" />
+	<SubTexture name="Man Left0006" x="0" y="254" width="112" height="127" frameX="-13" frameY="-17" frameWidth="128" frameHeight="144" />
+	<SubTexture name="Man Left0007" x="0" y="254" width="112" height="127" frameX="-13" frameY="-17" frameWidth="128" frameHeight="144" />
+	<SubTexture name="Man Up0000" x="112" y="254" width="112" height="127" frameX="-13" frameY="-17" frameWidth="128" frameHeight="144" />
+	<SubTexture name="Man Up0001" x="112" y="254" width="112" height="127" frameX="-13" frameY="-17" frameWidth="128" frameHeight="144" />
+	<SubTexture name="Man Up0002" x="224" y="254" width="112" height="127" frameX="-13" frameY="-17" frameWidth="128" frameHeight="144" />
+	<SubTexture name="Man Up0003" x="224" y="254" width="112" height="127" frameX="-13" frameY="-17" frameWidth="128" frameHeight="144" />
+	<SubTexture name="Man Up0004" x="336" y="254" width="112" height="127" frameX="-13" frameY="-17" frameWidth="128" frameHeight="144" />
+	<SubTexture name="Man Up0005" x="336" y="254" width="112" height="127" frameX="-13" frameY="-17" frameWidth="128" frameHeight="144" />
+	<SubTexture name="Man Up0006" x="448" y="254" width="112" height="127" frameX="-13" frameY="-17" frameWidth="128" frameHeight="144" />
+	<SubTexture name="Man Up0007" x="448" y="254" width="112" height="127" frameX="-13" frameY="-17" frameWidth="128" frameHeight="144" />
+	<SubTexture name="Man Right0000" x="560" y="254" width="112" height="127" frameX="-13" frameY="-17" frameWidth="128" frameHeight="144" />
+	<SubTexture name="Man Right0001" x="560" y="254" width="112" height="127" frameX="-13" frameY="-17" frameWidth="128" frameHeight="144" />
+	<SubTexture name="Man Right0002" x="0" y="381" width="112" height="127" frameX="-13" frameY="-17" frameWidth="128" frameHeight="144" />
+	<SubTexture name="Man Right0003" x="0" y="381" width="112" height="127" frameX="-13" frameY="-17" frameWidth="128" frameHeight="144" />
+	<SubTexture name="Man Right0004" x="112" y="381" width="112" height="127" frameX="-13" frameY="-17" frameWidth="128" frameHeight="144" />
+	<SubTexture name="Man Right0005" x="112" y="381" width="112" height="127" frameX="-13" frameY="-17" frameWidth="128" frameHeight="144" />
+	<SubTexture name="Man Right0006" x="224" y="381" width="112" height="127" frameX="-13" frameY="-17" frameWidth="128" frameHeight="144" />
+	<SubTexture name="Man Right0007" x="224" y="381" width="112" height="127" frameX="-13" frameY="-17" frameWidth="128" frameHeight="144" />
+	<SubTexture name="Sei Right0000" x="336" y="381" width="112" height="127" frameX="-13" frameY="-17" frameWidth="128" frameHeight="144" />
+	<SubTexture name="Sei Right0001" x="336" y="381" width="112" height="127" frameX="-13" frameY="-17" frameWidth="128" frameHeight="144" />
+	<SubTexture name="Sei Right0002" x="448" y="381" width="112" height="127" frameX="-13" frameY="-17" frameWidth="128" frameHeight="144" />
+	<SubTexture name="Sei Right0003" x="448" y="381" width="112" height="127" frameX="-13" frameY="-17" frameWidth="128" frameHeight="144" />
+	<SubTexture name="Sei Up0000" x="560" y="381" width="112" height="127" frameX="-13" frameY="-17" frameWidth="128" frameHeight="144" />
+	<SubTexture name="Sei Up0001" x="560" y="381" width="112" height="127" frameX="-13" frameY="-17" frameWidth="128" frameHeight="144" />
+	<SubTexture name="Sei Up0002" x="0" y="508" width="112" height="127" frameX="-13" frameY="-17" frameWidth="128" frameHeight="144" />
+	<SubTexture name="Sei Up0003" x="0" y="508" width="112" height="127" frameX="-13" frameY="-17" frameWidth="128" frameHeight="144" />
+	<SubTexture name="Sei Down0000" x="112" y="508" width="112" height="127" frameX="-13" frameY="-17" frameWidth="128" frameHeight="144" />
+	<SubTexture name="Sei Down0001" x="112" y="508" width="112" height="127" frameX="-13" frameY="-17" frameWidth="128" frameHeight="144" />
+	<SubTexture name="Sei Down0002" x="224" y="508" width="112" height="127" frameX="-13" frameY="-17" frameWidth="128" frameHeight="144" />
+	<SubTexture name="Sei Down0003" x="224" y="508" width="112" height="127" frameX="-13" frameY="-17" frameWidth="128" frameHeight="144" />
+	<SubTexture name="Sei Left0000" x="336" y="508" width="112" height="127" frameX="-13" frameY="-17" frameWidth="128" frameHeight="144" />
+	<SubTexture name="Sei Left0001" x="336" y="508" width="112" height="127" frameX="-13" frameY="-17" frameWidth="128" frameHeight="144" />
+	<SubTexture name="Sei Left0002" x="448" y="508" width="112" height="127" frameX="-13" frameY="-17" frameWidth="128" frameHeight="144" />
+	<SubTexture name="Sei Left0003" x="448" y="508" width="112" height="127" frameX="-13" frameY="-17" frameWidth="128" frameHeight="144" />
+	<SubTexture name="IntroIdle0000" x="560" y="508" width="112" height="127" frameX="-13" frameY="-17" frameWidth="128" frameHeight="144" />
+	<SubTexture name="IntroIdle0001" x="560" y="508" width="112" height="127" frameX="-13" frameY="-17" frameWidth="128" frameHeight="144" />
+	<SubTexture name="Intro0000" x="560" y="508" width="112" height="127" frameX="-13" frameY="-17" frameWidth="128" frameHeight="144" />
+	<SubTexture name="Intro0001" x="560" y="508" width="112" height="127" frameX="-13" frameY="-17" frameWidth="128" frameHeight="144" />
+	<SubTexture name="Intro0002" x="0" y="635" width="112" height="127" frameX="-13" frameY="-17" frameWidth="128" frameHeight="144" />
+	<SubTexture name="Intro0003" x="0" y="635" width="112" height="127" frameX="-13" frameY="-17" frameWidth="128" frameHeight="144" />
+	<SubTexture name="Intro0004" x="112" y="635" width="112" height="127" frameX="-13" frameY="-17" frameWidth="128" frameHeight="144" />
+	<SubTexture name="Intro0005" x="112" y="635" width="112" height="127" frameX="-13" frameY="-17" frameWidth="128" frameHeight="144" />
+</TextureAtlas>

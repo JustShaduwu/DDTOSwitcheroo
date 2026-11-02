@@ -1,0 +1,15 @@
+{
+  "title": "DDTO: Switcheroo!",
+  "id": "ddts",
+  "description": "Always Will Be Piece By Piece!",
+  "contributors": [
+    {
+      "name": "Shaduwu",
+      "role": "Shaduwer"
+    }
+  ],
+  "homepage": "https://gamebanana.com/mods/6168955",
+  "api_version": "0.8.0",
+  "mod_version": "1.7.0",
+  "license": "Apache-2.0"
+}

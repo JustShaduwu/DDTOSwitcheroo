@@ -1,0 +1,447 @@
+import funkin.modding.module.Module;
+
+import flixel.addons.display.FlxRuntimeShader;
+import flixel.util.FlxColor;
+
+import funkin.graphics.FunkinSprite;
+
+import lime.utils.Assets;
+
+typedef DropShaduwuData =
+{
+    var shader:FlxRuntimeShader;
+    var target:FunkinSprite;
+}
+
+
+class DropShaduwuShader extends Module
+{
+    var instances:Array<DropShaduwuData> = [];
+
+
+    function new()
+    {
+        super(
+            'DropShaduwuShader',
+            0
+        );
+    }
+
+    function createShader():FlxRuntimeShader
+    {
+        var shader =
+            new FlxRuntimeShader(
+                Assets.getText(
+                    Paths.frag(
+                        'DropShaduwuShader'
+                    )
+                )
+            );
+
+        shader.data.ang.value =
+            [0.0];
+
+        shader.data.dist.value =
+            [15.0];
+
+        shader.data.str.value =
+            [1.0];
+
+        shader.data.thr.value =
+            [0.1];
+
+        shader.data.dropColor.value =
+            [
+                1.0,
+                1.0,
+                1.0
+            ];
+
+        shader.data.hue.value =
+            [0.0];
+
+        shader.data.saturation.value =
+            [0.0];
+
+        shader.data.brightness.value =
+            [0.0];
+
+        shader.data.contrast.value =
+            [0.0];
+
+        shader.data.AA_STAGES.value =
+            [2.0];
+
+        shader.data.angOffset.value =
+            [0.0];
+
+        shader.data.uFrameBounds.value =
+            [
+                0.0,
+                0.0,
+                1.0,
+                1.0
+            ];
+
+        return shader;
+    }
+
+    function attach(
+        target:FunkinSprite,
+        brightness:Float = 0,
+        hue:Float = 0,
+        contrast:Float = 0,
+        saturation:Float = 0,
+        color:Int = 0xFFFFFFFF,
+        angle:Float = 0,
+        distance:Float = 15,
+        threshold:Float = 0.1,
+        strength:Float = 1,
+        antialiasAmt:Float = 2
+    ):FlxRuntimeShader
+    {
+        if (target == null)
+        {
+            return null;
+        }
+
+        var shader =
+            createShader();
+
+        if (
+            target.isAnimate &&
+            !target.useRenderTexture
+        )
+        {
+            target.useRenderTexture = true;
+        }
+
+        setAdjustColor(
+            shader,
+            brightness,
+            hue,
+            contrast,
+            saturation
+        );
+
+        setColor(
+            shader,
+            color
+        );
+
+        setAngle(
+            shader,
+            angle
+        );
+
+        setDistance(
+            shader,
+            distance
+        );
+
+        setThreshold(
+            shader,
+            threshold
+        );
+
+        setStrength(
+            shader,
+            strength
+        );
+
+        setAntialiasAmount(
+            shader,
+            antialiasAmt
+        );
+
+
+        updateFrameInfo(
+            shader,
+            target
+        );
+
+        target.shader =
+            shader;
+
+        instances.push(
+        {
+            shader: shader,
+            target: target
+        });
+
+        return shader;
+    }
+
+    function setAdjustColor(
+        shader:FlxRuntimeShader,
+        brightness:Float,
+        hue:Float,
+        contrast:Float,
+        saturation:Float
+    ):Void
+    {
+        if (shader == null)
+            return;
+
+        shader.data.brightness.value =
+            [brightness];
+
+        shader.data.hue.value =
+            [hue];
+
+        shader.data.contrast.value =
+            [contrast];
+
+        shader.data.saturation.value =
+            [saturation];
+    }
+
+
+    function setColor(
+        shader:FlxRuntimeShader,
+        color:Int
+    ):Void
+    {
+        if (shader == null)
+            return;
+
+        var red:Float =
+            ((color >> 16) & 0xFF) /
+            255.0;
+
+        var green:Float =
+            ((color >> 8) & 0xFF) /
+            255.0;
+
+        var blue:Float =
+            (color & 0xFF) /
+            255.0;
+
+        shader.data.dropColor.value =
+        [
+            red,
+            green,
+            blue
+        ];
+    }
+
+    function setAngle(
+        shader:FlxRuntimeShader,
+        value:Float
+    ):Void
+    {
+        if (shader == null)
+            return;
+
+        shader.data.ang.value =
+        [
+            value *
+            Math.PI /
+            180
+        ];
+    }
+
+    function setDistance(
+        shader:FlxRuntimeShader,
+        value:Float
+    ):Void
+    {
+        if (shader == null)
+            return;
+
+        shader.data.dist.value =
+            [value];
+    }
+
+
+    function setThreshold(
+        shader:FlxRuntimeShader,
+        value:Float
+    ):Void
+    {
+        if (shader == null)
+            return;
+
+        shader.data.thr.value =
+            [value];
+    }
+
+    function setStrength(
+        shader:FlxRuntimeShader,
+        value:Float
+    ):Void
+    {
+        if (shader == null)
+            return;
+
+        shader.data.str.value =
+            [value];
+    }
+
+    function setAntialiasAmount(
+        shader:FlxRuntimeShader,
+        value:Float
+    ):Void
+    {
+        if (shader == null)
+            return;
+
+        shader.data.AA_STAGES.value =
+            [value];
+    }
+
+
+    function updateFrameInfo(
+        shader:FlxRuntimeShader,
+        target:FunkinSprite
+    ):Void
+    {
+        if (
+            shader == null ||
+            target == null ||
+            target.frame == null
+        )
+        {
+            return;
+        }
+
+        var frame =
+            target.frame;
+
+        shader.data.uFrameBounds.value =
+        [
+            frame.uv.left,
+            frame.uv.top,
+            frame.uv.right,
+            frame.uv.bottom
+        ];
+
+        shader.data.angOffset.value =
+        [
+            frame.angle *
+            Math.PI /
+            180
+        ];
+    }
+
+    function detach(
+        target:FunkinSprite
+    ):Void
+    {
+        if (target == null)
+            return;
+
+        for (i in 0...instances.length)
+        {
+            var index =
+                instances.length -
+                1 -
+                i;
+
+            var data =
+                instances[index];
+
+            if (
+                data != null &&
+                data.target == target
+            )
+            {
+                if (
+                    target.shader ==
+                    data.shader
+                )
+                {
+                    target.shader =
+                        null;
+                }
+
+                instances.splice(
+                    index,
+                    1
+                );
+            }
+        }
+    }
+
+    function clearShaders():Void
+    {
+        for (data in instances)
+        {
+            if (
+                data == null ||
+                data.target == null
+            )
+            {
+                continue;
+            }
+
+            if (
+                data.target.shader ==
+                data.shader
+            )
+            {
+                data.target.shader =
+                    null;
+            }
+        }
+
+        instances.resize(0);
+    }
+
+
+    override function onUpdate(event)
+    {
+        super.onUpdate(event);
+
+        var i:Int =
+            instances.length - 1;
+
+        while (i >= 0)
+        {
+            var data =
+                instances[i];
+
+            if (
+                data == null ||
+                data.shader == null ||
+                data.target == null ||
+                !data.target.exists
+            )
+            {
+                instances.splice(
+                    i,
+                    1
+                );
+
+                i--;
+                continue;
+            }
+
+            if (data.target.frame != null)
+            {
+                updateFrameInfo(
+                    data.shader,
+                    data.target
+                );
+            }
+
+            i--;
+        }
+    }
+
+
+    override function onStateChangeBegin(event)
+    {
+        super.onStateChangeBegin(event);
+
+        clearShaders();
+    }
+
+
+    override function onDestroy(event)
+    {
+        super.onDestroy(event);
+
+        instances.resize(0);
+    }
+}

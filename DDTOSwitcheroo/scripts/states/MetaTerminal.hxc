@@ -1,0 +1,240 @@
+package switcheroo.states;
+
+import flixel.FlxG;
+import flixel.FlxCamera;
+import openfl.filters.ShaderFilter;
+import flixel.FlxSprite;
+import flixel.sound.FlxSound;
+import flixel.text.FlxText;
+import flixel.text.FlxTextBorderStyle;
+import funkin.Paths;
+import funkin.ui.MusicBeatState;
+import funkin.ui.ScriptedMusicBeatState;
+import lime.utils.Assets;
+import StringTools;
+import flixel.addons.display.FlxRuntimeShader;
+import flixel.util.FlxAxes;
+import JukeboxPlayer;
+import flixel.addons.transition.FlxTransitionableState;
+
+
+class MetaTerminal extends MusicBeatState
+{
+    var lines:Array<String> = [];
+    var suppliedLines:Array<String>;
+    var onFinished:Void->Void;
+    var foreground:FlxText;
+    var terminalCamera:FlxCamera;
+    var overlayCamera:FlxCamera;
+    var cursor:FlxSprite;
+    var staticSound:FlxSound;
+    var textTop:Float = 70;
+    var output:String = '';
+    var lineIndex:Int = 0;
+    var characterIndex:Int = 0;
+    var waitTime:Float = 0.4;
+    var characterDelay:Float = 0.30;
+    var blinkTime:Float = 0;
+    var completed:Bool = false;
+    var completionTime:Float = 0;
+    var completionDelay:Float = 2;
+    var leaving:Bool = false;
+    var previousMouse:Bool;
+    var uiScale:Float;
+
+    
+    var minimumCharacterDelay:Float = 0.10;
+    var maximumCharacterDelay:Float = 0.28;
+    var minimumLinePause:Float = 0.08;
+    var maximumLinePause:Float = 0.65;
+
+    public function new(messages:Array<String> = null, finished:Void->Void = null)
+    {
+        super();
+        suppliedLines = messages;
+        onFinished = finished;
+    }
+
+    override function create():Void
+    {
+        FlxTransitionableState.skipNextTransOut = true;
+        super.create();
+        JukeboxPlayer.stop();
+        if (FlxG.sound.music != null) FlxG.sound.music.stop();
+        for (sound in FlxG.sound.list.members)
+            if (sound != null) sound.stop();
+        if (Assets.exists(Paths.sound('meta/static')))
+            staticSound = FlxG.sound.play(Paths.sound('meta/static'), 1.0, true);
+        else trace('[MetaTerminal] Missing sound: meta/static');
+        previousMouse = FlxG.mouse.visible;
+        FlxG.mouse.visible = false;
+        FlxG.camera.follow(null);
+        FlxG.camera.scroll.set(0, 0);
+        FlxG.camera.zoom = 1;
+        add(new FlxSprite().makeGraphic(FlxG.width, FlxG.height, 0xFF000000));
+        uiScale = Math.min(FlxG.width / 1280, FlxG.height / 720);
+        terminalCamera = new FlxCamera();
+        terminalCamera.bgColor = 0x00000000;
+        FlxG.cameras.add(terminalCamera, false);
+        foreground = terminalText();
+        foreground.cameras = [terminalCamera];
+        cursor = new FlxSprite().makeGraphic(Std.int(Math.max(1, 11 * uiScale)), Std.int(Math.max(1, 21 * uiScale)), 0xFFCCCCCC);
+        cursor.cameras = [terminalCamera];
+        add(cursor);
+        if (suppliedLines != null) lines = suppliedLines.copy();
+        else
+        {
+            try
+            {
+                var raw = Assets.getText(Paths.file('data/terminal/boot.txt'));
+                lines = StringTools.replace(StringTools.replace(raw, '\r\n', '\n'), '\r', '\n').split('\n');
+                if (lines.length > 0 && lines[lines.length - 1] == '') lines.pop();
+            }
+            catch (error:Dynamic) { lines = ['Initializing...', 'Ready.']; }
+        }
+        
+        foreground.text = lines.join('\n');
+        foreground.fieldWidth = Math.min(FlxG.width - 48 * uiScale, Math.max(240 * uiScale, foreground.textField.textWidth + 24 * uiScale));
+        foreground.screenCenter(FlxAxes.X);
+        foreground.text = '';
+        try
+        {
+            var bloom = new FlxRuntimeShader(Assets.getText(Paths.frag('TerminalBloom')));
+            bloom.data.radius.value = [3.5 * uiScale];
+            bloom.data.strength.value = [1.5];
+            terminalCamera.filters = [new ShaderFilter(bloom)];
+            terminalCamera.filtersEnabled = true;
+        }
+        catch (error:Dynamic) { trace('[MetaTerminal] Bloom unavailable: ' + error); }
+        characterDelay = FlxG.random.float(minimumCharacterDelay, maximumCharacterDelay);
+        refreshOutput();
+        
+        overlayCamera = new FlxCamera();
+        overlayCamera.bgColor = 0x00000000;
+        FlxG.cameras.add(overlayCamera, false);
+        var darkOverlay = new FlxSprite().makeGraphic(FlxG.width, FlxG.height, 0xFF000000);
+        darkOverlay.alpha = 0.25;
+        darkOverlay.cameras = [overlayCamera];
+        add(darkOverlay);
+    }
+
+    function terminalText():FlxText
+    {
+        var result = new FlxText(12 * uiScale, textTop * uiScale, FlxG.width - 24 * uiScale, '');
+        result.setFormat(Paths.font('Perfect DOS VGA 437 Win.ttf'), Std.int(Math.max(12, 24 * uiScale)), 0xFFB9B9B9, 'left', FlxTextBorderStyle.NONE);
+        result.bold = false;
+        result.borderSize = 0;
+        result.antialiasing = true;
+        add(result);
+        return result;
+    }
+
+    function refreshOutput():Void
+    {
+        foreground.text = output;
+        
+        while (foreground.height > FlxG.height - (textTop + 40) * uiScale && output.indexOf('\n') >= 0)
+        {
+            output = output.substr(output.indexOf('\n') + 1);
+            foreground.text = output;
+        }
+        cursor.setPosition(foreground.x, foreground.y + foreground.height + 2 * uiScale);
+    }
+
+    override function update(elapsed:Float):Void
+    {
+        super.update(elapsed);
+        if (leaving) return;
+        blinkTime += elapsed;
+        cursor.visible = blinkTime % 0.8 < 0.5;
+        if (completed)
+        {
+            completionTime = completionTime + elapsed;
+            if (completionTime >= completionDelay) finish();
+            return;
+        }
+        waitTime -= elapsed;
+        var changed = false;
+        var budget:Int = 64;
+        while (waitTime <= 0 && budget > 0 && !completed)
+        {
+            budget = budget - 1;
+            if (lineIndex >= lines.length)
+            {
+                completed = true;
+                completionTime = 0;
+                break;
+            }
+            var line = lines[lineIndex];
+            if (characterIndex < line.length)
+            {
+                var character = line.charAt(characterIndex);
+                if (character == '.')
+                {
+                    output = output + '.';
+                    characterIndex = characterIndex + 1;
+                    waitTime = waitTime + characterDelay * FlxG.random.float(0.65, 1.4);
+                }
+                else
+                {
+                    
+                    var nextDot = line.indexOf('.', characterIndex);
+                    var end = nextDot < 0 ? line.length : nextDot;
+                    output = output + line.substring(characterIndex, end);
+                    characterIndex = end;
+                }
+                if (lineIndex == lines.length - 1 && characterIndex >= line.length)
+                {
+                    completed = true;
+                    completionTime = 0;
+                }
+            }
+            else
+            {
+                output = output + '\n';
+                lineIndex = lineIndex + 1;
+                characterIndex = 0;
+                characterDelay = FlxG.random.float(minimumCharacterDelay, maximumCharacterDelay);
+                waitTime = waitTime + FlxG.random.float(minimumLinePause, maximumLinePause);
+                if (lineIndex >= lines.length)
+                {
+                    completed = true;
+                    completionTime = 0;
+                }
+            }
+            changed = true;
+        }
+        if (changed) refreshOutput();
+    }
+
+    function finish():Void
+    {
+        if (leaving) return;
+        leaving = true;
+        stopStatic();
+        FlxTransitionableState.skipNextTransIn = true;
+        FlxTransitionableState.skipNextTransOut = true;
+        if (onFinished != null) onFinished();
+        else FlxG.switchState(ScriptedMusicBeatState.init('switcheroo.states.EnterpriseDesktopState'));
+    }
+
+    function stopStatic():Void
+    {
+        if (staticSound == null) return;
+        staticSound.stop();
+        FlxG.sound.list.remove(staticSound, true);
+        staticSound.destroy();
+        staticSound = null;
+    }
+
+    override function destroy():Void
+    {
+        stopStatic();
+        FlxG.mouse.visible = previousMouse;
+        super.destroy();
+        if (overlayCamera != null && FlxG.cameras.list.indexOf(overlayCamera) >= 0)
+            FlxG.cameras.remove(overlayCamera, true);
+        if (terminalCamera != null && FlxG.cameras.list.indexOf(terminalCamera) >= 0)
+            FlxG.cameras.remove(terminalCamera, true);
+    }
+}

@@ -1,0 +1,29 @@
+{
+  "version": "1.0.0",
+  "name": "Seira",
+  "assetPath": "gameplay/dialogue/speakers/seira/seira",
+  "flipX": false,
+  "isPixel": true,
+  "scale": 5.4,
+  "box": "seira",
+  "offsets": [0, 0],
+  "textSound": "dialogue/pixelText",
+  "animations": [
+    {
+      "name": "neutral",
+      "prefix": "seira_neutral"
+    },
+    {
+      "name": "angry",
+      "prefix": "seira_angry"
+    },
+    {
+      "name": "whodis",
+      "prefix": "seira_whodis"
+    },
+    {
+      "name": "hmm",
+      "prefix": "seira_hmm"
+    }
+  ]
+}

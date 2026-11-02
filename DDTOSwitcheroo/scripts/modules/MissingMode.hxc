@@ -1,0 +1,418 @@
+import funkin.modding.module.Module;
+import funkin.play.PlayState;
+import funkin.play.PlayStatePlaylist;
+import funkin.save.Save;
+import flixel.FlxG;
+import flixel.addons.transition.FlxTransitionableState;
+import funkin.ui.ScriptedMusicBeatState;
+import JukeboxPlayer;
+import haxe.Json;
+import StringTools;
+import funkin.play.character.CharacterDataParser;
+import funkin.play.character.CharacterType;
+
+class MissingMode extends Module
+{
+    public var missingmode:Bool = false;
+    var trackedPlay:Dynamic = null;
+    var pendingReset:Bool = false;
+    var partnerReplacement:Dynamic = null;
+    var replacedDuetId:String = '';
+    var partnerVocals:Bool = false;
+    var azaleaVocals:Bool = false;
+    var removedNoteTimes:Array<Float> = [];
+    var lastPartnerHit:Float = -1;
+    var azaleaOffsetX:Float = -200;
+    var azaleaOffsetY:Float = -180;
+    var hiddenDad:Dynamic = null;
+    var hiddenIcon:Dynamic = null;
+    var dadWasVisible:Bool = true;
+    var iconWasVisible:Bool = true;
+    var mutedVocals:Dynamic = null;
+    var previousVolume:Float = 1;
+
+    public function new() { super('MissingMode', 1000); }
+
+    public function refreshMissingMode():Bool
+    {
+        missingmode = false;
+        var paths = Save.instance.modOptions.get('switcherooHiddenFiles');
+        if (paths == null) return false;
+        for (path in paths)
+        {
+            try
+            {
+                var segments = Json.parse(Std.string(path));
+                if (Std.isOfType(segments, Array) && segments.length > 0
+                    && Std.string(segments[segments.length - 1]).toLowerCase() == 'manuel.chr')
+                {
+                    missingmode = true;
+                    break;
+                }
+            }
+            catch (error:Dynamic) {}
+        }
+        return missingmode;
+    }
+
+    public function isMissingMirror():Bool
+    {
+        return !PlayStatePlaylist.isStoryMode && Save.instance.modOptions.get('mirrorMode') == true;
+    }
+
+    
+    public function isManuelSide(noteData:Dynamic):Bool
+    {
+        return noteData != null && noteData.getMustHitNote() == isMissingMirror();
+    }
+
+    function isPartnerNote(noteData:Dynamic):Bool
+    {
+        if (noteData == null) return false;
+        if (partnerReplacement != null) return noteData.kind == 'mom';
+        return isMissingDualDeath() && noteData.kind == 'azalea';
+    }
+
+    public function syncMissingVocals():Bool
+    {
+        refreshMissingMode();
+        return applyMissing();
+    }
+
+    function isManuel(character:Dynamic):Bool
+    {
+        if (character == null || character.characterId == null) return false;
+        var id = Std.string(character.characterId).toLowerCase();
+        return id == 'manuel' || StringTools.startsWith(id, 'manuel-')
+            || StringTools.startsWith(id, 'manuel_') || id == 'manu-pixel';
+    }
+
+    function restoreHidden():Void
+    {
+        if (hiddenDad != null && hiddenDad.exists) hiddenDad.visible = dadWasVisible;
+        if (hiddenIcon != null && hiddenIcon.exists) hiddenIcon.visible = iconWasVisible;
+        if (mutedVocals != null) mutedVocals.opponentVolume = previousVolume;
+        hiddenDad = null;
+        hiddenIcon = null;
+        mutedVocals = null;
+    }
+
+    function replaceOpponent(id:String):Dynamic
+    {
+        var play = PlayState.instance;
+        var stage = play.currentStage;
+        var old = stage.getOpponent();
+        var replacement = CharacterDataParser.fetchCharacter(id);
+        if (replacement == null) return null;
+        var z = old == null ? 0 : old.zIndex;
+        if (old != null) old.destroy();
+        replacement.set_characterType(CharacterType.DAD);
+        stage.addCharacter(replacement, CharacterType.DAD);
+        
+        
+        if (id == 'seira' || id == 'azalea')
+        {
+            var slot = stage._data.characters.dad;
+            if (slot != null && slot.position != null)
+            {
+                replacement.setPosition(slot.position[0] - replacement.characterOrigin.x,
+                    slot.position[1] - replacement.characterOrigin.y);
+                if (id == 'azalea')
+                {
+                    replacement.x += azaleaOffsetX;
+                    replacement.y += azaleaOffsetY;
+                }
+                replacement.originalPosition.set(replacement.x, replacement.y);
+            }
+        }
+        replacement.zIndex = z;
+        replacement.initHealthIcon(true);
+        if (isMissingMirror()) replacement.set_characterType(CharacterType.BF);
+        if (play.iconP2 != null) play.iconP2.visible = true;
+        stage.refresh();
+        return replacement;
+    }
+
+    public function isMissingDualDeath():Bool
+    {
+        var play = PlayState.instance;
+        return missingmode && play != null && play.currentSong != null
+            && play.currentSong.id.toLowerCase() == 'dual-death';
+    }
+
+    function pinAzaleaIcon():Void
+    {
+        var play = PlayState.instance;
+        if (play == null || play.iconP2 == null) return;
+        if (!isMissingDualDeath() && !isMissingAzalea(play.currentStage == null ? null : play.currentStage.getOpponent())) return;
+        if (play.iconP2.characterId != 'azalea') play.iconP2.loadCharacter('azalea');
+        play.iconP2.visible = true;
+    }
+
+    function suppressManuelHoldMisses():Void
+    {
+        var play = PlayState.instance;
+        if (play == null) return;
+        var strumline = isMissingMirror() ? play.playerStrumline : play.opponentStrumline;
+        if (strumline == null) return;
+        if (strumline.holdNotes != null)
+        {
+            for (hold in strumline.holdNotes.members)
+            {
+                if (hold == null || !hold.alive || hold.noteData == null) continue;
+                if (!isPartnerNote(hold.noteData))
+                {
+                    hold.handledMiss = true;
+                    hold.kill();
+                }
+            }
+        }
+        
+        if (strumline.notes != null)
+        {
+            for (note in strumline.notes.members)
+            {
+                if (note == null || !note.alive || isPartnerNote(note.noteData)) continue;
+                if (note.holdNoteSprite != null)
+                {
+                    note.holdNoteSprite.handledMiss = true;
+                    note.holdNoteSprite.kill();
+                }
+                if (note.noteData != null) removedNoteTimes.push(note.noteData.time);
+                note.kill();
+            }
+        }
+    }
+
+    function applyMissing():Bool
+    {
+        var play = PlayState.instance;
+        if (trackedPlay != play)
+        {
+            hiddenDad = null; hiddenIcon = null; mutedVocals = null;
+            trackedPlay = play;
+            partnerReplacement = null; replacedDuetId = ''; partnerVocals = false; azaleaVocals = false;
+            removedNoteTimes = []; lastPartnerHit = -1;
+        }
+        if (play == null || play.currentStage == null) return false;
+        var now = play.conductorInUse.songPosition;
+        for (muteTime in removedNoteTimes.copy())
+        {
+            if (muteTime > now) continue;
+            if (muteTime > lastPartnerHit)
+            {
+                partnerVocals = false;
+                azaleaVocals = false;
+            }
+            removedNoteTimes.remove(muteTime);
+        }
+        var dad = play.currentStage.getOpponent();
+        if (partnerReplacement != null && dad != partnerReplacement)
+        {
+            partnerReplacement = null;
+            replacedDuetId = '';
+            partnerVocals = false;
+            if (play.vocals != null) play.vocals.opponentVolume = 1;
+        }
+        if (!missingmode && partnerReplacement != null)
+        {
+            var originalId = replacedDuetId;
+            partnerReplacement = null;
+            replacedDuetId = '';
+            partnerVocals = false;
+            dad = replaceOpponent(originalId);
+            if (play.vocals != null) play.vocals.opponentVolume = 1;
+        }
+        var id = dad == null ? '' : Std.string(dad.characterId).toLowerCase();
+        if (missingmode && (id == 'duet' || id == 'duetazalea'))
+        {
+            restoreHidden();
+            replacedDuetId = dad.characterId;
+            partnerReplacement = replaceOpponent(id == 'duetazalea' ? 'azalea' : 'seira');
+            partnerVocals = false;
+            dad = play.currentStage.getOpponent();
+        }
+        if (missingmode && partnerReplacement != null && dad == partnerReplacement)
+        {
+            suppressManuelHoldMisses();
+            dad.visible = true;
+            if (play.iconP2 != null) play.iconP2.visible = true;
+            if (play.vocals != null) play.vocals.opponentVolume = partnerVocals ? 1 : 0;
+            return true;
+        }
+        if (!missingmode || !isManuel(dad))
+        {
+            restoreHidden();
+            return false;
+        }
+        if (hiddenDad != dad)
+        {
+            restoreHidden();
+            hiddenDad = dad;
+            dadWasVisible = dad.visible;
+        }
+        dad.visible = false;
+        suppressManuelHoldMisses();
+        if (play.iconP2 != null)
+        {
+            if (hiddenIcon != play.iconP2)
+            {
+                hiddenIcon = play.iconP2;
+                iconWasVisible = hiddenIcon.visible;
+            }
+            hiddenIcon.visible = isMissingDualDeath();
+            if (isMissingDualDeath() && hiddenIcon.characterId != 'azalea')
+                hiddenIcon.loadCharacter('azalea');
+        }
+        if (play.vocals != null)
+        {
+            if (mutedVocals != play.vocals)
+            {
+                mutedVocals = play.vocals;
+                previousVolume = mutedVocals.opponentVolume;
+            }
+            if (isMissingDualDeath()) suppressManuelHoldMisses();
+            mutedVocals.opponentVolume = isMissingDualDeath() && azaleaVocals ? 1 : 0;
+        }
+        return true;
+    }
+
+    override function onUpdate(event):Void
+    {
+        super.onUpdate(event);
+        if (pendingReset)
+        {
+            pendingReset = false;
+            Save.instance.modOptions.set('switcherooHiddenFiles', []);
+            Save.instance.flush();
+            JukeboxPlayer.stop();
+            var play = PlayState.instance;
+            if (play != null && play.vocals != null) play.vocals.stop();
+            if (FlxG.sound.music != null) FlxG.sound.music.stop();
+            missingmode = false;
+            hiddenDad = null; hiddenIcon = null; mutedVocals = null;
+            FlxTransitionableState.skipNextTransIn = true;
+            FlxTransitionableState.skipNextTransOut = true;
+            FlxG.switchState(ScriptedMusicBeatState.init('switcheroo.states.MetaTerminal'));
+            return;
+        }
+        refreshMissingMode();
+        if (PlayState.instance == null)
+        {
+            
+            hiddenDad = null; hiddenIcon = null; mutedVocals = null;
+            return;
+        }
+        applyMissing();
+        pinAzaleaIcon();
+    }
+
+    
+    
+    public function interceptSongEnd(event):Bool
+    {
+        if (!pendingReset && !refreshMissingMode()) return false;
+        if (PlayState.instance == null) return false;
+        event.cancelEvent();
+        pendingReset = true;
+        return true;
+    }
+
+    override function onSongEnd(event):Void
+    {
+        super.onSongEnd(event);
+        interceptSongEnd(event);
+    }
+
+    override function onCountdownStart(event):Void
+    {
+        super.onCountdownStart(event);
+        refreshMissingMode();
+        applyMissing();
+        pinAzaleaIcon();
+    }
+
+    override function onSongRetry(event):Void
+    {
+        super.onSongRetry(event);
+        removedNoteTimes = []; lastPartnerHit = -1;
+        partnerVocals = false;
+        azaleaVocals = false;
+        refreshMissingMode();
+        applyMissing();
+        pinAzaleaIcon();
+    }
+
+    public function isMissingSeira(character:Dynamic):Bool
+    {
+        return missingmode && partnerReplacement != null && character == partnerReplacement
+            && replacedDuetId.toLowerCase() == 'duet';
+    }
+
+    public function isMissingAzalea(character:Dynamic):Bool
+    {
+        return missingmode && partnerReplacement != null && character == partnerReplacement
+            && replacedDuetId.toLowerCase() == 'duetazalea';
+    }
+
+    override function onNoteMiss(event):Void
+    {
+        super.onNoteMiss(event);
+        if (event.note == null || event.note.noteData == null || !isManuelSide(event.note.noteData)) return;
+        refreshMissingMode();
+        if (!applyMissing()) return;
+        if (isMissingMirror() && isPartnerNote(event.note.noteData)) return;
+        
+        event.playAnim = false;
+        event.cancelEvent();
+    }
+
+    override function onNoteHoldDrop(event):Void
+    {
+        super.onNoteHoldDrop(event);
+        if (event.holdNote == null || event.holdNote.noteData == null
+            || !isManuelSide(event.holdNote.noteData)) return;
+        refreshMissingMode();
+        if (!applyMissing()) return;
+        if (isMissingMirror() && isPartnerNote(event.holdNote.noteData)) return;
+        
+        event.cancelEvent();
+    }
+
+    override function onNoteGhostMiss(event):Void
+    {
+        super.onNoteGhostMiss(event);
+        refreshMissingMode();
+        if (!isMissingMirror() || !applyMissing()) return;
+        if (partnerReplacement != null || isMissingDualDeath()) return;
+        event.cancelEvent();
+    }
+
+    override function onNoteHit(event):Void
+    {
+        super.onNoteHit(event);
+        refreshMissingMode();
+        if (!applyMissing() || event.note == null || event.note.noteData == null) return;
+        if (!isManuelSide(event.note.noteData)) return;
+        var play = PlayState.instance;
+        if (isMissingDualDeath() && partnerReplacement == null)
+        {
+            azaleaVocals = event.note.kind == 'azalea';
+            if (play.vocals != null) play.vocals.opponentVolume = azaleaVocals ? 1 : 0;
+            
+            if (azaleaVocals) { lastPartnerHit = event.note.noteData.time; return; }
+        }
+        if (partnerReplacement != null && play.currentStage.getOpponent() == partnerReplacement)
+        {
+            partnerVocals = event.note.kind == 'mom';
+            if (play.vocals != null) play.vocals.opponentVolume = partnerVocals ? 1 : 0;
+            
+            if (partnerVocals) { lastPartnerHit = event.note.noteData.time; return; }
+        }
+        
+        
+        if (event.note.holdNoteSprite != null) event.note.holdNoteSprite.handledMiss = true;
+        event.cancelEvent();
+        if (play.vocals != null) play.vocals.opponentVolume = 0;
+    }
+}

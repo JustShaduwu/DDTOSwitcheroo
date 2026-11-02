@@ -1,0 +1,32 @@
+package switcheroo.states;
+
+import flixel.FlxG;
+import SwitcherooProgress;
+import LanguageManager;
+import switcheroo.substates.EnterprisePopup;
+import funkin.ui.MusicBeatState;
+import switcheroo.substates.SwitcherooGallerySubState;
+
+class SwitcherooGalleryState extends MusicBeatState
+{
+    override function create():Void
+    {
+        super.create();
+        persistentUpdate = false;
+        if (!SwitcherooProgress.hasCompletedPrologue())
+        {
+            openSubState(new EnterprisePopup(
+                LanguageManager.getTranslation('progress_locked_title', 'Locked'),
+                LanguageManager.getTranslation('progress_prologue_required', 'Complete the prologue in Story Mode to unlock this content.'),
+                function(_) { FlxG.switchState(new switcheroo.states.SwitcherooMainMenuState()); }, true
+            ));
+            return;
+        }
+        var gallery = new SwitcherooGallerySubState(0, true);
+        gallery.closeCallback = function()
+        {
+            FlxG.switchState(new switcheroo.states.SwitcherooMainMenuState());
+        };
+        openSubState(gallery);
+    }
+}

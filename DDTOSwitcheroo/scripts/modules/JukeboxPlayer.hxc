@@ -1,0 +1,151 @@
+import SwitcherooProgress;
+import funkin.modding.module.Module;
+import funkin.audio.FunkinSound;
+import funkin.Paths;
+import funkin.save.Save;
+import flixel.FlxG;
+import lime.utils.Assets;
+import haxe.Json;
+
+class JukeboxPlayer extends Module
+{
+    static var jukeboxData:Dynamic = null;
+
+    public static function getState():Dynamic
+    {
+        if (jukeboxData == null)
+        {
+            jukeboxData = {
+                songs: [], tracks: [], playlist: [], playlistOnly: false,
+                songIndex: -1, playing: false, repeatSong: false, revision: 0,
+                lastError: '', initialized: false, advancePending: false,
+                queuePlaylist: false, syncTime: 0.0
+            };
+        }
+        return jukeboxData;
+    }
+
+    public function new()
+    {
+        super('JukeboxPlayer');
+        getState();
+    }
+
+    public static function list(onlyPlaylist:Bool):Array<Int>
+    {
+        var data = getState();
+        var result:Array<Int> = [];
+        if (onlyPlaylist)
+        {
+            for (id in data.playlist)
+                for (i in 0...data.songs.length)
+                    if (SwitcherooProgress.isAvailable(data.songs[i]) && Std.string(data.songs[i].id) == id && result.indexOf(i) < 0) result.push(i);
+        }
+        else for (i in 0...data.songs.length)
+            if (SwitcherooProgress.isAvailable(data.songs[i])) result.push(i);
+        return result;
+    }
+
+    public static function stop():Void
+    {
+        var data = getState();
+        data.advancePending = false;
+        for (track in data.tracks)
+        {
+            track.onComplete = null;
+            track.stop();
+            FlxG.sound.list.remove(track, true);
+            track.destroy();
+        }
+        data.tracks = [];
+        data.playing = false;
+        data.revision++;
+    }
+
+    public static function play(index:Int, fromPlaylist:Bool):Void
+    {
+        var data = getState();
+        if (index < 0 || index >= data.songs.length
+            || !SwitcherooProgress.isAvailable(data.songs[index])) return;
+        stop();
+        data.songIndex = index;
+        data.queuePlaylist = fromPlaylist;
+        data.lastError = '';
+        try
+        {
+            var sources:Array<Dynamic> = data.songs[index].audio;
+            for (source in sources)
+            {
+                var path = Paths.file(Std.string(source.path));
+                if (!Assets.exists(path)) throw 'No existe: ' + source.path;
+                var track = FunkinSound.load(path, source.volume == null ? 1.0 : source.volume, false);
+                if (track == null) throw 'No se pudo cargar: ' + source.path;
+                track.autoDestroy = false;
+                track.persist = true;
+                data.tracks.push(track);
+            }
+            data.tracks[0].onComplete = function() { data.advancePending = true; };
+            for (track in data.tracks) track.play();
+            data.playing = true;
+        }
+        catch (error:Dynamic)
+        {
+            stop();
+            data.lastError = 'No se pudo cargar el audio';
+            trace('[Jukebox] ' + error);
+        }
+        data.revision++;
+    }
+
+    public static function step(direction:Int, fromPlaylist:Bool):Void
+    {
+        var data = getState();
+        var queue = list(fromPlaylist);
+        if (queue.length == 0) { stop(); return; }
+        var pos = queue.indexOf(data.songIndex);
+        if (pos < 0) pos = direction > 0 ? -1 : 0;
+        play(queue[(pos + direction + queue.length) % queue.length], fromPlaylist);
+    }
+
+    override function onUpdate(event):Void
+    {
+        var data = getState();
+        super.onUpdate(event);
+        if (!data.playing || data.tracks.length == 0) return;
+        if (data.advancePending)
+        {
+            data.advancePending = false;
+            if (data.repeatSong) play(data.songIndex, data.queuePlaylist);
+            else step(1, data.queuePlaylist);
+            return;
+        }
+        data.syncTime += FlxG.elapsed;
+        if (data.syncTime < 0.5) return;
+        data.syncTime = 0;
+        var master = data.tracks[0];
+        if (master == null) return;
+        for (i in 1...data.tracks.length)
+            if (data.tracks[i] != null && data.tracks[i].playing && Math.abs(data.tracks[i].time - master.time) > 40) data.tracks[i].time = master.time;
+    }
+    public static function initialize():Void
+    {
+        var data = getState();
+        if (data.initialized) return;
+        data.initialized = true;
+        try
+        {
+            var entries:Array<Dynamic> = Json.parse(Assets.getText(Paths.file('data/jukebox/songs.json')));
+            for (entry in entries)
+                if (entry.id != null && entry.title != null && entry.audio != null && entry.audio.length > 0) data.songs.push(entry);
+        }
+        catch (error:Dynamic) { trace('[Jukebox] ' + error); }
+        var saved = Save.instance.modOptions.get('switcherooJukeboxPlaylist');
+        if (saved != null)
+        {
+            var savedIds:Array<Dynamic> = saved;
+            for (id in savedIds) data.playlist.push(Std.string(id));
+        }
+    }
+
+
+}

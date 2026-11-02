@@ -1,0 +1,57 @@
+{
+  "version": "1.0.0",
+  "name": "Manuel",
+  "assetPath": "gameplay/dialogue/speakers/manuel/ManuelPortraits",
+  "flipX": false,
+  "isPixel": true,
+  "scale": 5.4,
+  "box": "manuel",
+  "textSound": "dialogue/pixelText",
+  "offsets": [30, 90],
+  "animations": [
+    {
+      "name": "worried",
+      "prefix": "ManuelPortraitA"
+    },
+    {
+      "name": "uhoh",
+      "prefix": "ManuelPortraitB"
+    },
+    {
+      "name": "sad",
+      "prefix": "ManuelPortraitC"
+    },
+    {
+      "name": "peace",
+      "prefix": "ManuelPortraitD"
+    },
+    {
+      "name": "happy",
+      "prefix": "ManuelPortraitE"
+    },
+    {
+      "name": "cry",
+      "prefix": "ManuelPortraitF"
+    },
+    {
+      "name": "ugh",
+      "prefix": "ManuelPortraitG"
+    },
+    {
+      "name": "pissed",
+      "prefix": "ManuelPortraitJ"
+    },
+    {
+      "name": "angry",
+      "prefix": "ManuelPortraitK"
+    },
+    {
+      "name": "mad",
+      "prefix": "ManuelPortraitL"
+    },
+    {
+      "name": "neutral",
+      "prefix": "ManuelPortraitM"
+    }
+  ]
+}

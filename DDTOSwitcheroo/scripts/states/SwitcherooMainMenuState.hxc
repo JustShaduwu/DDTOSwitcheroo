@@ -1,0 +1,762 @@
+package switcheroo.states;
+
+import LanguageManager;
+import SwitcherooProgress;
+
+import haxe.Json;
+import lime.utils.Assets;
+import lime.app.Application;
+
+import flixel.FlxG;
+import skyredux.states.SwitcherooTitleState;
+import flixel.FlxSprite;
+import flixel.addons.display.FlxBackdrop;
+import flixel.effects.FlxFlicker;
+import flixel.group.FlxTypedGroup;
+import flixel.math.FlxMath;
+import flixel.text.FlxText;
+import flixel.text.FlxTextBorderStyle;
+import flixel.tweens.FlxEase;
+import flixel.tweens.FlxTween;
+import flixel.util.FlxColor;
+import flixel.util.FlxTimer;
+
+import funkin.audio.FunkinSound;
+import funkin.graphics.FunkinSprite;
+import funkin.modding.PolymodHandler;
+import funkin.ui.MusicBeatState;
+import funkin.ui.ScriptedMusicBeatState;
+import funkin.ui.options.OptionsState;
+import funkin.api.discord.DiscordClient;
+import funkin.util.WindowUtil;
+
+import flixel.addons.display.FlxRuntimeShader;
+import lime.utils.Assets;
+
+using StringTools;
+
+class SwitcherooMainMenuState extends MusicBeatState
+{
+    static var rememberedSelection:Int = 0;
+    static var firstStart:Bool = true;
+    public static var openedOptions:Bool = false;
+
+    var acceptInputs:Bool = true;
+    var selectedSomething:Bool = false;
+
+    var curSelected:Int = 0;
+
+    var options:Array<String> =
+    [
+        'story',
+        'freeplay',
+        'credits',
+        'options',
+        'exit'
+    ];
+
+    var menuItems:FlxTypedGroup<FlxText>;
+
+    var backdrop:FlxBackdrop;
+    var menuCharacter:FunkinSprite;
+    var logo:FunkinSprite;
+    var logoBump:FunkinSprite;
+
+    var discordButton:FunkinSprite;
+    var loveButton:FunkinSprite;
+    var menuBPM:Float = 120;
+var lastMenuBeat:Int = -1;
+
+    override function create():Void
+    {
+        options = [];
+        for (option in ['story', 'freeplay', 'credits', 'options', 'exit'])
+            if (SwitcherooProgress.isMenuUnlocked(option)) options.push(option);
+
+        persistentUpdate = true;
+        persistentDraw = true;
+
+        DiscordClient.setPresence(
+        {
+            state: 'Main Menu',
+            details: 'Doki Doki Takeover\': Switcheroo'
+        });
+
+        createBackdrop();
+        createRandomMenuCharacter();
+        createLogo();
+        createMenuItems();
+        createExtraButtons();
+        createVersionText();
+
+        curSelected = FlxMath.wrap(
+            rememberedSelection,
+            0,
+            options.length - 1
+        );
+
+        changeItem(0, false);
+
+        FlxG.mouse.visible = true;
+
+        super.create();
+    }
+
+
+function createBackdrop():Void
+{
+    backdrop = new FlxBackdrop(
+        Paths.image('scrollingBG')
+    );
+
+    backdrop.velocity.set(-40, -40);
+    backdrop.antialiasing = true;
+
+    var colorMask:FlxRuntimeShader = new FlxRuntimeShader(
+        Assets.getText(
+            Paths.frag('ColorMaskShader')
+        )
+    );
+
+    colorMask.data.color1.value =
+    [
+        0.99215686274,
+        1.0,
+        1.0
+    ];
+
+    colorMask.data.color2.value =
+    [
+        0.49803921568,
+        0.92941176470,
+        0.94117647058
+    ];
+
+    backdrop.shader = colorMask;
+
+    add(backdrop);
+}
+
+    function createRandomMenuCharacter():Void
+    {
+       var characterData:Dynamic = loadMenuCharacterJSON();
+
+        var commonCharacters:Array<String> =
+        [
+            'manuel',
+            'seira',
+            'hex'
+        ];
+
+        var uncommonCharacters:Array<String> =
+        [
+            'manu',
+            'secretchar1',
+            'secretchar2',
+            'secretchar3'
+        ];
+
+        var rareCharacters:Array<String> =
+        [
+            'fumo',
+            'manuel_old'
+        ];
+
+        var random:Float = FlxG.random.float(0, 1);
+        var selectedName:String;
+
+if (random < 0.60)
+{
+    selectedName = commonCharacters[
+        FlxG.random.int(0, commonCharacters.length - 1)
+    ];
+}
+else if (random < 0.98)
+{
+    selectedName = uncommonCharacters[
+        FlxG.random.int(0, uncommonCharacters.length - 1)
+    ];
+}
+else
+{
+    selectedName = rareCharacters[
+        FlxG.random.int(0, rareCharacters.length - 1)
+    ];
+}
+
+        if (characterData != null)
+        {
+            for (character in characterData.characters)
+            {
+                if (character.name != selectedName)
+                    continue;
+
+                menuCharacter = FunkinSprite.createSparrow(
+                    character.spritePos[0],
+                    character.spritePos[1],
+                    character.atlas
+                );
+
+                var frameRate:Int =
+                    character.frames ?? 24;
+
+                var looped:Bool =
+                    character.looped ?? false;
+
+                menuCharacter.animation.addByPrefix(
+                    'play',
+                    character.prefix,
+                    frameRate,
+                    looped
+                );
+
+                if (character.scale != null &&
+                    character.scale.length >= 2)
+                {
+                    menuCharacter.scale.set(
+                        character.scale[0],
+                        character.scale[1]
+                    );
+                }
+
+                if (character.locked == true)
+                {
+                    menuCharacter.color = FlxColor.BLACK;
+                }
+
+                break;
+            }
+        }
+
+        if (menuCharacter == null)
+        {
+            menuCharacter = FunkinSprite.createSparrow(
+                540,
+                160,
+                'menucharacters/manuel_new'
+            );
+
+            menuCharacter.scale.set(0.9, 0.9);
+
+            menuCharacter.animation.addByPrefix(
+                'play',
+                'MonikaAnim_gif',
+                24,
+                false
+            );
+        }
+
+        menuCharacter.antialiasing = true;
+        menuCharacter.updateHitbox();
+        menuCharacter.animation.play('play', true);
+
+        add(menuCharacter);
+    }
+
+function loadMenuCharacterJSON():Dynamic
+{
+    try
+    {
+        var rawJSON:String = Assets.getText(
+            Paths.file('data/menuCharacters.json')
+        );
+
+        return Json.parse(rawJSON);
+    }
+    catch (exception:Dynamic)
+    {
+        trace('No se pudo cargar menuCharacters.json: ' + exception);
+        return null;
+    }
+}
+
+    function createLogo():Void
+    {
+        logo = FunkinSprite.create(
+            -260,
+            0,
+            'Credits_LeftSide'
+        );
+
+        logo.antialiasing = true;
+        add(logo);
+
+        logoBump = FunkinSprite.createSparrow(
+            -160,
+            -40,
+            'Start_Screen_AssetsPlus'
+        );
+
+        logoBump.antialiasing = true;
+        logoBump.scale.set(0.5, 0.5);
+
+        logoBump.animation.addByPrefix(
+            'bump',
+            'logo bumpin',
+            24,
+            false
+        );
+
+        logoBump.animation.play('bump', true);
+        logoBump.updateHitbox();
+
+        add(logoBump);
+
+        if (firstStart)
+        {
+            FlxTween.tween(
+                logo,
+                {x: -60},
+                1.2,
+                {
+                    ease: FlxEase.elasticOut
+                }
+            );
+
+            FlxTween.tween(
+                logoBump,
+                {x: 40},
+                1.2,
+                {
+                    ease: FlxEase.elasticOut,
+                    onComplete: function(_)
+                    {
+                        firstStart = false;
+                    }
+                }
+            );
+        }
+        else
+        {
+            logo.x = -60;
+            logoBump.x = 40;
+        }
+    }
+
+function createMenuItems():Void
+{
+    menuItems = new FlxTypedGroup();
+    add(menuItems);
+
+    for (index in 0...options.length)
+    {
+        var menuItem:FlxText = new FlxText(
+            firstStart ? -350 : 50,
+            370 + index * 43,
+            0,
+            getOptionLabel(options[index])
+        );
+
+        menuItem.setFormat(
+            Paths.font('riffic.ttf'),
+            27,
+            FlxColor.WHITE,
+            'left'
+        );
+
+        menuItem.setBorderStyle(
+            FlxTextBorderStyle.OUTLINE,
+            0xFF1A5057,
+            2
+        );
+
+        menuItem.antialiasing = true;
+        menuItem.ID = index;
+
+        menuItems.add(menuItem);
+
+        if (firstStart)
+        {
+            FlxTween.tween(
+                menuItem,
+                {x: 50},
+                1.2 + index * 0.2,
+                {
+                    ease: FlxEase.elasticOut
+                }
+            );
+        }
+        else
+        {
+            menuItem.x = 50;
+        }
+    }
+}
+
+function getOptionLabel(option:String):String
+{
+    return switch (option)
+    {
+        case 'story': LanguageManager.getTranslation("story", "Story Mode");
+        case 'freeplay': LanguageManager.getTranslation("freeplay", "Freeplay");
+        case 'credits': LanguageManager.getTranslation("credits", "Credits");
+        case 'options': LanguageManager.getTranslation("options", "Options");
+        case 'exit': LanguageManager.getTranslation("exit", "Exit");
+        default: option.toUpperCase();
+    }
+}
+
+    function createExtraButtons():Void
+    {
+        discordButton = FunkinSprite.create(
+            1100,
+            570,
+            'discordov'
+        );
+
+        discordButton.antialiasing = true;
+        add(discordButton);
+
+        loveButton = FunkinSprite.create(
+            discordButton.x - 110,
+            570,
+            'loveov'
+        );
+
+        loveButton.antialiasing = true;
+        add(loveButton);
+    }
+
+    function createVersionText():Void
+    {
+        var version:String = 'Unknown';
+
+        try
+        {
+            var metadata =
+                PolymodHandler.modFileSystem
+                    .getMetadataByModId('ddts');
+
+            if (metadata != null)
+            {
+                version =
+                    metadata.modVersion.version.join('.');
+            }
+        }
+        catch (exception:Dynamic)
+        {
+            trace('No se pudo obtener la versión: $exception');
+        }
+
+        var versionText = new FlxText(
+            firstStart ? -350 : 5,
+            FlxG.height - 24,
+            0,
+            'v$version'
+        );
+
+        versionText.setFormat(
+            Paths.font('aller.ttf'),
+            16,
+            FlxColor.WHITE,
+            'left',
+            FlxTextBorderStyle.OUTLINE,
+            FlxColor.BLACK
+        );
+
+        add(versionText);
+
+        if (firstStart)
+        {
+            FlxTween.tween(
+                versionText,
+                {x: 5},
+                1.2,
+                {
+                    ease: FlxEase.elasticOut
+                }
+            );
+        }
+    }
+
+    override function update(elapsed:Float):Void
+    {
+        super.update(elapsed);
+            updateMenuBeat();
+
+        if (!acceptInputs || selectedSomething || subState != null)
+            return;
+
+        updateMouseInput();
+        updateKeyboardInput();
+    }
+
+    function updateKeyboardInput():Void
+    {
+        if (controls.UI_UP_P || controls.UI_DOWN_P)
+        {
+            var direction:Int =
+                controls.UI_UP_P ? -1 : 1;
+
+            changeItem(direction);
+        }
+
+        if (controls.ACCEPT_P)
+        {
+            selectThing();
+        }
+
+        if (controls.BACK_P)
+        {
+            var title = ScriptedMusicBeatState.init('skyredux.states.SwitcherooTitleState');
+            title.scriptCall('configureIntro', [true]);
+            switchState(title);
+        }
+    }
+
+    function updateMenuBeat():Void
+{
+    if (FlxG.sound.music == null)
+        return;
+
+    var crochet:Float = 60000 / menuBPM;
+    var currentMenuBeat:Int = Math.floor(
+        FlxG.sound.music.time / crochet
+    );
+
+    if (currentMenuBeat != lastMenuBeat)
+    {
+        lastMenuBeat = currentMenuBeat;
+        menuBeatHit(currentMenuBeat);
+    }
+}
+
+function menuBeatHit(beat:Int):Void
+{
+    if (logoBump != null)
+    {
+        logoBump.animation.play('bump', true);
+    }
+
+    if (
+        menuCharacter != null &&
+        menuCharacter.animation.curAnim != null &&
+        !menuCharacter.animation.curAnim.looped &&
+        beat % 2 == 0
+    )
+    {
+        menuCharacter.animation.play('play', true);
+    }
+}
+
+    function updateMouseInput():Void
+    {
+        for (item in menuItems.members)
+        {
+            if (item == null || !item.exists)
+                continue;
+
+            if (FlxG.mouse.overlaps(item))
+            {
+                if (curSelected != item.ID)
+                {
+                    curSelected = item.ID;
+                    rememberedSelection = curSelected;
+
+                    FlxG.sound.play(
+                        Paths.sound('scrollMenu')
+                    );
+
+                    changeItem(0, false);
+                }
+
+                if (FlxG.mouse.justPressed)
+                {
+                    selectThing();
+                }
+            }
+        }
+
+        if (discordButton != null &&
+            FlxG.mouse.overlaps(discordButton) &&
+            FlxG.mouse.justPressed)
+        {
+            openLink('discord');
+        }
+
+        if (loveButton != null &&
+            FlxG.mouse.overlaps(loveButton) &&
+            FlxG.mouse.justPressed)
+        {
+            openLink('love');
+        }
+    }
+
+function changeItem(amount:Int = 0, playSound:Bool = true):Void
+{
+    curSelected = FlxMath.wrap(
+        curSelected + amount,
+        0,
+        options.length - 1
+    );
+
+    rememberedSelection = curSelected;
+
+    if (playSound && amount != 0)
+    {
+        FlxG.sound.play(Paths.sound('scrollMenu'));
+    }
+
+    for (item in menuItems.members)
+    {
+        if (item == null)
+            continue;
+
+        var selected:Bool = item.ID == curSelected;
+
+        item.setBorderStyle(
+            FlxTextBorderStyle.OUTLINE,
+            selected ? 0xFF37D3D5 : 0xFF1A5057,
+            2
+        );
+
+        item.alpha = selected ? 1 : 0.8;
+    }
+}
+
+function selectThing():Void
+{
+    if (!acceptInputs || selectedSomething || subState != null)
+        return;
+
+    acceptInputs = false;
+    selectedSomething = true;
+
+    FlxG.sound.play(Paths.sound('confirmMenu'));
+
+    for (item in menuItems.members)
+    {
+        if (item == null)
+            continue;
+
+        if (item.ID != curSelected)
+        {
+            FlxTween.tween(
+                item,
+                {alpha: 0},
+                0.6,
+                {
+                    ease: FlxEase.quadOut
+                }
+            );
+        }
+    }
+
+    var selectedItem:FlxText = menuItems.members[curSelected];
+
+    if (selectedItem != null)
+    {
+        FlxFlicker.flicker(
+            selectedItem,
+            1,
+            0.06,
+            false,
+            false,
+            function(flicker:FlxFlicker)
+            {
+                goToState();
+            }
+        );
+    }
+    else
+    {
+        goToState();
+    }
+}
+
+function goToState():Void
+{
+    var selectedOption:String = options[curSelected];
+
+    switch (selectedOption)
+    {
+        case 'story':
+            switchState(
+                ScriptedMusicBeatState.init(
+                    'switcheroo.states.SwitcherooStoryModeState'
+                )
+            );
+
+        case 'freeplay':
+            switchState(
+                ScriptedMusicBeatState.init(
+                    'switcheroo.states.SwitcherooFreeplayState'
+                )
+            );
+
+        case 'credits':
+            switchState(
+                ScriptedMusicBeatState.init(
+                    'switcheroo.states.SwitcherooCreditsState'
+                )
+            );
+
+        case 'options':
+            SwitcherooMainMenuState.openedOptions = true;
+            switchState(new OptionsState());
+
+        case 'exit':
+        selectExit();
+    }
+}
+
+function resetMenuItems():Void
+{
+    for (item in menuItems.members)
+    {
+        if (item == null)
+            continue;
+
+        item.alpha = 1;
+        item.visible = true;
+    }
+
+    changeItem(0, false);
+}
+
+    function switchState(state:MusicBeatState):Void
+    {
+        if (state == null)
+        {
+            trace('No se pudo inicializar el estado destino.');
+
+            acceptInputs = true;
+            selectedSomething = false;
+            return;
+        }
+            FlxG.switchState(state);
+    }
+
+    function selectExit():Void
+    {
+openSubState(
+    new switcheroo.substates.CloseGameSubState(
+        function()
+        {
+
+            acceptInputs = true;
+            selectedSomething = false;
+
+            resetMenuItems();
+        }
+    )
+);
+    }
+
+    function openLink(which:String):Void
+    {
+        switch (which)
+        {
+            case 'love':
+                WindowUtil.openURL(
+                    'https://www.youtube.com/watch?v=Uy8rR2M0Mlg&t=1s'
+                );
+
+            case 'discord':
+                WindowUtil.openURL(
+                    'https://discord.gg/dN4a3Nzu5u'
+                );
+        }
+    }
+
+}

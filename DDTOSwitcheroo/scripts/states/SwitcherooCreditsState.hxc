@@ -1,0 +1,877 @@
+package switcheroo.states;
+
+import LanguageManager;
+
+import haxe.Json;
+import lime.utils.Assets;
+
+import flixel.FlxG;
+import flixel.FlxSprite;
+import flixel.addons.display.FlxBackdrop;
+import flixel.group.FlxGroup;
+import flixel.group.FlxGroup.FlxTypedGroup;
+import flixel.math.FlxMath;
+import flixel.text.FlxText;
+import flixel.text.FlxTextBorderStyle;
+import flixel.tweens.FlxEase;
+import flixel.tweens.FlxTween;
+import flixel.util.FlxColor;
+
+import funkin.Paths;
+import funkin.audio.FunkinSound;
+import funkin.graphics.FunkinSprite;
+import funkin.save.Save;
+import funkin.ui.MusicBeatState;
+import funkin.ui.ScriptedMusicBeatState;
+import funkin.ui.ScriptedMusicBeatSubState;
+import funkin.util.WindowUtil;
+
+import flixel.addons.display.FlxRuntimeShader;
+
+using StringTools;
+
+typedef CreditsFile =
+{
+    var peeps:Array<CreditPerson>;
+    var listoroles:Array<String>;
+}
+
+typedef CreditPerson =
+{
+    var realName:String;
+    var iconName:String;
+    var description:String;
+    var twitter:String;
+    var whichrole:Int;
+    var funnyName:Null<String>;
+    var hiddenType:Null<String>;
+}
+
+class SwitcherooCreditsState extends MusicBeatState
+{
+    static final CREDITS_JSON_PATH:String =
+        'data/credits.json';
+
+   
+    static var backdropX:Float = 0;
+
+   
+    static var rememberedPage:Int = 0;
+
+    var curSelected:Int = 0;
+    var curPage:Int = 0;
+
+    var acceptInputs:Bool = false;
+    var selectedSomething:Bool = false;
+
+    var backdrop:FlxBackdrop;
+
+   
+    var allCredits:Array<CreditPerson> = [];
+    var roleList:Array<String> = [];
+
+   
+    var currentCredits:Array<CreditPerson> = [];
+
+   
+    var pageGroup:FlxGroup;
+    var namesGroup:FlxTypedGroup<FlxText>;
+    var iconGroup:FlxTypedGroup<FunkinSprite>;
+
+    var icons:Array<FunkinSprite> = [];
+
+   
+    var funnyName:FlxText;
+    var funnyDescription:FlxText;
+    var roleText:FlxText;
+
+    override function create():Void
+    {
+        super.create();
+
+        persistentUpdate = true;
+        persistentDraw = true;
+
+        if (!loadCreditsData())
+        {
+            trace(
+                'SwitcherooCreditsState: no fue posible cargar ' +
+                CREDITS_JSON_PATH
+            );
+
+            returnToMainMenu();
+            return;
+        }
+
+        curPage = FlxMath.bound(
+            rememberedPage,
+            0,
+            roleList.length - 1
+        );
+
+        playCreditsMusic();
+        buildBackground();
+        buildPageContainers();
+        buildFixedInterface();
+
+        rebuildCurrentPage(false);
+
+       
+        new flixel.util.FlxTimer().start(
+            0.3,
+            function(timer)
+            {
+                acceptInputs = true;
+            }
+        );
+    }
+
+    function loadCreditsData():Bool
+    {
+        if (!Assets.exists(CREDITS_JSON_PATH))
+        {
+            trace(
+                'No existe el archivo: ' +
+                CREDITS_JSON_PATH
+            );
+
+            return false;
+        }
+
+        try
+        {
+            var rawJson:String =
+                Assets.getText(
+                    CREDITS_JSON_PATH
+                );
+
+            var json:CreditsFile =
+                cast Json.parse(rawJson);
+
+            if (
+                json == null ||
+                json.peeps == null ||
+                json.listoroles == null ||
+                json.listoroles.length == 0
+            )
+            {
+                return false;
+            }
+
+            allCredits = json.peeps;
+            roleList = json.listoroles;
+
+            return true;
+        }
+        catch (error:Dynamic)
+        {
+            trace(
+                'Error leyendo credits.json: ' +
+                error
+            );
+
+            return false;
+        }
+    }
+
+    function playCreditsMusic():Void
+    {
+        FunkinSound.playMusic(
+            'cutsceneEnd',
+            {
+                overrideExisting: true,
+                restartTrack: false,
+                persist: true
+            }
+        );
+    }
+
+ function buildBackground():Void
+{
+    backdrop =
+        new FlxBackdrop(
+            Paths.image('scrollingBG')
+        );
+
+    backdrop.x = backdropX;
+    backdrop.velocity.set(-16, 0);
+    backdrop.scale.set(0.2, 0.2);
+    backdrop.antialiasing = true;
+
+    var colorMask:FlxRuntimeShader =
+        new FlxRuntimeShader(
+            Assets.getText(
+                Paths.frag('ColorMaskShader')
+            )
+        );
+
+    colorMask.data.color1.value = [
+        0.04705882352,
+        0.19215686274,
+        0.30588235294
+    ];
+
+    colorMask.data.color2.value = [
+        0.00784313725,
+        0.38431372549,
+        0.47058823529
+    ];
+
+    backdrop.shader = colorMask;
+
+    add(backdrop);
+
+    var gradient:FunkinSprite =
+        FunkinSprite.create(
+            0,
+            0,
+            'gradient'
+        );
+
+    gradient.antialiasing = true;
+    gradient.color = 0xFF008080;
+    gradient.scrollFactor.set();
+    add(gradient);
+
+    var background:FunkinSprite =
+        FunkinSprite.create(
+            0,
+            0,
+            'credits/background'
+        );
+
+    background.antialiasing = true;
+    background.scrollFactor.set();
+    add(background);
+}
+
+    function buildPageContainers():Void
+    {
+        pageGroup = new FlxGroup();
+        add(pageGroup);
+
+        namesGroup =
+            new FlxTypedGroup();
+
+        iconGroup =
+            new FlxTypedGroup();
+
+        pageGroup.add(namesGroup);
+        pageGroup.add(iconGroup);
+    }
+
+    function buildFixedInterface():Void
+    {
+        funnyName = new FlxText(
+            286,
+            424,
+            1180,
+            '',
+            50
+        );
+
+        funnyName.setFormat(
+            Paths.font('riffic.ttf'),
+            50,
+            FlxColor.WHITE,
+            'center',
+            FlxTextBorderStyle.OUTLINE,
+            0xFF008080
+        );
+
+        funnyName.scrollFactor.set();
+        funnyName.borderSize = 2.4;
+        funnyName.antialiasing = true;
+        add(funnyName);
+
+        funnyDescription = new FlxText(
+            286,
+            550,
+            1180,
+            '',
+            20
+        );
+
+        funnyDescription.setFormat(
+            Paths.font('riffic.ttf'),
+            20,
+            0xFF008080,
+            'center'
+        );
+
+        funnyDescription.scrollFactor.set();
+        funnyDescription.antialiasing = true;
+        add(funnyDescription);
+
+       
+        var overlay:FunkinSprite =
+            FunkinSprite.create(
+                0,
+                0,
+                'credits/overlay'
+            );
+
+        overlay.antialiasing = true;
+        overlay.scrollFactor.set();
+        add(overlay);
+
+        roleText = new FlxText(
+            50,
+            60,
+            1180,
+            '',
+            60
+        );
+
+        roleText.setFormat(
+            Paths.font('riffic.ttf'),
+            60,
+            FlxColor.WHITE,
+            'center',
+            FlxTextBorderStyle.OUTLINE,
+            0xFF008080
+        );
+
+        roleText.borderSize = 2.4;
+        roleText.screenCenter(0x01);
+        roleText.scrollFactor.set();
+        roleText.antialiasing = true;
+        add(roleText);
+    }
+
+    function rebuildCurrentPage(
+        playSound:Bool = true
+    ):Void
+    {
+        clearCurrentPage();
+
+        currentCredits = [];
+
+        for (person in allCredits)
+        {
+            if (person == null)
+                continue;
+
+            if (person.whichrole != curPage)
+                continue;
+
+            if (!isPersonUnlocked(person))
+                continue;
+
+            currentCredits.push(person);
+        }
+
+        roleText.text =
+            LanguageManager.getTranslation('credits.role.' + curPage, roleList[curPage]);
+
+        curSelected = 0;
+
+        buildNames();
+        buildIcons();
+
+        if (currentCredits.length > 0)
+        {
+            changeItem(0, false);
+        }
+        else
+        {
+            funnyName.text =
+                LanguageManager.getTranslation("credits_empty", "NO CREDITS AVAILABLE");
+
+            funnyDescription.text = '';
+        }
+
+        if (playSound)
+        {
+            FunkinSound.playOnce(
+                Paths.sound('scrollMenu')
+            );
+        }
+    }
+
+    function clearCurrentPage():Void
+    {
+        for (nameText in namesGroup.members)
+        {
+            if (nameText != null)
+            {
+                nameText.destroy();
+            }
+        }
+
+        namesGroup.clear();
+
+        for (icon in iconGroup.members)
+        {
+            if (icon != null)
+            {
+                icon.destroy();
+            }
+        }
+
+        iconGroup.clear();
+        icons.resize(0);
+    }
+
+    function buildNames():Void
+    {
+        for (index in 0...currentCredits.length)
+        {
+            var person:CreditPerson =
+                currentCredits[index];
+
+            var nameText = new FlxText(
+                252,
+                196 + index * 43,
+                500,
+                person.realName,
+                27
+            );
+
+            nameText.setFormat(
+                Paths.font('riffic.ttf'),
+                27,
+                FlxColor.WHITE,
+                'left',
+                FlxTextBorderStyle.OUTLINE,
+                0xFF34C1FF
+            );
+
+            nameText.borderSize = 1;
+            nameText.antialiasing = true;
+            nameText.ID = index;
+
+            namesGroup.add(nameText);
+        }
+    }
+
+    function buildIcons():Void
+    {
+        for (person in currentCredits)
+        {
+            var iconPath:String =
+                'credits/icons/' +
+                person.iconName;
+
+           
+            if (!Assets.exists(Paths.image(iconPath)))
+            {
+                iconPath =
+                    'credits/icons/default';
+            }
+
+            var icon:FunkinSprite =
+                FunkinSprite.create(
+                    777,
+                    216,
+                    iconPath
+                );
+
+            icon.antialiasing = true;
+            icon.scale.set(1.67, 1.67);
+            icon.updateHitbox();
+            icon.alpha = 0;
+
+            icons.push(icon);
+            iconGroup.add(icon);
+        }
+    }
+
+   
+    function isPersonUnlocked(
+        person:CreditPerson
+    ):Bool
+    {
+        if (
+            person.hiddenType == null ||
+            person.hiddenType == ''
+        )
+        {
+            return true;
+        }
+
+        switch (person.hiddenType)
+        {
+            case 'drinksonme':
+                return getSaveFlag(
+                    'beatVA11HallA'
+                );
+
+            case 'libitina':
+                return getSaveFlag(
+                    'beatLibitina'
+                );
+
+            case 'libitinabefore':
+                return !getSaveFlag(
+                    'beatLibitina'
+                );
+
+            default:
+                return true;
+        }
+    }
+
+   
+    function getSaveFlag(
+        fieldName:String
+    ):Bool
+    {
+        var save:Dynamic =
+            Save.instance;
+
+        if (save == null)
+            return false;
+
+        var directValue:Dynamic =
+            Reflect.field(
+                save,
+                fieldName
+            );
+
+        if (directValue != null)
+        {
+            return directValue == true;
+        }
+
+        var saveData:Dynamic =
+            Reflect.field(
+                save,
+                'data'
+            );
+
+        if (saveData != null)
+        {
+            var nestedValue:Dynamic =
+                Reflect.field(
+                    saveData,
+                    fieldName
+                );
+
+            if (nestedValue != null)
+            {
+                return nestedValue == true;
+            }
+        }
+
+        return false;
+    }
+
+    override function update(
+        elapsed:Float
+    ):Void
+    {
+        super.update(elapsed);
+
+        if (backdrop != null)
+        {
+            backdropX = backdrop.x;
+        }
+
+        if (
+            FlxG.sound.music != null &&
+            FlxG.sound.music.volume < 0.8
+        )
+        {
+            FlxG.sound.music.volume =
+                Math.min(
+                    0.8,
+                    FlxG.sound.music.volume +
+                    0.5 * elapsed
+                );
+        }
+
+        if (
+            !acceptInputs ||
+            selectedSomething
+        )
+        {
+            return;
+        }
+
+        if (controls.UI_UP_P)
+        {
+            changeItem(-1);
+        }
+
+        if (controls.UI_DOWN_P)
+        {
+            changeItem(1);
+        }
+
+        if (controls.UI_LEFT_P)
+        {
+            changePage(-1);
+        }
+
+        if (controls.UI_RIGHT_P)
+        {
+            changePage(1);
+        }
+
+        if (controls.ACCEPT_P)
+        {
+            openCurrentLink();
+        }
+
+        if (controls.BACK_P)
+        {
+            returnToMainMenu();
+        }
+    }
+
+    function changeItem(
+        change:Int = 0,
+        playSound:Bool = true
+    ):Void
+    {
+        if (currentCredits.length == 0)
+            return;
+
+        curSelected =
+            FlxMath.wrap(
+                curSelected + change,
+                0,
+                currentCredits.length - 1
+            );
+
+        if (playSound)
+        {
+            FunkinSound.playOnce(
+                Paths.sound('scrollMenu')
+            );
+        }
+
+       
+        for (index in 0...icons.length)
+        {
+            icons[index].alpha =
+                index == curSelected
+                    ? 1
+                    : 0;
+        }
+
+        var relativeIndex:Int = 0;
+
+        for (item in namesGroup.members)
+        {
+            if (item == null)
+                continue;
+
+            item.ID =
+                relativeIndex -
+                curSelected;
+
+            relativeIndex++;
+
+            FlxTween.cancelTweensOf(item);
+
+            var targetY:Float =
+                calculateNameY(
+                    curSelected,
+                    item.ID,
+                    currentCredits.length
+                );
+
+            FlxTween.tween(
+                item,
+                {
+                    y: targetY
+                },
+                0.5,
+                {
+                    ease: FlxEase.circOut
+                }
+            );
+
+            item.setBorderStyle(
+                FlxTextBorderStyle.OUTLINE,
+                item.ID == 0
+                    ? 0xFFA7F7FF
+                    : 0xFF34C1FF,
+                1,
+                1
+            );
+
+            item.alpha =
+                Math.abs(item.ID) <= 8
+                    ? 1
+                    : 0;
+        }
+
+        updateSelectedInformation();
+    }
+
+   
+    function calculateNameY(
+        selected:Int,
+        relativeId:Int,
+        total:Int
+    ):Float
+    {
+       
+        if (selected <= 5)
+        {
+            return 196 +
+                selected * 43 +
+                relativeId * 43;
+        }
+
+       
+        if (
+            total >= 10 &&
+            selected >= total - 4
+        )
+        {
+            var endOffset:Int =
+                selected -
+                (total - 4);
+
+            return 454 +
+                endOffset * 43 +
+                relativeId * 43;
+        }
+
+       
+        return 454 +
+            relativeId * 43;
+    }
+
+    function updateSelectedInformation():Void
+    {
+        if (
+            curSelected < 0 ||
+            curSelected >= currentCredits.length
+        )
+        {
+            return;
+        }
+
+        var person:CreditPerson =
+            currentCredits[curSelected];
+
+        if (
+            person.funnyName != null &&
+            person.funnyName != ''
+        )
+        {
+            funnyName.text =
+                person.funnyName;
+        }
+        else
+        {
+            funnyName.text =
+                person.realName;
+        }
+
+        funnyDescription.text =
+            LanguageManager.getTranslation('credits.description.' + person.iconName, person.description);
+
+        funnyDescription.y =
+            funnyName.y +
+            funnyName.height;
+    }
+
+    function changePage(
+        change:Int
+    ):Void
+    {
+        if (roleList.length <= 1)
+            return;
+
+        curPage =
+            FlxMath.wrap(
+                curPage + change,
+                0,
+                roleList.length - 1
+            );
+
+        rememberedPage = curPage;
+
+        rebuildCurrentPage(true);
+    }
+
+    function openCurrentLink():Void
+    {
+        if (
+            currentCredits.length == 0 ||
+            curSelected < 0 ||
+            curSelected >= currentCredits.length
+        )
+        {
+            return;
+        }
+
+        var person:CreditPerson =
+            currentCredits[curSelected];
+
+        if (
+            person.realName ==
+                'Jorge - SunSpirit' &&
+            FlxG.keys.pressed.G
+        )
+        {
+            WindowUtil.openURL(
+                'https://www.youtube.com/watch?v=0MW9Nrg_kZU'
+            );
+
+            return;
+        }
+
+        if (
+            person.twitter != null &&
+            person.twitter != ''
+        )
+        {
+            WindowUtil.openURL(
+                person.twitter
+            );
+        }
+    }
+
+    function returnToMainMenu():Void
+    {
+        if (!acceptInputs)
+            return;
+
+        acceptInputs = false;
+        selectedSomething = true;
+
+       
+        rememberedPage = 0;
+
+        FunkinSound.playOnce(
+            Paths.sound('cancelMenu')
+        );
+
+        FunkinSound.playMusic('gettinSwitched',
+        {
+            overrideExisting: true,
+            restartTrack: false,
+            
+            persist: true
+        });
+        			FlxG.switchState(ScriptedMusicBeatState.init('switcheroo.states.SwitcherooMainMenuState'));
+    }
+
+    override function destroy():Void
+    {
+        if (namesGroup != null)
+        {
+            for (item in namesGroup.members)
+            {
+                if (item != null)
+                {
+                    FlxTween.cancelTweensOf(
+                        item
+                    );
+                }
+            }
+        }
+
+        icons.resize(0);
+        currentCredits.resize(0);
+
+        super.destroy();
+    }
+}

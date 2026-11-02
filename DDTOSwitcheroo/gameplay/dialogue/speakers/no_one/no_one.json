@@ -1,0 +1,37 @@
+{
+  "version": "1.0.0",
+  "name": "Narrator",
+  "assetPath": "gameplay/dialogue/speakers/no_one/no_one",
+  "flipX": false,
+  "isPixel": true,
+  "scale": 5.4,
+  "box": "manuel",
+  "textSound": "dialogue/pixelText",
+  "offsets": [-2, -2],
+  "animations": [
+    {
+      "name": "neutral",
+      "prefix": "manuel_neutral"
+    },
+    {
+      "name": "gasp",
+      "prefix": "manuel_gasp"
+    },
+    {
+      "name": "uhoh",
+      "prefix": "manuel_uhoh"
+    },
+    {
+      "name": "hmm",
+      "prefix": "manuel_hmm"
+    },
+    {
+      "name": "happy",
+      "prefix": "manuel_happy"
+    },
+    {
+      "name": "sad",
+      "prefix": "manuel_sad"
+    }
+  ]
+}

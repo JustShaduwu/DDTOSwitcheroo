@@ -1,0 +1,449 @@
+import funkin.play.stage.Stage;
+import funkin.play.character.CharacterType;
+import funkin.graphics.FunkinSprite;
+import funkin.modding.module.ModuleHandler;
+
+import flixel.addons.display.FlxRuntimeShader;
+
+typedef RemixRimData =
+{
+	var shader:FlxRuntimeShader;
+	var target:FunkinSprite;
+
+	var isCharacter:Bool;
+
+	var brightness:Float;
+	var hue:Float;
+	var contrast:Float;
+	var saturation:Float;
+	var color:Int;
+}
+
+class SchoolErectSwitcherooRemixStage extends Stage
+{
+	var dropShaduwuModule;
+
+	var stageRims:Array<RemixRimData> = [];
+
+	var freaksSprite:FunkinSprite;
+
+
+	function new()
+	{
+		super('schoolErect-switcheroo-erect');
+	}
+
+
+	override function buildStage():Void
+	{
+		super.buildStage();
+
+		dropShaduwuModule =
+			ModuleHandler.getModule(
+				'DropShaduwuShader'
+			);
+
+		if (dropShaduwuModule == null)
+		{
+			trace(
+				'[SchoolErectSwitcherooRemixStage] ' +
+				'DropShaduwuShader Module no encontrado.'
+			);
+		}
+
+		freaksSprite =
+			cast getNamedProp(
+				'freaks'
+			);
+
+		if (freaksSprite != null)
+		{
+			applyFreaksShader(
+				freaksSprite
+			);
+
+			freaksSprite.idleSuffix =
+				'-scared';
+		}
+	}
+
+
+	function registerRim(
+		shader:FlxRuntimeShader,
+		target:FunkinSprite,
+		isCharacter:Bool,
+		brightness:Float,
+		hue:Float,
+		contrast:Float,
+		saturation:Float,
+		color:Int
+	):Void
+	{
+		if (
+			shader == null ||
+			target == null
+		)
+		{
+			return;
+		}
+
+		stageRims.push(
+		{
+			shader: shader,
+			target: target,
+			isCharacter: isCharacter,
+
+			brightness: brightness,
+			hue: hue,
+			contrast: contrast,
+			saturation: saturation,
+
+			color: color
+		});
+	}
+
+
+	function updateRimFrame(
+		rim:FlxRuntimeShader,
+		target:FunkinSprite
+	):Void
+	{
+		if (
+			rim == null ||
+			target == null ||
+			target.frame == null ||
+			dropShaduwuModule == null
+		)
+		{
+			return;
+		}
+
+		dropShaduwuModule.scriptCall(
+			'updateFrameInfo',
+			[
+				rim,
+				target
+			]
+		);
+	}
+
+
+	function applyFreaksShader(
+		freaks:FunkinSprite
+	):Void
+	{
+		if (
+			freaks == null ||
+			dropShaduwuModule == null
+		)
+		{
+			return;
+		}
+
+		var rim:FlxRuntimeShader =
+			cast dropShaduwuModule.scriptCall(
+				'attach',
+				[
+					freaks,
+
+					-66,
+					-10,
+					24,
+					-23,
+
+					0xFF52351D,
+
+					90,
+					5,
+					0.3,
+					1,
+					2
+				]
+			);
+
+		if (rim == null)
+		{
+			return;
+		}
+
+		registerRim(
+			rim,
+			freaks,
+			false,
+
+			-66,
+			-10,
+			24,
+			-23,
+
+			0xFF52351D
+		);
+
+		freaks.animation.onFrameChange.add(
+			function()
+			{
+				if (
+					freaks != null &&
+					freaks.frame != null &&
+					rim != null &&
+					dropShaduwuModule != null
+				)
+				{
+					dropShaduwuModule.scriptCall(
+						'updateFrameInfo',
+						[
+							rim,
+							freaks
+						]
+					);
+				}
+			}
+		);
+	}
+
+
+	override function addCharacter(
+		character:BaseCharacter,
+		charType:CharacterType
+	):Void
+	{
+		super.addCharacter(
+			character,
+			charType
+		);
+
+		if (
+			character == null ||
+			dropShaduwuModule == null
+		)
+		{
+			return;
+		}
+
+		switch (charType)
+		{
+			case CharacterType.BF:
+
+				var rim:FlxRuntimeShader =
+					cast dropShaduwuModule.scriptCall(
+						'attach',
+						[
+							character,
+
+							-80,
+							-30,
+							-10,
+							-23,
+
+							0xFF7C74B5,
+
+							90,
+							5,
+							0.1,
+							1,
+							2
+						]
+					);
+
+				if (rim == null)
+				{
+					return;
+				}
+
+				registerRim(
+					rim,
+					cast character,
+					true,
+
+					-80,
+					-30,
+					-10,
+					-23,
+
+					0xFF7C74B5
+				);
+
+				character.animation.onFrameChange.add(function()
+				{
+					var boyfriend = getBoyfriend();
+
+					if (
+						boyfriend != null &&
+						boyfriend.frame != null &&
+						rim != null &&
+						dropShaduwuModule != null
+					)
+					{
+						dropShaduwuModule.scriptCall(
+							'updateFrameInfo',
+							[
+								rim,
+								boyfriend
+							]
+						);
+					}
+				});
+
+
+			case CharacterType.GF:
+
+				var rim:FlxRuntimeShader =
+					cast dropShaduwuModule.scriptCall(
+						'attach',
+						[
+							character,
+
+							-80,
+							-30,
+							-10,
+							-23,
+
+							0xFF7C74B5,
+
+							90,
+							3,
+							0.3,
+							1,
+							2
+						]
+					);
+
+				if (rim == null)
+				{
+					return;
+				}
+
+				registerRim(
+					rim,
+					cast character,
+					true,
+
+					-80,
+					-30,
+					-10,
+					-23,
+
+					0xFF7C74B5
+				);
+
+				character.animation.onFrameChange.add(function()
+				{
+					var girlfriend = getGirlfriend();
+
+					if (
+						girlfriend != null &&
+						girlfriend.frame != null &&
+						rim != null &&
+						dropShaduwuModule != null
+					)
+					{
+						dropShaduwuModule.scriptCall(
+							'updateFrameInfo',
+							[
+								rim,
+								girlfriend
+							]
+						);
+					}
+				});
+
+
+			case CharacterType.DAD:
+
+				var rim:FlxRuntimeShader =
+					cast dropShaduwuModule.scriptCall(
+						'attach',
+						[
+							character,
+
+							-80,
+							-30,
+							-10,
+							-23,
+
+							0xFF7C74B5,
+
+							90,
+							5,
+							0.1,
+							1,
+							2
+						]
+					);
+
+				if (rim == null)
+				{
+					return;
+				}
+
+				registerRim(
+					rim,
+					cast character,
+					true,
+
+					-80,
+					-30,
+					-10,
+					-23,
+
+					0xFF7C74B5
+				);
+
+				character.animation.onFrameChange.add(function()
+				{
+					var dad = getDad();
+
+					if (
+						dad != null &&
+						dad.frame != null &&
+						rim != null &&
+						dropShaduwuModule != null
+					)
+					{
+						dropShaduwuModule.scriptCall(
+							'updateFrameInfo',
+							[
+								rim,
+								dad
+							]
+						);
+					}
+				});
+
+
+			default:
+		}
+	}
+
+
+	override function kill():Void
+	{
+		for (rimData in stageRims)
+		{
+			if (
+				rimData == null ||
+				rimData.target == null
+			)
+			{
+				continue;
+			}
+
+			if (
+				rimData.target.shader ==
+				rimData.shader
+			)
+			{
+				rimData.target.shader =
+					null;
+			}
+		}
+
+		stageRims.resize(0);
+
+		freaksSprite = null;
+
+		dropShaduwuModule = null;
+
+		super.kill();
+	}
+}

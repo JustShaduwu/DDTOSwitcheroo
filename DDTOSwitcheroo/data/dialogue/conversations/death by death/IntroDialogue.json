@@ -1,0 +1,151 @@
+{
+	"startingMusic": "Nightmare",
+	"initStyle": "pixel",
+	"dialogue": 
+	[
+		{
+			"isCommand": false,
+			"name": "manuel",
+			"expression": "happy",
+			"string": "...",
+			"key": "dbdIntro1",
+			"side": "left"
+		},
+		{
+			"isCommand": false,
+			"name": "manuel",
+			"expression": "peace",
+			"string": "Ah...peace and silence, finally.",
+			"key": "dbdIntro2",
+			"side": "left"
+		},
+		{
+			"isCommand": false,
+			"name": "bf",
+			"expression": "what",
+			"string": "...beep..?",
+			"key": "dbdIntro3",
+			"side": "right"
+		},
+		{
+			"isCommand": false,
+			"name": "manuel",
+			"expression": "neutral",
+			"string": "Oh, yeah. Where we left it?",
+			"key": "dbdIntro4",
+			"side": "left"
+		},
+		{
+			"isCommand": false,
+			"name": "manuel",
+			"expression": "pissed",
+			"string": "Okay, you were going to keep your end of the deal, weren't you? Come on, I'm waiting... ",
+			"key": "dbdIntro5",
+			"side": "left"
+		},
+		{
+			"isCommand": false,
+			"name": "bf",
+			"expression": "angry",
+			"string": "*aggressive bee bop noises*",
+			"key": "dbdIntro6",
+			"side": "right"
+		},
+		{
+			"isCommand": false,
+			"name": "manuel",
+			"expression": "angry",
+			"string": "...uh?",
+			"key": "dbdIntro7",
+			"side": "left"
+		},
+		{
+			"isCommand": false,
+			"name": "manuel",
+			"expression": "neutral",
+			"string": "What do you mean..",
+			"key": "dbdIntro8",
+			"side": "left"
+		},
+		{
+			"isCommand": false,
+			"name": "manuel",
+			"expression": "mad",
+			"string": "''NO''??",
+			"key": "dbdIntro8.5",
+			"side": "left"
+		},
+		{
+			"isCommand": false,
+			"name": "bf",
+			"expression": "angry",
+			"string": "*more aggressive bee bop noises*",
+			"key": "dbdIntro9",
+			"side": "right"
+		},
+		{
+			"isCommand": false,
+			"name": "manuel",
+			"expression": "pissed",
+			"string": "...hmm. It's because of your boyfriend, isn't it?",
+			"key": "dbdIntro10",
+			"side": "left"
+		},
+		{
+			"isCommand": false,
+			"name": "manuel",
+			"expression": "angry",
+			"string": "...you chose the hardest path.",
+			"key": "dbdIntro11",
+			"side": "left"
+		},
+		{
+			"isCommand": false,
+			"name": "manuel",
+			"expression": "angry",
+			"string": "Let's sing one more time.",
+			"key": "dbdIntro12",
+			"side": "left"
+		},
+		{
+			"isCommand": false,
+			"name": "manuel",
+			"expression": "mad",
+			"string": "If I win, you tell me what I want to know.",
+			"key": "dbdIntro13",
+			"side": "left"
+		},
+		{
+			"isCommand": false,
+			"name": "manuel",
+			"expression": "angry",
+			"string": "If you win, everything will go back to normal. Along with your Chris. Deal?",
+			"key": "dbdIntro14",
+			"side": "left"
+		},
+		{
+			"isCommand": false,
+			"name": "bf",
+			"expression": "angry",
+			"string": "*determined bop*",
+			"key": "dbdIntro15",
+			"side": "right"
+         },
+		{
+			"isCommand": false,
+			"name": "manuel",
+			"expression": "pissed",
+			"string": "...Great.",
+			"key": "dbdIntro16",
+			"side": "left"
+        },
+		{
+			"isCommand": false,
+			"name": "manuel",
+			"expression": "pissed",
+			"string": "Let's end this now.",
+			"key": "dbdIntro17",
+			"side": "left"
+		}
+	]
+}

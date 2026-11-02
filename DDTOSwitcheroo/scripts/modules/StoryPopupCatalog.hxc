@@ -1,0 +1,84 @@
+import funkin.modding.module.Module;
+import funkin.save.Save;
+import funkin.Paths;
+import lime.utils.Assets;
+import haxe.Json;
+
+class StoryPopupCatalog extends Module
+{
+    function new() { super('StoryPopupCatalog'); }
+
+    public static function wasSeen(key:String):Bool
+    {
+        return Save.instance.modOptions.get('switcherooPopupSeen:' + key) == true;
+    }
+
+    public static function parentWasSeen(key:String):Bool
+    {
+        return Save.instance.modOptions.get('switcherooPopupParentSeen:' + key) == true;
+    }
+
+    public static function markSeen(key:String):Void
+    {
+        Save.instance.modOptions.set('switcherooPopupSeen:' + key, true);
+        Save.instance.flush();
+    }
+
+    public static function acceptChild(entry:Dynamic):Void
+    {
+        Save.instance.modOptions.set('switcherooPopupSeen:' + entry.key, true);
+        if (entry.lastChild == true)
+            Save.instance.modOptions.set('switcherooPopupParentSeen:' + entry.parentKey, true);
+        Save.instance.flush();
+    }
+    
+    
+    public static function pending(parentKey:String, preview:Bool = false):Array<Dynamic>
+    {
+        var queue:Array<Dynamic> = [];
+        if (parentKey == null || parentKey == '') return queue;
+        var parents:Array<String> = [];
+        try
+        {
+            var config = Json.parse(Assets.getText(Paths.file('data/storyPopups.json')));
+            var popups:Array<Dynamic> = config.popups;
+            for (popup in popups)
+            {
+                if (popup.key == null || popup.key == '' || popup.enabled == false) continue;
+                var key = Std.string(popup.key);
+                if (parents.indexOf(key) >= 0) continue;
+                parents.push(key);
+                if (key != parentKey) continue;
+                if (!preview && parentWasSeen(key)) continue;
+                
+                if (popup.childs == null) continue;
+                var childs:Array<Dynamic> = popup.childs;
+                var remaining:Array<Dynamic> = [];
+                var childKeys:Array<String> = [];
+                for (child in childs)
+                {
+                    if (child.key == null || child.key == '' || child.message == null) continue;
+                    var childKey = Std.string(child.key);
+                    if (childKeys.indexOf(childKey) >= 0) continue;
+                    childKeys.push(childKey);
+                    if (!preview && wasSeen(childKey)) continue;
+                    remaining.push({key: childKey, style: child.style,
+                        message: child.message, parentKey: key, lastChild: false});
+                }
+                if (remaining.length > 0)
+                {
+                    remaining[remaining.length - 1].lastChild = true;
+                    for (entry in remaining) queue.push(entry);
+                }
+                else if (!preview && childKeys.length > 0)
+                {
+                    
+                    Save.instance.modOptions.set('switcherooPopupParentSeen:' + key, true);
+                    Save.instance.flush();
+                }
+            }
+        }
+        catch (error:Dynamic) { trace('[StoryPopupCatalog] ' + error); }
+        return queue;
+    }
+}
